@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.petsinaermica.askavet.utils.JSONResponseHandler;
 import net.petsinamerica.askavet2.R;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -66,12 +69,10 @@ public class ArticleActivity extends Activity {
 		new HttpGetTask().execute(articleURL_API);
 		
 		
-		
-		
 	}
 	
 	
-	private class HttpGetTask extends AsyncTask<String, Void, List<String>> {
+	private class HttpGetTask extends AsyncTask<String, Void, String> {
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 		
@@ -84,33 +85,59 @@ public class ArticleActivity extends Activity {
 		}
 
 		@Override
-		protected List<String> doInBackground(String... params) {
+		protected String doInBackground(String... params) {
 			String url = params[0];
 			HttpGet request = new HttpGet(url);
-			JSONResponseHandler responseHandler = new JSONResponseHandler();
 			
+			HttpResponse response = null;		
+			String JSONResponse = null;
 			try {
-				return mClient.execute(request, responseHandler);
-			} catch (ClientProtocolException e) {
+				response = mClient.execute(request);
+				JSONResponse = new BasicResponseHandler()
+				.handleResponse(response);
+				return JSONResponse;
+			} catch (HttpResponseException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}			
 			return null;
 		}
 
 		@Override
-		protected void onPostExecute(List<String> result) {
+		protected void onPostExecute(String JSONResponse) {
 			if (null != mClient)
 				mClient.close();
-			String s = result.get(0);
-			String[] tokens = s.split(";;");
+			//String s = result.get(0);
+			// parse the JSON object to get the right content for display
+			String sTitle = null, sImgURL = null, sContent = null;
+			try {
+				JSONObject responseObject = (JSONObject) new JSONTokener(
+						JSONResponse).nextValue();
+				sTitle = responseObject.get("title").toString();
+				sImgURL = responseObject.get("img").toString();
+				sContent = responseObject.get("content").toString();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//String s = "";
+			//String[] tokens = s.split(";;");
 			
-			mTitleTextView.setText(tokens[2]);
+			if (sTitle != null){
+				mTitleTextView.setText(sTitle);
+			}else{
+				mTitleTextView.setText("No Content Available");
+			}
 			
-			// view port doesn't see useful in this case
-			//String html_head = "<head><title>test</title><meta name=\"viewport\" content=\"width=device-width, user-scalable=no\"/></head>";
-			String html_string = "<body>" + "<img src=\"" + tokens[5] + "\">" + tokens[3] + "</body>";
+			String html_string =null;
+			if (sImgURL != null && sContent != null){
+				html_string = "<body>" + "<img src=\"" + sImgURL + "\">" + sContent + "</body>";
+			}else{
+				html_string = "<body>" + "No Content Available" + "</body>";
+			}
 			
 			
 			String pattern = "(<img.*?[jp][pn]g.*?\")(.?)(>)";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
@@ -127,47 +154,6 @@ public class ArticleActivity extends Activity {
 			mProgBarView.setVisibility(View.GONE);
 			
 			
-		}
-	}
-
-	
-	
-	private class JSONResponseHandler implements ResponseHandler<List<String>> {
-
-		private static final String IMAGE_URL_TAG = "img";
-		private static final String TIME_TAG = "time";
-		private static final String ID_TAG = "id";
-		private static final String AUTHOR_TAG = "author";
-		private static final String OWNER_TAG = "owner";
-		private static final String TITLE_TAG = "title";
-		private static final String LIST_TAG = "list";
-		private static final String CONTENT_TAG = "content";
-		private static final String AVATAR_TAG = "avatar";
-
-		@Override
-		public List<String> handleResponse(HttpResponse response)
-				throws ClientProtocolException, IOException {
-			//List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
-			List<String> result = new ArrayList<String>();
-			String JSONResponse = new BasicResponseHandler()
-					.handleResponse(response);
-			try {
-
-				// Get top-level JSON Object - a Map
-				JSONObject responseObject = (JSONObject) new JSONTokener(
-						JSONResponse).nextValue();
-				
-				result.add(responseObject.get(TIME_TAG) + ";;"
-						 + responseObject.get(ID_TAG) + ";;" 
-						 + responseObject.get(TITLE_TAG) + ";;"
-						 + responseObject.get(CONTENT_TAG) + ";;"
-						 + responseObject.get(OWNER_TAG) + ";;"
-						 + responseObject.get(IMAGE_URL_TAG));
-				
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			return result;
 		}
 	}
 

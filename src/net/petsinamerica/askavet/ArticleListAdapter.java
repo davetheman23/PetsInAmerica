@@ -2,11 +2,16 @@ package net.petsinamerica.askavet;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import net.petsinaermica.askavet.utils.DownLoadImageTask;
 import net.petsinaermica.askavet.utils.MemoryCache;
 import net.petsinamerica.askavet2.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -28,9 +33,9 @@ import android.widget.TextView;
  *  listAdapter to display article summaries
  *  layout file list_item.xml 
  */
-public class ArticleListAdapter extends ArrayAdapter<String> {
+public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 	private final Context mContext;
-	private final List<String> mObjects;
+	private final List<Map<String, String>> mArticleSummaries;
 	private final int mResource;
 	private final int mHeader;
 	private final static int HEADER_POSITION  = 0;
@@ -54,11 +59,11 @@ public class ArticleListAdapter extends ArrayAdapter<String> {
 	 *  Standard constructer
 	 */
 	public ArticleListAdapter(Context context, int header, int resource,
-			List<String> objects) {
+			List<Map<String, String>> objects) {
 		super(context,  header, resource, objects);
 		
 		mContext = context;
-		mObjects = objects;
+		mArticleSummaries = objects;
 		mHeader = header;
 		mResource = resource;
 		mMemCache = new MemoryCache();	// set aside some cache memory to store bitmaps, for fast loading of image
@@ -118,30 +123,42 @@ public class ArticleListAdapter extends ArrayAdapter<String> {
 
 			viewHolder = (ViewHolder) rowview.getTag();
 			viewHolder.iv.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_launcher));
-			for (int tagidx = 0; tagidx < MAX_NUM_TAGS_DISPLAY; tagidx++){
+			/*for (int tagidx = 0; tagidx < MAX_NUM_TAGS_DISPLAY; tagidx++){
 				ViewHolder.tv_tags[tagidx].setText("");
 				ViewHolder.tv_tags[tagidx].setVisibility(View.GONE);
-			}
+			}*/
 		}
 		
-		// parse the JSON string, obtained elsewhere
-		// may need a better logic here instead of hard coding 
-		String s = mObjects.get(position).toString();
-		String[] tokens = s.split(";;");
+		
+		Map<String,String> articlesummary = mArticleSummaries.get(position); 
+		String sTitle = articlesummary.get("title");
+		String sImgURL = articlesummary.get("img");
+		String sOwner = articlesummary.get("owner");
+		String tag = articlesummary.get("tag");
+		tag = tag.replaceAll("\\#\\*", ";");
+		tag = tag.replaceAll("\\#|\\*", "");
+		String[] tags = tag.split(";");
+		
+		
+				
+		//sContent = responseObject.get("content").toString();
+		
+		//String s = mObjects.get(position).toString();
+		//String[] tokens = s.split(";;");
 
 		
-		viewHolder.tv_firstline.setText(tokens[2]);
+		viewHolder.tv_firstline.setText(sTitle);
 		//if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
-//			viewHolder.tv_secondline.setText("作者：" + tokens[4]);
-	//	}
-		String[] subtokens = tokens[7].split(";");
+		//	viewHolder.tv_secondline.setText("作者：" + sOwner);
+		//}
+		//String[] subtokens = tokens[7].split(";");
 		
-		int tagstoshow = subtokens.length < MAX_NUM_TAGS_DISPLAY 
-				         ? subtokens.length : MAX_NUM_TAGS_DISPLAY;
+		int tagstoshow = tags.length < MAX_NUM_TAGS_DISPLAY 
+				         ? tags.length : MAX_NUM_TAGS_DISPLAY;
 		if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
 			for (int tagidx = 0; tagidx < tagstoshow; tagidx++){
 				ViewHolder.tv_tags[tagidx].setVisibility(View.VISIBLE);
-				ViewHolder.tv_tags[tagidx].setText(subtokens[tagidx]);
+				ViewHolder.tv_tags[tagidx].setText(tags[tagidx]);
 			}
 			for (int tagidx = tagstoshow; tagidx < MAX_NUM_TAGS_DISPLAY; tagidx++){
 				ViewHolder.tv_tags[tagidx].setVisibility(View.GONE);
@@ -150,14 +167,14 @@ public class ArticleListAdapter extends ArrayAdapter<String> {
 		
 		
 		// setup image loading procedure
-		String url = tokens[5];
-		final Bitmap bitmap = mMemCache.getBitmapFromMemCache(url);	// try first see if image in cache
+		//String url = sImgURL;
+		final Bitmap bitmap = mMemCache.getBitmapFromMemCache(sImgURL);	// try first see if image in cache
 		if (bitmap != null){
 			// if in cache, display immediately
 			viewHolder.iv.setImageBitmap(bitmap);
 		}else{
 			// if not in cache, setup an async task to download from web
-			viewHolder.iv.setTag(url);
+			viewHolder.iv.setTag(sImgURL);
 			DownLoadImageTask  loadimage = new DownLoadImageTask();
 			int scale = 0;
 			if (getItemViewType(position) == LIST_VIEW_TYPE_HEADER){
@@ -214,9 +231,18 @@ public class ArticleListAdapter extends ArrayAdapter<String> {
 	 */
 	public String getArticleID(int position) {
 		// the ID position in the original JSON array is hard-coded
-		String s = mObjects.get(position).toString();
-		String[] tokens = s.split(";;");
-		return tokens[1];
+		
+		JSONObject articleSummary;
+		String sArticleID = null;
+		try {
+			articleSummary = (JSONObject) mArticleSummaries.get(position);
+			sArticleID = articleSummary.get("id").toString();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return sArticleID;
 	}
 	
 

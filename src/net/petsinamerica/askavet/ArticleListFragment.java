@@ -2,10 +2,13 @@ package net.petsinamerica.askavet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import net.petsinaermica.askavet.utils.JsonHelper;
 import net.petsinamerica.askavet.ArticleListAdapter.ViewHolder;
 import net.petsinamerica.askavet2.R;
 
@@ -49,7 +52,7 @@ public class ArticleListFragment extends ListFragment{
 
 	private static final String URL_BLOGCN = "http://petsinamerica.net/new/api/blogCN/";
 	private static final String URL_ARTICLE_API = "http://petsinamerica.net/new/api/article/";
-	private static final String URL_ARTICLE = "http://petsinamerica.net/new/blog/article/";
+	//private static final String URL_ARTICLE = "http://petsinamerica.net/new/blog/article/";
 	
 	
 	
@@ -144,18 +147,22 @@ public class ArticleListFragment extends ListFragment{
 		startActivity(newIntent);
 	}
 	
-	private class HttpGetTask extends AsyncTask<String, Void, List<String>> {
+	private class HttpGetTask extends AsyncTask<String, Void, String> {
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 
 		@Override
-		protected List<String> doInBackground(String... params) {
+		protected String doInBackground(String... params) {
 			String url = params[0];
 			HttpGet request = new HttpGet(url);
-			JSONResponseHandler responseHandler = new JSONResponseHandler();
-			
+			//JSONResponseHandler responseHandler = new JSONResponseHandler();
+			HttpResponse response = null;		
+			String JSONResponse = null;
 			try {
-				return mClient.execute(request, responseHandler);
+				response = mClient.execute(request);
+				JSONResponse = new BasicResponseHandler()
+				.handleResponse(response);
+				return JSONResponse;
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -165,24 +172,44 @@ public class ArticleListFragment extends ListFragment{
 		}
 
 		@Override
-		protected void onPostExecute(List<String> result) {
+		protected void onPostExecute(String JSONResponse) {
 			if (null != mClient)
 				mClient.close();
 			if (isAdded()){		
 			// always test isAdded for a fragment, this help make sure
 			// the getActivity doesn't return null pointer
+				
+				
+				// -- Parse Json object, 
+				JSONObject responseObject = null;
+				JSONArray articleSummaries = null;
+				List<Map<String, String>> articleList = new ArrayList<Map<String, String>>();
+				try {
+					responseObject = (JSONObject) new JSONTokener(
+							JSONResponse).nextValue();
+					articleSummaries = responseObject.getJSONArray("list");
+					if (articleSummaries != null){
+						JsonHelper jhelper = new JsonHelper(); 
+						articleList = jhelper.toList(articleSummaries);
+					}
+					
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
 				if (mflag_addData == false){
 					mALAdapter = new ArticleListAdapter(
 										mContext, R.layout.article_list_header,
-										R.layout.article_list_item, result);
+										R.layout.article_list_item, articleList);
 					
 					//setup an asynctask to batch download the images, based on all urls from results
 					
-					getListView().addHeaderView(BuildHeaderView());
+					//getListView().addHeaderView(BuildHeaderView());
 					setListAdapter(mALAdapter);
 				}else{
-					if (result.size() > 0 ){
-						mALAdapter.addAll(result);
+					if (articleSummaries.length() > 0 ){
+						mALAdapter.addAll(articleList);
 						mflag_addData = false;
 					}
 				}
