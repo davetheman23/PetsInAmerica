@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">北美宠物网</string>
+    <string name="action_settings">设置</string>
+    <string name="action_search">搜索</string>
+    <string name="page_title_article">全部文章</string>
+    <string name="title_section2">文章列表</string>
+    <string name="title_section1">宠物提问</string>
+    <string name="title_section3">宠物用品</string>
+    <string name="no_content_available">没有内容显示</string>
+    
+    <string name="token_info">Token 信息：</string>
+    <string name="logout_button">注销</string>
+
+</resources>
