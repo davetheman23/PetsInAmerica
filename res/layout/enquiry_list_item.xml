@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:paddingLeft="2dp"
+    android:paddingRight="2dp">
+ <!-- This layout has image on the Right side -->
+
+	<ImageView
+        android:id="@+id/enquiry_list_icon"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="@string/article_pic"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher" />
+	
+    <TextView
+        android:id="@+id/enquiry_list_1stline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/enquiry_list_icon"        
+        android:ellipsize="marquee"
+        android:paddingRight="5dp"
+        android:text="Title"
+        android:textColor="#000000"
+        android:textSize="18sp" />
+    
+    <TextView
+        android:id="@+id/enquiry_list_status"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/enquiry_list_1stline"
+        android:ellipsize="marquee"
+        android:text="tag1"
+        android:textSize="13sp" 
+        android:textColor="#A3A3A3"/>
+    
+    <TextView
+        android:id="@+id/enquiry_list_2ndline"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/enquiry_list_1stline"
+        android:layout_toRightOf="@id/enquiry_list_icon"
+        android:layout_toLeftOf="@id/enquiry_list_status"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:ellipsize="marquee"
+        android:text="tag1"
+        android:textSize="10sp" 
+        android:textColor="#A3A3A3"/>    
+    
+</RelativeLayout>
