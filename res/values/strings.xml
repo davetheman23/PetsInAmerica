@@ -12,5 +12,21 @@
     
     <string name="token_info">Token 信息：</string>
     <string name="logout_button">注销</string>
-
+    
+    
+    
+    <!--resource for reading Json objects --> 
+    <string name = "common_JSON_tag_title">title</string>
+    <string name = "common_JSON_tag_image">img</string>
+    <string name = "common_JSON_tag_id">id</string>
+    <string name = "common_JSON_tag_tag">tag</string>
+    <string name = "common_JSON_tag_time">time</string>
+    <string name = "common_JSON_tag_content">content</string>
+    <string name = "common_JSON_tag_owner">owner</string>
+    <string name = "common_JSON_tag_author">author</string>
+    <string name = "common_JSON_tag_maintag">maintag</string>
+    <string name = "articlelist_JSON_tag_list">list</string>
+    <string name = "article_JSON_tag_avatar">avatar</string>
+    <string name = "article_JSON_tag_maintag_cn">maintag_cn</string>
+   
 </resources>

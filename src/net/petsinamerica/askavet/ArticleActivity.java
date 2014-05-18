@@ -1,17 +1,13 @@
 package net.petsinamerica.askavet;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import net.petsinaermica.askavet.utils.JSONResponseHandler;
 import net.petsinamerica.askavet2.R;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.protocol.HTTP;
@@ -40,6 +36,13 @@ public class ArticleActivity extends Activity {
 	private TextView mTitleTextView;
 	private ProgressBar mProgBarView;
 	//private ImageView mImageView = null;
+	private static final String HTML_CONTENT = "Html_Content";
+	private static final String HTML_TITLE = "Html_Title";
+	
+	// these tags are those for reading the JSON objects
+	private static String TAG_TITLE;
+	private static String TAG_IMAGE;
+	private static String TAG_CONTENT;
 	
 	
 	@Override
@@ -55,24 +58,20 @@ public class ArticleActivity extends Activity {
 		
 		mWebView = (WebView) findViewById(R.id.web_view);
 		mWebView.setWebViewClient(new WebViewClient());
-		
-		// view port doesn't see useful in this case
-		//mWebView.getSettings().setUseWideViewPort(true);
-		//mWebView.getSettings().setLoadWithOverviewMode(true);
-		
 		mWebView.getSettings().setBuiltInZoomControls(true);
 		mWebView.getSettings().setSupportZoom(true);
 		
+		TAG_TITLE = getResources().getString(R.string.common_JSON_tag_title);
+		TAG_IMAGE = getResources().getString(R.string.common_JSON_tag_image);
+		TAG_CONTENT = getResources().getString(R.string.common_JSON_tag_content);		
 		
 		String articleURL_API = getIntent().getStringExtra("URL_API");
 		
 		new HttpGetTask().execute(articleURL_API);
-		
-		
 	}
 	
 	
-	private class HttpGetTask extends AsyncTask<String, Void, String> {
+	private class HttpGetTask extends AsyncTask<String, Void, Map<String, String>> {
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 		
@@ -85,7 +84,7 @@ public class ArticleActivity extends Activity {
 		}
 
 		@Override
-		protected String doInBackground(String... params) {
+		protected Map<String, String> doInBackground(String... params) {
 			String url = params[0];
 			HttpGet request = new HttpGet(url);
 			
@@ -93,13 +92,35 @@ public class ArticleActivity extends Activity {
 			String JSONResponse = null;
 			try {
 				response = mClient.execute(request);
-				JSONResponse = new BasicResponseHandler()
-				.handleResponse(response);
-				return JSONResponse;
+				JSONResponse = new BasicResponseHandler().handleResponse(response);
+				
+				// -- Parse Json object, 
+				JSONObject responseObject = (JSONObject) new JSONTokener(
+						JSONResponse).nextValue();
+				String sTitle = responseObject.get(TAG_TITLE).toString();
+				String sImgURL = responseObject.get(TAG_IMAGE).toString();
+				String sContent = responseObject.get(TAG_CONTENT).toString();
+				String html_string = null;
+				if (sImgURL != null && sContent != null){
+					html_string = "<body>" + "<img src=\"" + sImgURL + "\">" + sContent + "</body>";
+					String pattern = "(<img.*?[jp][pn]g.*?\")(.?)(>)";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
+					html_string = html_string.replaceAll(pattern, "$1 width=\"100%\" alt=\"\"$3");
+				}
+				
+				// -- put the data together and display on the UI 
+				Map<String, String> results = new HashMap<String, String>();
+				results.put(HTML_TITLE, sTitle);
+				results.put(HTML_CONTENT, html_string);
+				// result.put("more contents", more contents);
+				
+				return results;
 			} catch (HttpResponseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}			
@@ -107,43 +128,22 @@ public class ArticleActivity extends Activity {
 		}
 
 		@Override
-		protected void onPostExecute(String JSONResponse) {
+		protected void onPostExecute(Map<String, String> results) {
 			if (null != mClient)
 				mClient.close();
-			//String s = result.get(0);
-			// parse the JSON object to get the right content for display
-			String sTitle = null, sImgURL = null, sContent = null;
-			try {
-				JSONObject responseObject = (JSONObject) new JSONTokener(
-						JSONResponse).nextValue();
-				sTitle = responseObject.get("title").toString();
-				sImgURL = responseObject.get("img").toString();
-				sContent = responseObject.get("content").toString();
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			//String s = "";
-			//String[] tokens = s.split(";;");
 			
+			String noContent = getResources().getString(R.string.no_content_available);
+			String sTitle = results.get(HTML_TITLE); 
 			if (sTitle != null){
 				mTitleTextView.setText(sTitle);
 			}else{
-				mTitleTextView.setText("No Content Available");
+				mTitleTextView.setText(noContent);
 			}
 			
-			String html_string =null;
-			if (sImgURL != null && sContent != null){
-				html_string = "<body>" + "<img src=\"" + sImgURL + "\">" + sContent + "</body>";
-			}else{
-				html_string = "<body>" + "No Content Available" + "</body>";
+			String html_string = results.get(HTML_CONTENT);
+			if (html_string == null){
+				html_string = "<body>" + noContent + "</body>";
 			}
-			
-			
-			String pattern = "(<img.*?[jp][pn]g.*?\")(.?)(>)";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
-			html_string = html_string.replaceAll(pattern, "$1 width=\"100%\" alt=\"\"$3");
-			
-			
 			mWebView.loadDataWithBaseURL(null, html_string, "text/html", HTTP.UTF_8, null);
 			
 			//String image_url = tokens[5];

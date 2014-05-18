@@ -54,6 +54,7 @@ public class ArticleListFragment extends ListFragment{
 	private static final String URL_ARTICLE_API = "http://petsinamerica.net/new/api/article/";
 	//private static final String URL_ARTICLE = "http://petsinamerica.net/new/blog/article/";
 	
+	private static String TAG_ARTICLE_LIST;
 	
 	
 	private int mPage = 1;
@@ -73,6 +74,8 @@ public class ArticleListFragment extends ListFragment{
 		super.onAttach(activity);
 		mContext = activity.getApplicationContext();
 		mAttributes = getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
+		
+		TAG_ARTICLE_LIST = mContext.getResources().getString(R.string.articlelist_JSON_tag_list);
 		
 	}
 	
@@ -134,11 +137,10 @@ public class ArticleListFragment extends ListFragment{
 		// TODO Auto-generated method stub
 		super.onListItemClick(l, v, position, id);
 		// obtain the article ID clicked
-		String articleID = mALAdapter.getArticleID(position);
+		int articleID = mALAdapter.getArticleID(v);
 		
 		// store the article ID clicked
 		//Record_Usage(articleID);
-		
 		
 		// start a new activity 
 		String articleURL_API = URL_ARTICLE_API + articleID;
@@ -147,12 +149,12 @@ public class ArticleListFragment extends ListFragment{
 		startActivity(newIntent);
 	}
 	
-	private class HttpGetTask extends AsyncTask<String, Void, String> {
+	private class HttpGetTask extends AsyncTask<String, Void, List<Map<String, String>>> {
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 
 		@Override
-		protected String doInBackground(String... params) {
+		protected List<Map<String, String>> doInBackground(String... params) {
 			String url = params[0];
 			HttpGet request = new HttpGet(url);
 			//JSONResponseHandler responseHandler = new JSONResponseHandler();
@@ -162,54 +164,51 @@ public class ArticleListFragment extends ListFragment{
 				response = mClient.execute(request);
 				JSONResponse = new BasicResponseHandler()
 				.handleResponse(response);
-				return JSONResponse;
+				
+				// -- Parse Json object, 
+				JSONObject responseObject = null;
+				JSONArray articleSummaries = null;
+				List<Map<String, String>> articleList = null;
+				
+				responseObject = (JSONObject) new JSONTokener(
+						JSONResponse).nextValue();
+				articleSummaries = responseObject.getJSONArray(TAG_ARTICLE_LIST);
+				if (articleSummaries != null){
+					JsonHelper jhelper = new JsonHelper(); 
+					articleList = jhelper.toList(articleSummaries);
+				}			
+				return articleList;
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
+				e.printStackTrace();
+			}catch (JSONException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return null;
 		}
 
 		@Override
-		protected void onPostExecute(String JSONResponse) {
+		protected void onPostExecute(List<Map<String, String>> resultArray) {
 			if (null != mClient)
 				mClient.close();
-			if (isAdded()){		
+			if (isAdded() && resultArray != null){		
 			// always test isAdded for a fragment, this help make sure
 			// the getActivity doesn't return null pointer
 				
-				
-				// -- Parse Json object, 
-				JSONObject responseObject = null;
-				JSONArray articleSummaries = null;
-				List<Map<String, String>> articleList = new ArrayList<Map<String, String>>();
-				try {
-					responseObject = (JSONObject) new JSONTokener(
-							JSONResponse).nextValue();
-					articleSummaries = responseObject.getJSONArray("list");
-					if (articleSummaries != null){
-						JsonHelper jhelper = new JsonHelper(); 
-						articleList = jhelper.toList(articleSummaries);
-					}
-					
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			
 				if (mflag_addData == false){
 					mALAdapter = new ArticleListAdapter(
 										mContext, R.layout.article_list_header,
-										R.layout.article_list_item, articleList);
+										R.layout.article_list_item, resultArray);
 					
 					//setup an asynctask to batch download the images, based on all urls from results
 					
 					//getListView().addHeaderView(BuildHeaderView());
 					setListAdapter(mALAdapter);
 				}else{
-					if (articleSummaries.length() > 0 ){
-						mALAdapter.addAll(articleList);
+					if (resultArray.size() > 0 ){
+						mALAdapter.addAll(resultArray);
 						mflag_addData = false;
 					}
 				}
@@ -256,60 +255,4 @@ public class ArticleListFragment extends ListFragment{
 	    return Attributes;
 	}
 
-	private class JSONResponseHandler implements ResponseHandler<List<String>> {
-
-		private static final String IMAGE_URL_TAG = "img";
-		private static final String TIME_TAG = "time";
-		private static final String ID_TAG = "id";
-		private static final String AUTHOR_TAG = "author";
-		private static final String OWNER_TAG = "owner";
-		private static final String TITLE_TAG = "title";
-		private static final String LIST_TAG = "list";
-		private static final String CONTENT_TAG = "content";
-		private static final String MAINTAG_TAG = "maintag";
-		private static final String TAGS_TAG = "tag";
-
-		@Override
-		public List<String> handleResponse(HttpResponse response)
-				throws ClientProtocolException, IOException {
-			//List<HashMap<String, String>> result = new ArrayList<HashMap<String, String>>();
-			List<String> result = new ArrayList<String>();
-			String JSONResponse = new BasicResponseHandler()
-					.handleResponse(response);
-			try {
-
-				// Get top-level JSON Object - a Map
-				JSONObject responseObject = (JSONObject) new JSONTokener(
-						JSONResponse).nextValue();
-
-				// Extract value of "LIST_TAG" key -- a List
-				JSONArray articleSummaries = responseObject
-						.getJSONArray(LIST_TAG);
-				
-				// Iterate over earthquakes list
-				for (int idx = 0; idx < articleSummaries.length(); idx++) {
-
-					// Get a single article data - a Map
-					JSONObject articleSummary = (JSONObject) articleSummaries.get(idx);
-					
-					String tags = articleSummary.get(TAGS_TAG).toString();
-					tags = tags.replaceAll("\\#\\*", ";");
-					tags = tags.replaceAll("\\#|\\*", "");
-					
-					// Summarize article data into a string and add to result
-					result.add(articleSummary.get(TIME_TAG) + ";;"
-							 + articleSummary.get(ID_TAG) + ";;" 
-							 + articleSummary.get(TITLE_TAG) + ";;"
-							 + articleSummary.get(CONTENT_TAG) + ";;"
-							 + articleSummary.get(OWNER_TAG) + ";;"
-							 + articleSummary.get(IMAGE_URL_TAG) + ";;"
-							 + articleSummary.get(MAINTAG_TAG) + ";;"
-							 + tags);
-				}
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			return result;
-		}
-	}
 }

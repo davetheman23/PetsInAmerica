@@ -8,16 +8,11 @@ import net.petsinaermica.askavet.utils.DownLoadImageTask;
 import net.petsinaermica.askavet.utils.MemoryCache;
 import net.petsinamerica.askavet2.R;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.text.Layout;
 import android.util.AttributeSet;
 import android.util.Xml;
 import android.view.LayoutInflater;
@@ -42,9 +37,15 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 	private final static int LIST_VIEW_TYPE_HEADER = 0;
 	private final static int LIST_VIEW_TYPE_REGULAR = 1;
 	private final static int MAX_NUM_TAGS_DISPLAY = 5;
-	private MemoryCache mMemCache;
 	
+	private MemoryCache mMemCache;
 	private AttributeSet mAttributes;
+	
+	// these tags are those for reading the JSON objects
+	private static String TAG_TITLE;
+	private static String TAG_IMAGE;
+	private static String TAG_ID;
+	private static String TAG_TAG;
 	
 	static class ViewHolder{
 		ImageView iv;
@@ -52,7 +53,7 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 		TextView tv_secondline;
 		static TextView[] tv_tags;
 		RelativeLayout RL_layout;
-		int position;
+		int articleID;
 	}
 	
 	/*
@@ -67,8 +68,12 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 		mHeader = header;
 		mResource = resource;
 		mMemCache = new MemoryCache();	// set aside some cache memory to store bitmaps, for fast loading of image
-		
 		mAttributes = getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
+		
+		TAG_TITLE = mContext.getResources().getString(R.string.common_JSON_tag_title);
+		TAG_IMAGE = mContext.getResources().getString(R.string.common_JSON_tag_image);
+		TAG_ID = mContext.getResources().getString(R.string.common_JSON_tag_id);
+		TAG_TAG = mContext.getResources().getString(R.string.common_JSON_tag_tag);
 		
 	}
 
@@ -107,7 +112,8 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 					ViewHolder.tv_tags[tagidx] = new TextView(mContext, mAttributes);
 					ViewHolder.tv_tags[tagidx].setId(tagidx+1);
 					// create some layout parameters for the relative layout
-					LayoutParams laypar = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+					LayoutParams laypar = new LayoutParams(LayoutParams.WRAP_CONTENT, 
+											  			   LayoutParams.WRAP_CONTENT);
 					if (tagidx ==0)
 						laypar.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 					else
@@ -123,35 +129,26 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 
 			viewHolder = (ViewHolder) rowview.getTag();
 			viewHolder.iv.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_launcher));
-			/*for (int tagidx = 0; tagidx < MAX_NUM_TAGS_DISPLAY; tagidx++){
-				ViewHolder.tv_tags[tagidx].setText("");
-				ViewHolder.tv_tags[tagidx].setVisibility(View.GONE);
-			}*/
 		}
 		
 		
+		
 		Map<String,String> articlesummary = mArticleSummaries.get(position); 
-		String sTitle = articlesummary.get("title");
-		String sImgURL = articlesummary.get("img");
-		String sOwner = articlesummary.get("owner");
-		String tag = articlesummary.get("tag");
+		String sTitle = articlesummary.get(TAG_TITLE);
+		String sImgURL = articlesummary.get(TAG_IMAGE);
+		String sArticleID = articlesummary.get(TAG_ID);
+		//String sOwner = articlesummary.get("owner");
+		String tag = articlesummary.get(TAG_TAG);
 		tag = tag.replaceAll("\\#\\*", ";");
 		tag = tag.replaceAll("\\#|\\*", "");
 		String[] tags = tag.split(";");
 		
 		
-				
-		//sContent = responseObject.get("content").toString();
-		
-		//String s = mObjects.get(position).toString();
-		//String[] tokens = s.split(";;");
-
-		
+		viewHolder.articleID = Integer.parseInt(sArticleID);
 		viewHolder.tv_firstline.setText(sTitle);
 		//if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
 		//	viewHolder.tv_secondline.setText("作者：" + sOwner);
 		//}
-		//String[] subtokens = tokens[7].split(";");
 		
 		int tagstoshow = tags.length < MAX_NUM_TAGS_DISPLAY 
 				         ? tags.length : MAX_NUM_TAGS_DISPLAY;
@@ -167,7 +164,6 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 		
 		
 		// setup image loading procedure
-		//String url = sImgURL;
 		final Bitmap bitmap = mMemCache.getBitmapFromMemCache(sImgURL);	// try first see if image in cache
 		if (bitmap != null){
 			// if in cache, display immediately
@@ -227,22 +223,13 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 	}
 
 	/*
-	 * return a article ID from the position selected
+	 * return a article ID from view selected
 	 */
-	public String getArticleID(int position) {
-		// the ID position in the original JSON array is hard-coded
-		
-		JSONObject articleSummary;
-		String sArticleID = null;
-		try {
-			articleSummary = (JSONObject) mArticleSummaries.get(position);
-			sArticleID = articleSummary.get("id").toString();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public int getArticleID(View v) {
+		// this assumes the view is the row view so it has a viewholder
+		ViewHolder vh = (ViewHolder) v.getTag();
 
-		return sArticleID;
+		return vh.articleID;
 	}
 	
 
