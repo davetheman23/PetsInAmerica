@@ -10,7 +10,7 @@ import java.util.Set;
 
 import net.petsinaermica.askavet.utils.JsonHelper;
 import net.petsinamerica.askavet.ArticleListAdapter.ViewHolder;
-import net.petsinamerica.askavet2.R;
+import net.petsinamerica.askavet.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;

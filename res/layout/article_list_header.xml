@@ -11,6 +11,8 @@
         android:id="@+id/list_header_icon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:maxHeight="250dp"
+        android:adjustViewBounds="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:contentDescription="first_article_pic"

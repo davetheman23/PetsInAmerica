@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.petsinaermica.askavet.utils.JsonHelper;
-import net.petsinamerica.askavet2.R;
+import net.petsinamerica.askavet.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -18,15 +18,19 @@ import org.json.JSONTokener;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.View;
+import android.widget.ListView;
 
 public class EnquiryListFragment extends ListFragment {
 
 	private static final String URL_ENQUIRY = "http://petsinamerica.net/new/api/publicQueryList/";
+	private static String TAG_RESULT;
+	private static String TAG_CONTENT;
 	
 	private int mPage = 1;
 	boolean mflag_addData = false;		// false-don't add data
@@ -38,6 +42,8 @@ public class EnquiryListFragment extends ListFragment {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		mContext = activity.getApplicationContext();
+		TAG_RESULT = mContext.getResources().getString(R.string.JSON_tag_result);
+		TAG_CONTENT = mContext.getResources().getString(R.string.JSON_tag_content);
 	}
 
 	@Override
@@ -50,6 +56,24 @@ public class EnquiryListFragment extends ListFragment {
 		
 		// disable scroll bar
 		getListView().setVerticalScrollBarEnabled(false);	
+	}
+	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		// TODO Auto-generated method stub
+		super.onListItemClick(l, v, position, id);
+		// obtain the article ID clicked
+		//int articleID = mELAdapter.getQueryID(v);
+		
+		// store the article ID clicked
+		//Record_Usage(articleID);
+		
+		// start a new activity 
+		String query_content = mELAdapter.getQueryContent(v);
+		Intent newIntent = new Intent(mContext, EnquiryActivity.class);
+		//newIntent.putExtra("URL_API", articleURL_API);
+		newIntent.putExtra(TAG_CONTENT, query_content);
+		startActivity(newIntent);
 	}
 	
 	
@@ -76,7 +100,7 @@ public class EnquiryListFragment extends ListFragment {
 				
 				responseObject = (JSONObject) new JSONTokener(
 						JSONResponse).nextValue();
-				enqueries = responseObject.getJSONArray("result");
+				enqueries = responseObject.getJSONArray(TAG_RESULT);
 				if (enqueries != null){
 					JsonHelper jhelper = new JsonHelper(); 
 					enquiryList = jhelper.toList(enqueries);

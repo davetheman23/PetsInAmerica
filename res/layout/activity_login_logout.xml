@@ -8,28 +8,55 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin" >
 
+    <ImageView 
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center"
+        android:contentDescription="launcher"
+        android:src="@drawable/pia_logo_large_w_text"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
-        android:orientation="vertical" >
-
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center_horizontal"
+         >
+        
+        <AutoCompleteTextView
+            android:id="@+id/login_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:height="20dp"
+            android:width="50dp" />
+        
+        <Button
+        	android:id="@+id/login_button"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_marginTop="5dp"
+        	android:text="@string/button_login_login" 
+        	android:layout_gravity="center_horizontal"/>
+        <!-- 
+        <Button
+        	android:id="@+id/logout_button"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_marginTop="5dp"
+        	android:text="@string/logout_button" 
+        	android:layout_gravity="center_horizontal"/>
+         -->
         <!-- 默认效果，带图片文字的登陆按钮 -->
         <com.sina.weibo.sdk.widget.LoginButton
-            android:id="@+id/login_button_default"
+            android:id="@+id/weibo_login_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp" 
+            android:layout_gravity="center_horizontal"/>
             <!-- android:background="@drawable/com_sina_weibo_sdk_login_button_with_account_text" /> -->
             
-    </LinearLayout>
-    
-    <Button
-        android:id="@+id/logout_button"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="@string/logout_button" />
+    </RelativeLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -37,7 +64,7 @@
         android:layout_marginTop="20dp"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:text="@string/token_info" />
+        android:text="@string/token_login_info" />
         
     <TextView
         android:id="@+id/result"

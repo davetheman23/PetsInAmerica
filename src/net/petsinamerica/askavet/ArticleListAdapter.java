@@ -6,7 +6,7 @@ import java.util.Map;
 
 import net.petsinaermica.askavet.utils.DownLoadImageTask;
 import net.petsinaermica.askavet.utils.MemoryCache;
-import net.petsinamerica.askavet2.R;
+import net.petsinamerica.askavet.R;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;

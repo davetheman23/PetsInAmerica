@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.petsinaermica.askavet.utils.MemoryCache;
-import net.petsinamerica.askavet2.R;
+import net.petsinamerica.askavet.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -33,6 +33,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 	private static String TAG_TAG;
 	private static String TAG_AVATAR;
 	private static String TAG_OWNERNAME;
+	private static String TAG_CONTENT;
 	private static String TAG_DATE;
 	private static String TAG_STATUS;
 	
@@ -42,6 +43,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		TextView tv_firstline;
 		TextView tv_secondline;
 		TextView tv_status;
+		String queryContent = "";
 		int queryID;
 	}
 	
@@ -64,6 +66,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		TAG_AVATAR = mContext.getResources().getString(R.string.JSON_tag_avatar);
 		TAG_DATE = mContext.getResources().getString(R.string.JSON_tag_date);
 		TAG_STATUS = mContext.getResources().getString(R.string.JSON_tag_status);
+		TAG_CONTENT = mContext.getResources().getString(R.string.JSON_tag_content);
 		
 	}
 
@@ -106,6 +109,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		String sOwnerName = enquiry.get(TAG_OWNERNAME);
 		String sQueryID = enquiry.get(TAG_ID);
 		String sDate = enquiry.get(TAG_DATE);
+		String sContent = enquiry.get(TAG_CONTENT);
 		int status = Integer.parseInt(enquiry.get(TAG_STATUS));
 		int status_color = android.R.color.black;
 		String sStatus = null;
@@ -129,6 +133,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		}
 		
 		viewHolder.queryID = Integer.parseInt(sQueryID);
+		viewHolder.queryContent = sContent;
 		viewHolder.tv_firstline.setText(sTitle);
 		viewHolder.tv_secondline.setText(sOwnerName + " 提问于 " + sDate);
 		viewHolder.tv_status.setText(sStatus);
@@ -167,6 +172,11 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		ViewHolder vh = (ViewHolder) v.getTag();
 
 		return vh.queryID;
+	}
+	
+	public String getQueryContent(View v){
+		ViewHolder vh = (ViewHolder) v.getTag();
+		return vh.queryContent;
 	}
 	
 

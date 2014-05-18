@@ -2,7 +2,7 @@ package net.petsinamerica.askavet;
 
 import java.util.Locale;
 
-import net.petsinamerica.askavet2.R;
+import net.petsinamerica.askavet.R;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;

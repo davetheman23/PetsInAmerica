@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.petsinamerica.askavet2.R;
+import net.petsinamerica.askavet.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpResponseException;
