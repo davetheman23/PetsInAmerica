@@ -61,9 +61,9 @@ public class ArticleActivity extends Activity {
 		mWebView.getSettings().setBuiltInZoomControls(true);
 		mWebView.getSettings().setSupportZoom(true);
 		
-		TAG_TITLE = getResources().getString(R.string.common_JSON_tag_title);
-		TAG_IMAGE = getResources().getString(R.string.common_JSON_tag_image);
-		TAG_CONTENT = getResources().getString(R.string.common_JSON_tag_content);		
+		TAG_TITLE = getResources().getString(R.string.JSON_tag_title);
+		TAG_IMAGE = getResources().getString(R.string.JSON_tag_image);
+		TAG_CONTENT = getResources().getString(R.string.JSON_tag_content);		
 		
 		String articleURL_API = getIntent().getStringExtra("URL_API");
 		

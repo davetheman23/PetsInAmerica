@@ -70,10 +70,10 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 		mMemCache = new MemoryCache();	// set aside some cache memory to store bitmaps, for fast loading of image
 		mAttributes = getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
 		
-		TAG_TITLE = mContext.getResources().getString(R.string.common_JSON_tag_title);
-		TAG_IMAGE = mContext.getResources().getString(R.string.common_JSON_tag_image);
-		TAG_ID = mContext.getResources().getString(R.string.common_JSON_tag_id);
-		TAG_TAG = mContext.getResources().getString(R.string.common_JSON_tag_tag);
+		TAG_TITLE = mContext.getResources().getString(R.string.JSON_tag_title);
+		TAG_IMAGE = mContext.getResources().getString(R.string.JSON_tag_image);
+		TAG_ID = mContext.getResources().getString(R.string.JSON_tag_id);
+		TAG_TAG = mContext.getResources().getString(R.string.JSON_tag_tag);
 		
 	}
 
@@ -138,10 +138,10 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 		String sImgURL = articlesummary.get(TAG_IMAGE);
 		String sArticleID = articlesummary.get(TAG_ID);
 		//String sOwner = articlesummary.get("owner");
-		String tag = articlesummary.get(TAG_TAG);
-		tag = tag.replaceAll("\\#\\*", ";");
-		tag = tag.replaceAll("\\#|\\*", "");
-		String[] tags = tag.split(";");
+		//String tag = articlesummary.get(TAG_TAG);
+		//tag = tag.replaceAll("\\#\\*", ";");
+		//tag = tag.replaceAll("\\#|\\*", "");
+		//String[] tags = tag.split(";");
 		
 		
 		viewHolder.articleID = Integer.parseInt(sArticleID);
@@ -150,7 +150,7 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 		//	viewHolder.tv_secondline.setText("作者：" + sOwner);
 		//}
 		
-		int tagstoshow = tags.length < MAX_NUM_TAGS_DISPLAY 
+		/*int tagstoshow = tags.length < MAX_NUM_TAGS_DISPLAY 
 				         ? tags.length : MAX_NUM_TAGS_DISPLAY;
 		if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
 			for (int tagidx = 0; tagidx < tagstoshow; tagidx++){
@@ -160,7 +160,7 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 			for (int tagidx = tagstoshow; tagidx < MAX_NUM_TAGS_DISPLAY; tagidx++){
 				ViewHolder.tv_tags[tagidx].setVisibility(View.GONE);
 			}
-		}
+		}*/
 		
 		
 		// setup image loading procedure

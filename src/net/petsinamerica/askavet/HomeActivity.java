@@ -117,14 +117,19 @@ public class HomeActivity extends FragmentActivity implements
 			// getItem is called to instantiate the fragment for the given page.
 			// Return a DummySectionFragment with the page number as its lone argument.
 			Fragment fragment =  null;
-			if (position != 1){
+			switch (position){
+			case 0:
+				fragment = (Fragment) new EnquiryListFragment();
+				break;
+			case 1:
+				fragment = (Fragment) new ArticleListFragment();
+				break;
+			default:
 				fragment = new DummySectionFragment();
 				Bundle args = new Bundle();
 				args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
 				fragment.setArguments(args);
-			}else{
-				fragment = (Fragment) new ArticleListFragment();
-				
+				break;				
 			}
 
 			return fragment;

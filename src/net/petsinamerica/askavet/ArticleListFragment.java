@@ -75,7 +75,7 @@ public class ArticleListFragment extends ListFragment{
 		mContext = activity.getApplicationContext();
 		mAttributes = getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
 		
-		TAG_ARTICLE_LIST = mContext.getResources().getString(R.string.articlelist_JSON_tag_list);
+		TAG_ARTICLE_LIST = mContext.getResources().getString(R.string.JSON_tag_list);
 		
 	}
 	
