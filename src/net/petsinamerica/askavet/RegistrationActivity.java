@@ -10,7 +10,7 @@ public class RegistrationActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+		// TODO Complete the registration process
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_register);
 		
@@ -26,5 +26,11 @@ public class RegistrationActivity extends Activity {
 			}
 		});
 		
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		finish();
 	}
 }

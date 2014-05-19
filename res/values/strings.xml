@@ -47,6 +47,9 @@
     <string name = "JSON_tag_avatar">avatar</string>
     <string name = "JSON_tag_maintag_cn">maintag_cn</string>
     <string name = "JSON_tag_ownername">ownername</string>
+    <string name = "JSON_tag_username">username</string>
+    <string name = "JSON_tag_password">password</string>
+    <string name = "JSON_tag_login">login</string>
     
    
 </resources>

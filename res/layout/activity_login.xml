@@ -53,10 +53,13 @@
                 android:textColor="@color/Black"
                 android:text="@string/label_login_username"
                 android:textSize="18sp"/>
-          <EditText android:layout_width="fill_parent"
+          <EditText
+              	android:id="@+id/login_username" 
+              	android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dip"
                 android:layout_marginBottom="20dip"
+                android:inputType="text"
                 android:singleLine="true"
                 android:textColor="@color/Black"
                 android:background="@drawable/textlines"
@@ -68,7 +71,9 @@
                 android:textColor="@color/Black"
                 android:text="@string/label_login_password"
                 android:textSize="18sp"/>
-          <EditText android:layout_width="fill_parent"
+          <EditText 
+              	android:id="@+id/login_password"
+              	android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dip"
                 android:layout_marginBottom="20dip"

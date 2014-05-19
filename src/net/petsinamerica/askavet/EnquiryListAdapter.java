@@ -97,9 +97,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 			// set tag for future reuse of the view
 			rowview.setTag(viewHolder);
 		}else{
-
 			viewHolder = (ViewHolder) rowview.getTag();
-			viewHolder.iv.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_launcher));
 		}
 		
 		
@@ -112,6 +110,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		String sContent = enquiry.get(TAG_CONTENT);
 		int status = Integer.parseInt(enquiry.get(TAG_STATUS));
 		int status_color = android.R.color.black;
+		// TODO need to convert these hard-coded strings 
 		String sStatus = null;
 		switch (status){
 		case 0:
@@ -141,7 +140,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		
 		
 		
-		// setup image loading procedure
+		// TODO setup image loading procedure
 		/*final Bitmap bitmap = mMemCache.getBitmapFromMemCache(sImgURL);	// try first see if image in cache
 		if (bitmap != null){
 			// if in cache, display immediately

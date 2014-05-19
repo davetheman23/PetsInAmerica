@@ -16,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:contentDescription="@string/article_pic"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/someone" />
 	
     <TextView
         android:id="@+id/enquiry_list_1stline"
@@ -27,7 +27,7 @@
         android:ellipsize="marquee"
         android:paddingRight="5dp"
         android:text="Title"
-        android:textColor="#000000"
+        android:textColor="@color/Black"
         android:textSize="18sp" />
     
     <TextView
@@ -40,7 +40,7 @@
         android:ellipsize="marquee"
         android:text="tag1"
         android:textSize="13sp" 
-        android:textColor="#A3A3A3"/>
+        android:textColor="@color/Grey"/>
     
     <TextView
         android:id="@+id/enquiry_list_2ndline"
@@ -54,6 +54,6 @@
         android:ellipsize="marquee"
         android:text="tag1"
         android:textSize="10sp" 
-        android:textColor="#A3A3A3"/>    
+        android:textColor="@color/Grey"/>    
     
 </RelativeLayout>
