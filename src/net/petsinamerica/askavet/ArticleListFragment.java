@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.petsinaermica.askavet.utils.JsonHelper;
 import net.petsinamerica.askavet.ArticleListAdapter.ViewHolder;
+import net.petsinamerica.askavet.utils.JsonHelper;
 import net.petsinamerica.askavet.R;
 
 import org.apache.http.HttpResponse;

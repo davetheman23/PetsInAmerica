@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
+    <string name="no_content_available">没有内容显示</string>
+    <string name="article_pic">article_pic</string>
 
+    <!-- Home page -->
     <string name="app_name">北美宠物网</string>
     <string name="action_settings">设置</string>
     <string name="action_search">搜索</string>
@@ -9,7 +13,8 @@
     <string name="title_section2">文章列表</string>
     <string name="title_section1">宠物提问</string>
     <string name="title_section3">宠物用品</string>
-    <string name="no_content_available">没有内容显示</string>
+    <string name="label_my_enquiry">我的提问</string>
+    <string name="label_all_enquiry">所有提问</string>
     
     <!-- Login page  -->
     <string name="token_login_info">Token 信息：</string>
@@ -26,9 +31,6 @@
     <string name="label_reg_password_confirm">再次输入密码</string>
     <string name="button_reg_signup">注册</string>
     <string name="link_reg_login">已经注册？点这里登录！</string>
-    
-    
-    <string name="article_pic">article_pic</string>
     
     <!--resource for reading Json objects --> 
     <string name = "JSON_tag_title">title</string>

@@ -1,4 +1,4 @@
-package net.petsinaermica.askavet.utils;
+package net.petsinamerica.askavet.utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;

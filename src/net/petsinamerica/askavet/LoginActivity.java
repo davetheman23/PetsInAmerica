@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.petsinaermica.askavet.utils.AccessToken;
-import net.petsinaermica.askavet.utils.AccessTokenKeeper_PIA;
-import net.petsinaermica.askavet.utils.JsonHelper;
+import net.petsinamerica.askavet.utils.AccessToken;
+import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.JsonHelper;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -36,22 +36,21 @@ import android.widget.TextView;
 
 public class LoginActivity extends Activity{
 	
-	private static final String URL = "http://petsinamerica.net/new/api/login";
-	private static final int LOGIN_FAIL = 0;
-	private static final int LOGIN_SUCCEED = 1;
-	private static final String TAG_USERNAME = "username";
-	private static final String TAG_PASSWORD = "password";
-	
-	private static String TAG_LOGIN;
-	private static String mUsername;
-	private static String mPassword;
+	private static final String sURL = "http://petsinamerica.net/new/api/login";
+	private static final int sLOGIN_FAIL = 0;
+	private static final int sLOGIN_SUCCEED = 1;
+	private static final String sTAG_USERNAME = "username";
+	private static final String sTAG_PASSWORD = "password";
+	private static String sTAG_LOGIN;
+	private String mUsername;
+	private String mPassword;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		
-		TAG_LOGIN = getResources().getString(R.string.JSON_tag_login);
+		sTAG_LOGIN = getResources().getString(R.string.JSON_tag_login);
 		
 		// = set click listener for sign-up link
 		TextView tv_signup = (TextView) findViewById(R.id.link_to_register);
@@ -79,10 +78,9 @@ public class LoginActivity extends Activity{
 				// - collect password
 				EditText et_password = (EditText) findViewById(R.id.login_password);
 				mPassword = et_password.getText().toString();
-				new LoginTask().execute(URL);
+				new LoginTask().execute(sURL);
 			}
 		});
-		
 		
 	}
 
@@ -114,8 +112,8 @@ public class LoginActivity extends Activity{
 			
 			try {
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-				nameValuePairs.add(new BasicNameValuePair(TAG_USERNAME, mUsername));
-				nameValuePairs.add(new BasicNameValuePair(TAG_PASSWORD, mPassword));
+				nameValuePairs.add(new BasicNameValuePair(sTAG_USERNAME, mUsername));
+				nameValuePairs.add(new BasicNameValuePair(sTAG_PASSWORD, mPassword));
 				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 				
 				HttpResponse response = mClient.execute(post);
@@ -129,7 +127,7 @@ public class LoginActivity extends Activity{
 				JsonHelper jhelper = new JsonHelper();
 				Map<String, Object> responseMap = jhelper.toMap(responseObject);
 				
-				String loginToken = responseMap.get(TAG_LOGIN).toString();
+				String loginToken = responseMap.get(sTAG_LOGIN).toString();
 				if (Integer.parseInt(loginToken) == 1){
 					Log.i("Http_Post", "Login successfully");
 					 
@@ -137,27 +135,18 @@ public class LoginActivity extends Activity{
 					String userid = responseMap.get("userid").toString();
 					String token = responseMap.get("password").toString();
 					
+					
 					// save the token in a safe place
-					AccessTokenKeeper_PIA.SaveAccessToken(
+					//TODO: if expiration date is available from server, should
+					//      use the standard constructor for AccessToken
+					AccessTokenManager.SaveAccessToken(
 							getApplicationContext(), 
 							new AccessToken(userid, token));
-					
-					// TODO move this block of codes to where UserQueryList will be displayed
-					/* use the userid and token to obtain the userQueryList
-					AccessToken accessToken = AccessTokenKeeper_PIA.readAccessToken(getApplicationContext());
-					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-					nameValuePairs.add(new BasicNameValuePair("userid", accessToken.getUserId()));
-					nameValuePairs.add(new BasicNameValuePair("token", accessToken.getToken()));
-					HttpPost post2 = new HttpPost("http://petsinamerica.net/new/api/userQueryList/1");
-					post2.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-					response = mClient.execute(post2);
-					String userQueryList = new BasicResponseHandler().handleResponse(response);
-					Log.i("Http_Post", userQueryList);*/
-					
-					return LOGIN_SUCCEED;
+
+					return sLOGIN_SUCCEED;
 				}else{
 					Log.i("Http_Post", "Login failed");
-					return LOGIN_FAIL;
+					return sLOGIN_FAIL;
 				}
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
@@ -167,7 +156,7 @@ public class LoginActivity extends Activity{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return LOGIN_FAIL;
+			return sLOGIN_FAIL;
 		}
 
 		@Override
@@ -175,12 +164,12 @@ public class LoginActivity extends Activity{
 			if (null != mClient)
 				mClient.close();
 			switch (loginresult){
-			case LOGIN_SUCCEED:
+			case sLOGIN_SUCCEED:
 				Intent intent = new Intent(getApplicationContext(),
 						HomeActivity.class);
 				startActivity(intent);
 				break;
-			case LOGIN_FAIL:
+			case sLOGIN_FAIL:
 				DialogFragment df = AlertDialogFragment.newInstance();
 				df.show(getFragmentManager(), "Login Failed");
 				break;

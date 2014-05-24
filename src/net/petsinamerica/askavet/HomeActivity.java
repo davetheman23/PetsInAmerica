@@ -35,6 +35,8 @@ public class HomeActivity extends FragmentActivity implements
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
+	
+	private static final int sTOTAL_PAGES = 4;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +117,6 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		public Fragment getItem(int position) {
 			// getItem is called to instantiate the fragment for the given page.
-			// Return a DummySectionFragment with the page number as its lone argument.
 			Fragment fragment =  null;
 			switch (position){
 			case 0:
@@ -137,8 +138,8 @@ public class HomeActivity extends FragmentActivity implements
 
 		@Override
 		public int getCount() {
-			// Show 3 total pages.
-			return 3;
+			// Show sTOTAL_PAGES total pages.
+			return sTOTAL_PAGES;
 		}
 
 		@Override
@@ -151,6 +152,8 @@ public class HomeActivity extends FragmentActivity implements
 				return getString(R.string.title_section2).toUpperCase(l);
 			case 2:
 				return getString(R.string.title_section3).toUpperCase(l);
+			case 3:
+				return "abc";
 			}
 			return null;
 		}

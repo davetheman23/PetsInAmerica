@@ -1,29 +1,33 @@
-package net.petsinaermica.askavet.utils;
+package net.petsinamerica.askavet.utils;
 
 import java.util.Calendar;
 
-/*
+/**
  * Define the behavior of the Access Token & related methods
  *  
  * @since 05/23/2014  
  */
 public class AccessToken {
 	
-	private static String userId;
-	private static String accessToken;
-	private static Calendar expiration;
-	private static int renewHours = 24;
+	private static String userId = "";
+	private static String accessToken = "";
+	private static Calendar expiration = null;
+	private static int renewHours = 1;
 	
-	/*
+	/*App Key for website: 3684625824*/
+	
+	/**
 	 * Starndard constructor for the access token  
 	 */
 	public AccessToken(String userId, String token, Calendar expiration){
+		
 		AccessToken.userId = userId; 
 		AccessToken.accessToken = token;
 		AccessToken.expiration = expiration;
+		
 	}
 	
-	/*
+	/**
 	 * Constructor for the access token, without specifying 
 	 * expiration time, the token will expire in 24 hours
 	 *   
@@ -33,14 +37,12 @@ public class AccessToken {
 		AccessToken.accessToken = token;
 		
 		// get current time and set expiration to renewHours hrs later
-		if (null == AccessToken.expiration){
-			Calendar time = Calendar.getInstance();
-			time.add(Calendar.HOUR, renewHours);
-			AccessToken.expiration = time;			
-		}
+		Calendar time = Calendar.getInstance();
+		time.add(Calendar.HOUR, renewHours);
+		AccessToken.expiration = time;		
 	}
 
-	/*
+	/**
 	 *  Getter method for userID, if token not expired, return current
 	 *  user Id, otherwise return null
 	 */
@@ -51,7 +53,7 @@ public class AccessToken {
 		return null;
 	}
 	
-	/*
+	/**
 	 *  Getter method for Access token, if token not expired, return current
 	 *  access token, otherwise return null
 	 */
@@ -62,7 +64,7 @@ public class AccessToken {
 		return null;
 	}
 	
-	/*
+	/**
 	 *  Getter method for expiration date, if token not expired, return current
 	 *  expiration, otherwise return null
 	 */
@@ -70,7 +72,7 @@ public class AccessToken {
 		return expiration;
 	}
 	
-	/*
+	/**
 	 *  Test method for expiration date, if token expired, return true
 	 *  otherwise return false
 	 */

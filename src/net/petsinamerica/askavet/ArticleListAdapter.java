@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import net.petsinaermica.askavet.utils.DownLoadImageTask;
-import net.petsinaermica.askavet.utils.MemoryCache;
 import net.petsinamerica.askavet.R;
+import net.petsinamerica.askavet.utils.DownLoadImageTask;
+import net.petsinamerica.askavet.utils.MemoryCache;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;

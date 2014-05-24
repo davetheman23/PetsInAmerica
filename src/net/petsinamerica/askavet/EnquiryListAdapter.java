@@ -3,8 +3,8 @@ package net.petsinamerica.askavet;
 import java.util.List;
 import java.util.Map;
 
-import net.petsinaermica.askavet.utils.MemoryCache;
 import net.petsinamerica.askavet.R;
+import net.petsinamerica.askavet.utils.MemoryCache;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -43,8 +43,8 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		TextView tv_firstline;
 		TextView tv_secondline;
 		TextView tv_status;
-		String queryContent = "";
-		int queryID;
+		String enQueryContent = "";
+		int enqueryID;
 	}
 	
 	/*
@@ -131,8 +131,8 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 			break;
 		}
 		
-		viewHolder.queryID = Integer.parseInt(sQueryID);
-		viewHolder.queryContent = sContent;
+		viewHolder.enqueryID = Integer.parseInt(sQueryID);
+		viewHolder.enQueryContent = sContent;
 		viewHolder.tv_firstline.setText(sTitle);
 		viewHolder.tv_secondline.setText(sOwnerName + " 提问于 " + sDate);
 		viewHolder.tv_status.setText(sStatus);
@@ -170,12 +170,12 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		// this assumes the view is the row view so it has a viewholder
 		ViewHolder vh = (ViewHolder) v.getTag();
 
-		return vh.queryID;
+		return vh.enqueryID;
 	}
 	
-	public String getQueryContent(View v){
+	public String getEnqueryContent(View v){
 		ViewHolder vh = (ViewHolder) v.getTag();
-		return vh.queryContent;
+		return vh.enQueryContent;
 	}
 	
 
