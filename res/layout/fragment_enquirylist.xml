@@ -1,11 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:layout_height="match_parent">
 
     <LinearLayout 
         android:id="@+id/frag_enquirylist_header"
@@ -13,12 +9,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
+        android:background="@drawable/bkg_with_shadow"
+        android:padding="3dp"
         >
         <Button 
             android:id="@+id/frag_enquirylist_myquery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dip"
             android:text="@string/label_my_enquiry"
             android:textColor="@color/Black"
             android:textAppearance="@android:style/TextAppearance.Small"/>
@@ -27,15 +24,16 @@
             android:id="@+id/frag_enquirylist_allquery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
             android:text="@string/label_all_enquiry"
             android:textColor="@color/Black"
             android:textAppearance="@android:style/TextAppearance.Small"/>
     </LinearLayout>
+    
+    
     <ListView 
         android:id="@android:id/list"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_below="@id/frag_enquirylist_header">
     </ListView>
     

@@ -4,15 +4,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import net.petsinamerica.askavet.R;
-import net.petsinamerica.askavet.utils.DownLoadImageTask;
-import net.petsinamerica.askavet.utils.MemoryCache;
-
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.util.Xml;
 import android.view.LayoutInflater;
@@ -23,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 /*
  *  listAdapter to display article summaries
@@ -38,7 +35,6 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 	private final static int LIST_VIEW_TYPE_REGULAR = 1;
 	private final static int MAX_NUM_TAGS_DISPLAY = 5;
 	
-	private MemoryCache mMemCache;
 	private AttributeSet mAttributes;
 	
 	// these tags are those for reading the JSON objects
@@ -67,7 +63,6 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 		mArticleSummaries = objects;
 		mHeader = header;
 		mResource = resource;
-		mMemCache = new MemoryCache();	// set aside some cache memory to store bitmaps, for fast loading of image
 		mAttributes = getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
 		
 		TAG_TITLE = mContext.getResources().getString(R.string.JSON_tag_title);
@@ -162,26 +157,22 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 			}
 		}*/
 		
-		
-		// setup image loading procedure
-		final Bitmap bitmap = mMemCache.getBitmapFromMemCache(sImgURL);	// try first see if image in cache
-		if (bitmap != null){
-			// if in cache, display immediately
-			viewHolder.iv.setImageBitmap(bitmap);
-		}else{
-			// if not in cache, setup an async task to download from web
-			viewHolder.iv.setTag(sImgURL);
-			DownLoadImageTask  loadimage = new DownLoadImageTask();
-			int scale = 0;
-			if (getItemViewType(position) == LIST_VIEW_TYPE_HEADER){
-				scale = 1;
-			}else if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
-				scale = 4;
-			}
-			loadimage.SetMemCache(mMemCache, scale);
-			loadimage.execute(viewHolder.iv);
+		// image loading procedure:
+		// 1. check if image available in memory / disk
+		// 2. set image if not in memory then fetch from URL
+		// Note: currently, use picasso instead 
+		if (getItemViewType(position) == LIST_VIEW_TYPE_HEADER){
+			Picasso.with(mContext)
+				.load(sImgURL)
+				.into(viewHolder.iv);
+		}else if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
+			Picasso.with(mContext)
+				.load(sImgURL)
+				.placeholder(R.drawable.ic_launcher)
+				.resize(150, 120)
+				.into(viewHolder.iv);
 		}
-		
+
 		return rowview;
 		
 	}

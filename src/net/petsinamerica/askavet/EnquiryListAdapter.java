@@ -3,18 +3,15 @@ package net.petsinamerica.askavet;
 import java.util.List;
 import java.util.Map;
 
-import net.petsinamerica.askavet.utils.DownLoadImageTask;
-import net.petsinamerica.askavet.utils.MemoryCache;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 /*
  *  listAdapter to display article summaries
@@ -24,9 +21,6 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 	private final Context mContext;
 	private final List<Map<String, String>> mEnquiries;
 	private final int mResource;
-	
-	private MemoryCache mMemCache;
-	private AttributeSet mAttributes;
 	
 	// these tags are those for reading the JSON objects
 	private static String TAG_TITLE;
@@ -59,7 +53,6 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		mContext = context;
 		mEnquiries = objects;
 		mResource = resource;
-		mMemCache = new MemoryCache();	// set aside some cache memory to store bitmaps, for fast loading of image
 		
 		TAG_TITLE = mContext.getResources().getString(R.string.JSON_tag_title);
 		TAG_IMAGE = mContext.getResources().getString(R.string.JSON_tag_image);
@@ -100,6 +93,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 			rowview.setTag(viewHolder);
 		}else{
 			viewHolder = (ViewHolder) rowview.getTag();
+			viewHolder.iv.setImageDrawable(mContext.getResources().getDrawable(R.drawable.someone));
 		}
 		
 		
@@ -140,23 +134,20 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		viewHolder.tv_status.setText(sStatus);
 		viewHolder.tv_status.setTextColor(status_color);
 		
-		//String urlPattern = "(http.*/)(.*?)(\\.[jp][pn]g)";
-		/*String avatarFile = userAvatarURL.replaceAll(urlPattern, "$2");
+		String urlPattern = "(http.*/)(.*?)(\\.[jp][pn]g)";
+		String avatarFile = userAvatarURL.replaceAll(urlPattern, "$2");
 		
+		// image loading procedure:
+		// 1. check if image available in memory / disk
+		// 2. set image if not in memory then fetch from URL
+		// Note: currently, use picasso instead 
 		if (!avatarFile.equals("someone")){
-			final Bitmap bitmap = mMemCache.getBitmapFromMemCache(userAvatarURL);	// try first see if image in cache
-			if (bitmap != null){
-				// if in cache, display immediately
-				viewHolder.iv.setImageBitmap(bitmap);
-			}else{
-				// if not in cache, setup an async task to download from web
-				viewHolder.iv.setTag(userAvatarURL);
-				DownLoadImageTask  loadimage = new DownLoadImageTask();
-				int scale = 4;
-				loadimage.SetMemCache(mMemCache, scale);
-				loadimage.execute(viewHolder.iv);
-			}
-		}*/
+			Picasso.with(mContext)
+				.load(userAvatarURL)
+				.placeholder(R.drawable.someone)
+				.resize(70, 70)
+				.into(viewHolder.iv);
+		}
 		
 		return rowview;
 	}

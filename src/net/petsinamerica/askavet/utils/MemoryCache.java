@@ -1,9 +1,12 @@
 package net.petsinamerica.askavet.utils;
 
+import android.annotation.TargetApi;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.v4.util.LruCache;
 
-  /*
+  /**
+   * @deprecated use picasso instead
    * this class to store an bitmap image in the memory cache
    * the data only persist until application is killed
    */
@@ -22,7 +25,7 @@ public class MemoryCache {
 	        protected int sizeOf(String key, Bitmap bitmap) {
 	            // The cache size will be measured in kilobytes rather than
 	            // number of items.
-	            return bitmap.getByteCount() / 1024;
+	            return sizeOf_kb(bitmap);
 	        }
 		};
 			
@@ -36,5 +39,14 @@ public class MemoryCache {
 	public Bitmap getBitmapFromMemCache(String key) {
 		return mMemoryCache.get(key);
 	}
+	
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+    protected int sizeOf_kb(Bitmap data) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR1) {
+            return data.getRowBytes() * data.getHeight() / 1024;
+        } else {
+            return data.getByteCount() / 1024;
+        }
+    }
 
 }
