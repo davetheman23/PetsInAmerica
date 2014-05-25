@@ -3,10 +3,12 @@ package net.petsinamerica.askavet;
 import java.util.List;
 import java.util.Map;
 
-import net.petsinamerica.askavet.R;
+import net.petsinamerica.askavet.utils.DownLoadImageTask;
 import net.petsinamerica.askavet.utils.MemoryCache;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,12 +104,12 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		
 		
 		Map<String,String> enquiry = mEnquiries.get(position); 
-		String sTitle = enquiry.get(TAG_TITLE);
-		//String sUserAvatarURL = enquiry.get(TAG_AVATAR);
-		String sOwnerName = enquiry.get(TAG_OWNERNAME);
-		String sQueryID = enquiry.get(TAG_ID);
-		String sDate = enquiry.get(TAG_DATE);
-		String sContent = enquiry.get(TAG_CONTENT);
+		String title = enquiry.get(TAG_TITLE);
+		String userAvatarURL = enquiry.get(TAG_AVATAR);
+		String ownerName = enquiry.get(TAG_OWNERNAME);
+		String queryID = enquiry.get(TAG_ID);
+		String date = enquiry.get(TAG_DATE);
+		String content = enquiry.get(TAG_CONTENT);
 		int status = Integer.parseInt(enquiry.get(TAG_STATUS));
 		int status_color = android.R.color.black;
 		// TODO need to convert these hard-coded strings 
@@ -131,36 +133,32 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 			break;
 		}
 		
-		viewHolder.enqueryID = Integer.parseInt(sQueryID);
-		viewHolder.enQueryContent = sContent;
-		viewHolder.tv_firstline.setText(sTitle);
-		viewHolder.tv_secondline.setText(sOwnerName + " 提问于 " + sDate);
+		viewHolder.enqueryID = Integer.parseInt(queryID);
+		viewHolder.enQueryContent = content;
+		viewHolder.tv_firstline.setText(title);
+		viewHolder.tv_secondline.setText(ownerName + " 提问于 " + date);
 		viewHolder.tv_status.setText(sStatus);
 		viewHolder.tv_status.setTextColor(status_color);
 		
+		//String urlPattern = "(http.*/)(.*?)(\\.[jp][pn]g)";
+		/*String avatarFile = userAvatarURL.replaceAll(urlPattern, "$2");
 		
-		
-		// TODO setup image loading procedure
-		/*final Bitmap bitmap = mMemCache.getBitmapFromMemCache(sImgURL);	// try first see if image in cache
-		if (bitmap != null){
-			// if in cache, display immediately
-			viewHolder.iv.setImageBitmap(bitmap);
-		}else{
-			// if not in cache, setup an async task to download from web
-			viewHolder.iv.setTag(sImgURL);
-			DownLoadImageTask  loadimage = new DownLoadImageTask();
-			int scale = 0;
-			if (getItemViewType(position) == LIST_VIEW_TYPE_HEADER){
-				scale = 1;
-			}else if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
-				scale = 4;
+		if (!avatarFile.equals("someone")){
+			final Bitmap bitmap = mMemCache.getBitmapFromMemCache(userAvatarURL);	// try first see if image in cache
+			if (bitmap != null){
+				// if in cache, display immediately
+				viewHolder.iv.setImageBitmap(bitmap);
+			}else{
+				// if not in cache, setup an async task to download from web
+				viewHolder.iv.setTag(userAvatarURL);
+				DownLoadImageTask  loadimage = new DownLoadImageTask();
+				int scale = 4;
+				loadimage.SetMemCache(mMemCache, scale);
+				loadimage.execute(viewHolder.iv);
 			}
-			loadimage.SetMemCache(mMemCache, scale);
-			loadimage.execute(viewHolder.iv);
 		}*/
 		
 		return rowview;
-		
 	}
 	
 	/*

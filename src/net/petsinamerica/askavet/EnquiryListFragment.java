@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class EnquiryListFragment extends ListFragment {
@@ -51,6 +52,7 @@ public class EnquiryListFragment extends ListFragment {
 	private Button mBtnMyQuery;
 	private Button mBtnAllQuery;
 	private TextView mTvEmpty;
+	private ProgressBar mProgBar;
 	
 	
 	@Override
@@ -65,34 +67,14 @@ public class EnquiryListFragment extends ListFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_enquirylist,
-				container, false);
-		// set up all query button, and listener load new list if necessary
+				container, false);	
 		mBtnAllQuery = (Button) rootView.findViewById(R.id.frag_enquirylist_allquery);
-		mBtnAllQuery.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (URL_ALL_ENQUIRY != mUrlType){
-					setUrl(URL_ALL_ENQUIRY);
-					loadEnquiryList(mUrl,mPageAllEnqury);
-				}else{
-					// TODO: refresh the contents if necessary
-				}
-			}
-		});
-		// set up my query button, and listener load new list if necessary
-		mBtnMyQuery = (Button) rootView.findViewById(R.id.frag_enquirylist_myquery);
-		mBtnMyQuery.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (URL_MY_ENQUIRY != mUrlType){
-					setUrl(URL_MY_ENQUIRY);
-					loadEnquiryList(mUrl, mPageMyEnqury);
-				}else{
-					// TODO: refresh the contents if necessary
-				}
-			}
-		});
 		
+		mBtnMyQuery = (Button) rootView.findViewById(R.id.frag_enquirylist_myquery);
+		
+		// get a reference to progress bar
+		mProgBar = (ProgressBar) rootView.findViewById(R.id.frag_enquirylist_progressbar);
+				
 		// get a refernce to the textview when no data available to list
 		mTvEmpty = (TextView) rootView.findViewById(android.R.id.empty);
 		
@@ -115,7 +97,35 @@ public class EnquiryListFragment extends ListFragment {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
-		loadEnquiryList(mUrl, mPageAllEnqury);
+		if (getListAdapter() == null){
+			loadEnquiryList(mUrl, 1);
+		}
+		
+		// set up all query button, and listener load new list if necessary
+		mBtnAllQuery.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (URL_ALL_ENQUIRY != mUrlType){
+					setUrl(URL_ALL_ENQUIRY);
+					loadEnquiryList(mUrl,mPageAllEnqury);
+				}else{
+					// TODO: refresh the contents if necessary
+				}
+			}
+		});
+		
+		// set up my query button, and listener load new list if necessary
+		mBtnMyQuery.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (URL_MY_ENQUIRY != mUrlType){
+					setUrl(URL_MY_ENQUIRY);
+					loadEnquiryList(mUrl, mPageMyEnqury);
+				}else{
+					// TODO: refresh the contents if necessary
+				}
+			}
+		});
 		
 		// disable scroll bar
 		getListView().setVerticalScrollBarEnabled(false);	
@@ -146,6 +156,12 @@ public class EnquiryListFragment extends ListFragment {
 	private class HttpPostTask extends AsyncTask<String, Void, List<Map<String, String>>> {
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			mProgBar.setVisibility(View.VISIBLE);
+		}
 
 		@Override
 		protected List<Map<String, String>> doInBackground(String... params) {
@@ -198,6 +214,9 @@ public class EnquiryListFragment extends ListFragment {
 
 		@Override
 		protected void onPostExecute(List<Map<String, String>> resultArray) {
+
+			mProgBar.setVisibility(View.INVISIBLE);
+			
 			if (null != mClient)
 				mClient.close();
 			if (!isAdded() || resultArray == null){		

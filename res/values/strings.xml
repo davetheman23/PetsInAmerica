@@ -46,7 +46,7 @@
     <string name = "JSON_tag_list">list</string>
     <string name = "JSON_tag_result">result</string>
     <string name = "JSON_tag_status">status</string>
-    <string name = "JSON_tag_avatar">avatar</string>
+    <string name = "JSON_tag_avatar">useravatar</string>
     <string name = "JSON_tag_maintag_cn">maintag_cn</string>
     <string name = "JSON_tag_ownername">ownername</string>
     <string name = "JSON_tag_username">username</string>

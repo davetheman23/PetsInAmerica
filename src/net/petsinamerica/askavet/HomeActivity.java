@@ -77,6 +77,9 @@ public class HomeActivity extends FragmentActivity implements
 					.setTabListener(this));
 		}
 		actionBar.setSelectedNavigationItem(1);
+		
+		// this option will cache the view Hierachy of the pagers
+		mViewPager.setOffscreenPageLimit(2);
 	}
 
 	@Override

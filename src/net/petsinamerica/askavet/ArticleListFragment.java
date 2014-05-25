@@ -1,20 +1,15 @@
 package net.petsinamerica.askavet;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.petsinamerica.askavet.ArticleListAdapter.ViewHolder;
 import net.petsinamerica.askavet.utils.JsonHelper;
-import net.petsinamerica.askavet.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.json.JSONArray;
@@ -39,10 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 
 public class ArticleListFragment extends ListFragment{
@@ -96,8 +88,10 @@ public class ArticleListFragment extends ListFragment{
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
-		// fetch article list from the website
-		new HttpGetTask().execute(URL_BLOGCN + Integer.toString(mPage));
+		if (getListAdapter() == null){
+			// fetch article list from the website
+			new HttpGetTask().execute(URL_BLOGCN + Integer.toString(mPage));
+		}
 		
 		mReadArticleList = new HashSet<String>();
 		
@@ -214,22 +208,6 @@ public class ArticleListFragment extends ListFragment{
 				}
 			}
 		}
-	}
-	private View BuildHeaderView(){
-		RelativeLayout rl = new RelativeLayout(mContext);
-		TextView[] tv = new TextView[3];
-		for (int i = 0; i < 3; i++){
-			tv[i] = new TextView(mContext, mAttributes);
-			tv[i].setId(i);
-			tv[i].setText("test1");
-			LayoutParams laypar = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			if (i == 0)
-				laypar.addRule(RelativeLayout.CENTER_IN_PARENT);
-			else
-				laypar.addRule(RelativeLayout.RIGHT_OF, tv[i-1].getId());
-			rl.addView(tv[i],laypar);
-		}		
-		return rl;
 	}
 	
 	private AttributeSet getAttributeSet(Context context, int layoutResource, String ViewName){
