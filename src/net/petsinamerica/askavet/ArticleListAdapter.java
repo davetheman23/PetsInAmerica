@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import net.petsinamerica.askavet.utils.JsonHelper;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -15,8 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -25,9 +29,9 @@ import com.squareup.picasso.Picasso;
  *  listAdapter to display article summaries
  *  layout file list_item.xml 
  */
-public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
+public class ArticleListAdapter extends ArrayAdapter<Map<String, Object>> {
 	private final Context mContext;
-	private final List<Map<String, String>> mArticleSummaries;
+	//private final List<Map<String, Object>> mArticleSummaries;
 	private final int mResource;
 	private final int mHeader;
 	private final static int HEADER_POSITION  = 0;
@@ -41,14 +45,14 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 	private static String TAG_TITLE;
 	private static String TAG_IMAGE;
 	private static String TAG_ID;
-	private static String TAG_TAG;
+	private static String TAG_TAGS;
 	
-	static class ViewHolder{
+	private class ViewHolder{
 		ImageView iv;
 		TextView tv_firstline;
-		TextView tv_secondline;
-		static TextView[] tv_tags;
-		RelativeLayout RL_layout;
+		//TextView tv_secondline;
+		TextView[] tv_tags;
+		LinearLayout linearLayout;
 		int articleID;
 	}
 	
@@ -56,11 +60,11 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 	 *  Standard constructer
 	 */
 	public ArticleListAdapter(Context context, int header, int resource,
-			List<Map<String, String>> objects) {
+			List<Map<String, Object>> objects) {
 		super(context,  header, resource, objects);
 		
 		mContext = context;
-		mArticleSummaries = objects;
+		//mArticleSummaries = objects;
 		mHeader = header;
 		mResource = resource;
 		mAttributes = getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
@@ -68,7 +72,7 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 		TAG_TITLE = mContext.getResources().getString(R.string.JSON_tag_title);
 		TAG_IMAGE = mContext.getResources().getString(R.string.JSON_tag_image);
 		TAG_ID = mContext.getResources().getString(R.string.JSON_tag_id);
-		TAG_TAG = mContext.getResources().getString(R.string.JSON_tag_tag);
+		TAG_TAGS = mContext.getResources().getString(R.string.JSON_tag_tags);
 		
 	}
 
@@ -98,46 +102,30 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 				rowview = inflater.inflate(mResource, parent, false);
 				viewHolder.iv = (ImageView) rowview.findViewById(R.id.list_icon);
 				viewHolder.tv_firstline =(TextView) rowview.findViewById(R.id.list_firstLine);	
-				// create several textviews, all under the RL_layout view 
+				// create several textviews, all inside the linear layout view 
 				// for each textview, can set an onclicklistener too
-				viewHolder.RL_layout = (RelativeLayout) rowview.findViewById(R.id.list_secondline);
-				ViewHolder.tv_tags = new TextView[MAX_NUM_TAGS_DISPLAY];
+				viewHolder.linearLayout = (LinearLayout) rowview.findViewById(R.id.list_secondline);
+				viewHolder.tv_tags = new TextView[MAX_NUM_TAGS_DISPLAY];
 				for (int tagidx = 0; tagidx < MAX_NUM_TAGS_DISPLAY; tagidx++){
 					// create a textview from a template file, which attribute is obtained in the constructor
-					ViewHolder.tv_tags[tagidx] = new TextView(mContext, mAttributes);
-					ViewHolder.tv_tags[tagidx].setId(tagidx+1);
-					// create some layout parameters for the relative layout
-					LayoutParams laypar = new LayoutParams(LayoutParams.WRAP_CONTENT, 
-											  			   LayoutParams.WRAP_CONTENT);
-					if (tagidx ==0)
-						laypar.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-					else
-						laypar.addRule(RelativeLayout.RIGHT_OF, ViewHolder.tv_tags[tagidx-1].getId());		
-					laypar.addRule(RelativeLayout.CENTER_VERTICAL);
-					viewHolder.RL_layout.addView(ViewHolder.tv_tags[tagidx], laypar);
+					viewHolder.tv_tags[tagidx] = new TextView(mContext, mAttributes);
+					viewHolder.linearLayout.addView(viewHolder.tv_tags[tagidx]);
 				}
 			}
-			
 			// set tag for future reuse of the view
 			rowview.setTag(viewHolder);
 		}else{
 
 			viewHolder = (ViewHolder) rowview.getTag();
-			viewHolder.iv.setImageDrawable(mContext.getResources().getDrawable(R.drawable.ic_launcher));
 		}
 		
-		
-		
-		Map<String,String> articlesummary = mArticleSummaries.get(position); 
-		String sTitle = articlesummary.get(TAG_TITLE);
-		String sImgURL = articlesummary.get(TAG_IMAGE);
-		String sArticleID = articlesummary.get(TAG_ID);
-		//String sOwner = articlesummary.get("owner");
-		//String tag = articlesummary.get(TAG_TAG);
-		//tag = tag.replaceAll("\\#\\*", ";");
-		//tag = tag.replaceAll("\\#|\\*", "");
-		//String[] tags = tag.split(";");
-		
+		Map<String, Object> articlesummary = getItem(position); 
+		String sTitle,sImgURL, sArticleID;
+		sTitle = (String) articlesummary.get(TAG_TITLE);
+		sTitle = sTitle.trim();
+		sImgURL = (String) articlesummary.get(TAG_IMAGE);
+		sArticleID = (String) articlesummary.get(TAG_ID);
+		String[] tags_cn = getCnTags(articlesummary.get(TAG_TAGS));
 		
 		viewHolder.articleID = Integer.parseInt(sArticleID);
 		viewHolder.tv_firstline.setText(sTitle);
@@ -145,17 +133,18 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 		//	viewHolder.tv_secondline.setText("作者：" + sOwner);
 		//}
 		
-		/*int tagstoshow = tags.length < MAX_NUM_TAGS_DISPLAY 
-				         ? tags.length : MAX_NUM_TAGS_DISPLAY;
+		// adding tags to in the second line of the view
+		int tagstoshow = (tags_cn.length) < MAX_NUM_TAGS_DISPLAY 
+				         ? (tags_cn.length) : MAX_NUM_TAGS_DISPLAY;
 		if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
-			for (int tagidx = 0; tagidx < tagstoshow; tagidx++){
-				ViewHolder.tv_tags[tagidx].setVisibility(View.VISIBLE);
-				ViewHolder.tv_tags[tagidx].setText(tags[tagidx]);
+			for (int tagidx = 1; tagidx < tagstoshow; tagidx++){
+				viewHolder.tv_tags[tagidx].setVisibility(View.VISIBLE);
+				viewHolder.tv_tags[tagidx].setText("["+tags_cn[tagidx]+"]");
 			}
 			for (int tagidx = tagstoshow; tagidx < MAX_NUM_TAGS_DISPLAY; tagidx++){
-				ViewHolder.tv_tags[tagidx].setVisibility(View.GONE);
+				viewHolder.tv_tags[tagidx].setVisibility(View.INVISIBLE);
 			}
-		}*/
+		}
 		
 		// image loading procedure:
 		// 1. check if image available in memory / disk
@@ -223,5 +212,27 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String,String>> {
 		return vh.articleID;
 	}
 	
+	/**
+	 * Get Chinese tags for each article
+	 * @param object
+	 * @return
+	 */
+	private String[] getCnTags(Object object){
+		String[] tagArray = null;
+		
+		try{
+			JSONArray jsonArray = (JSONArray)JsonHelper.toJSON(object);
+			int numTags = jsonArray.length();
+			tagArray = new String[numTags];
+			JSONObject jsonObject;
+			for (int i = 0; i < numTags; i++){
+				jsonObject = (JSONObject) jsonArray.get(i);
+				tagArray[i] = jsonObject.getString("cn");
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return tagArray;
+	}
 
 }

@@ -141,12 +141,12 @@ public class ArticleListFragment extends ListFragment{
 		startActivity(newIntent);
 	}
 	
-	private class HttpGetTask extends AsyncTask<String, Void, List<Map<String, String>>> {
+	private class HttpGetTask extends AsyncTask<String, Void, List<Map<String, Object>>> {
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 
 		@Override
-		protected List<Map<String, String>> doInBackground(String... params) {
+		protected List<Map<String, Object>> doInBackground(String... params) {
 			String url = params[0];
 			HttpGet request = new HttpGet(url);
 			//JSONResponseHandler responseHandler = new JSONResponseHandler();
@@ -160,8 +160,8 @@ public class ArticleListFragment extends ListFragment{
 				// -- Parse Json object, 
 				JSONObject responseObject = null;
 				JSONArray articleSummaries = null;
-				List<Map<String, String>> articleList = null;
-				
+				//List<Map<String, String>> articleList = null;
+				List<Map<String, Object>> articleList = null;
 				responseObject = (JSONObject) new JSONTokener(
 						JSONResponse).nextValue();
 				articleSummaries = responseObject.getJSONArray(TAG_ARTICLE_LIST);
@@ -182,7 +182,7 @@ public class ArticleListFragment extends ListFragment{
 		}
 
 		@Override
-		protected void onPostExecute(List<Map<String, String>> resultArray) {
+		protected void onPostExecute(List<Map<String, Object>> resultArray) {
 			if (null != mClient)
 				mClient.close();
 			if (isAdded() && resultArray != null){		

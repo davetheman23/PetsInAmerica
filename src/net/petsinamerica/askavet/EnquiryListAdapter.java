@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ import com.squareup.picasso.Picasso;
  */
 public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 	private final Context mContext;
-	private final List<Map<String, String>> mEnquiries;
+	//private final List<Map<String, String>> mEnquiries;
 	private final int mResource;
 	
 	// these tags are those for reading the JSON objects
@@ -34,7 +35,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 	private static String TAG_STATUS;
 	
 	
-	static class ViewHolder{
+	private class ViewHolder{
 		ImageView iv;
 		TextView tv_firstline;
 		TextView tv_secondline;
@@ -51,7 +52,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		super(context, resource, objects);
 		
 		mContext = context;
-		mEnquiries = objects;
+		//mEnquiries = objects;
 		mResource = resource;
 		
 		TAG_TITLE = mContext.getResources().getString(R.string.JSON_tag_title);
@@ -93,11 +94,13 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 			rowview.setTag(viewHolder);
 		}else{
 			viewHolder = (ViewHolder) rowview.getTag();
-			viewHolder.iv.setImageDrawable(mContext.getResources().getDrawable(R.drawable.someone));
+			//viewHolder.iv.setImageDrawable(mContext.getResources().getDrawable(R.drawable.someone));
 		}
 		
 		
-		Map<String,String> enquiry = mEnquiries.get(position); 
+		//Map<String,String> enquiry = mEnquiries.get(position);
+		Map<String,String> enquiry = getItem(position);
+		
 		String title = enquiry.get(TAG_TITLE);
 		String userAvatarURL = enquiry.get(TAG_AVATAR);
 		String ownerName = enquiry.get(TAG_OWNERNAME);
@@ -134,21 +137,24 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		viewHolder.tv_status.setText(sStatus);
 		viewHolder.tv_status.setTextColor(status_color);
 		
-		String urlPattern = "(http.*/)(.*?)(\\.[jp][pn]g)";
-		String avatarFile = userAvatarURL.replaceAll(urlPattern, "$2");
-		
 		// image loading procedure:
 		// 1. check if image available in memory / disk
 		// 2. set image if not in memory then fetch from URL
 		// Note: currently, use picasso instead 
-		if (!avatarFile.equals("someone")){
-			Picasso.with(mContext)
+		Picasso.with(mContext)
 				.load(userAvatarURL)
 				.placeholder(R.drawable.someone)
 				.resize(70, 70)
 				.into(viewHolder.iv);
-		}
 		
+		String urlPattern = "(http.*/)(.*?)(\\.[jp][pn]g)";
+		String avatarFile = userAvatarURL.replaceAll(urlPattern, "$2");
+		if (avatarFile.equals("someone")){			
+			// cancel request when download is not needed
+			Picasso.with(mContext)
+				.cancelRequest(viewHolder.iv);
+		}
+
 		return rowview;
 	}
 	

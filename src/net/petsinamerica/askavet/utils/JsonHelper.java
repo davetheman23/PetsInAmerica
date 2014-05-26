@@ -19,7 +19,7 @@ public class JsonHelper {
         } else if (object instanceof Iterable) {
             JSONArray json = new JSONArray();
             for (Object value : ((Iterable)object)) {
-                json.put(value);
+                json.put(toJSON(value));
             }
             return json;
         } else {
