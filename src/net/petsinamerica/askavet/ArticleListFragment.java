@@ -1,6 +1,7 @@
 package net.petsinamerica.askavet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +37,8 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 
 public class ArticleListFragment extends ListFragment{
@@ -45,6 +49,7 @@ public class ArticleListFragment extends ListFragment{
 	private static final String URL_BLOGCN = "http://petsinamerica.net/new/api/blogCN/";
 	private static final String URL_ARTICLE_API = "http://petsinamerica.net/new/api/article/";
 	//private static final String URL_ARTICLE = "http://petsinamerica.net/new/blog/article/";
+	private static final String TAG = "ArticleListFragment";
 	
 	private static String TAG_ARTICLE_LIST;
 	
@@ -54,18 +59,16 @@ public class ArticleListFragment extends ListFragment{
 	ArticleListAdapter mALAdapter;
 	private Context mContext;
 	
+	private View mfooterview; 
+	
 	Set<String> mReadArticleList = null;		// the article list that has been read by the user
 	
 	SharedPreferences mUsageData;
-	private AttributeSet mAttributes;
-	
-
 	@Override
 	public void onAttach(Activity activity) {
-		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		mContext = activity.getApplicationContext();
-		mAttributes = getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
+		getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
 		
 		TAG_ARTICLE_LIST = mContext.getResources().getString(R.string.JSON_tag_list);
 		
@@ -87,8 +90,15 @@ public class ArticleListFragment extends ListFragment{
 		super.onViewCreated(view, savedInstanceState);
 		
 		if (getListAdapter() == null){
-			// fetch article list from the website
+			// first time the view is created
 			new HttpGetTask().execute(URL_BLOGCN + Integer.toString(mPage));
+			
+			// set up footer 
+			LayoutInflater inflater = (LayoutInflater) mContext
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mfooterview = (View) inflater.inflate(R.layout.list_footer, null);
+			getListView().addFooterView(mfooterview);
+			getListView().setFooterDividersEnabled(true);
 		}
 		
 		mReadArticleList = new HashSet<String>();
@@ -108,7 +118,7 @@ public class ArticleListFragment extends ListFragment{
 			@Override
 			public void onScroll(AbsListView view, int firstVisibleItem,
 					int visibleItemCount, int totalItemCount) {
-				if(firstVisibleItem + visibleItemCount == totalItemCount && totalItemCount != 0)
+				if(firstVisibleItem + visibleItemCount == totalItemCount - 1 && totalItemCount != 0)
 				{
 					// when the visible item reaches the last item, 
 					if (mflag_addData == false)
@@ -128,6 +138,11 @@ public class ArticleListFragment extends ListFragment{
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		// TODO Auto-generated method stub
 		super.onListItemClick(l, v, position, id);
+		if (position == getListView().getCount() - 1){
+			// if footer is clicked, this assumes footer exists
+			return;
+		}
+		
 		// obtain the article ID clicked
 		int articleID = mALAdapter.getArticleID(v);
 		
@@ -145,11 +160,11 @@ public class ArticleListFragment extends ListFragment{
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 
+		@SuppressWarnings("unchecked")
 		@Override
 		protected List<Map<String, Object>> doInBackground(String... params) {
 			String url = params[0];
 			HttpGet request = new HttpGet(url);
-			//JSONResponseHandler responseHandler = new JSONResponseHandler();
 			HttpResponse response = null;		
 			String JSONResponse = null;
 			try {
@@ -161,13 +176,18 @@ public class ArticleListFragment extends ListFragment{
 				JSONObject responseObject = null;
 				JSONArray articleSummaries = null;
 				//List<Map<String, String>> articleList = null;
-				List<Map<String, Object>> articleList = null;
+				List<Map<String, Object>> articleList = new ArrayList<Map<String, Object>>();
 				responseObject = (JSONObject) new JSONTokener(
 						JSONResponse).nextValue();
+				if (responseObject !=null){
+					String listObject = responseObject.getString(TAG_ARTICLE_LIST);
+					if (listObject.equalsIgnoreCase("null")){
+						return articleList;
+					}
+				}
 				articleSummaries = responseObject.getJSONArray(TAG_ARTICLE_LIST);
 				if (articleSummaries != null){
-					JsonHelper jhelper = new JsonHelper(); 
-					articleList = jhelper.toList(articleSummaries);
+					articleList = JsonHelper.toList(articleSummaries);
 				}			
 				return articleList;
 			} catch (ClientProtocolException e) {
@@ -175,34 +195,47 @@ public class ArticleListFragment extends ListFragment{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				Log.e(TAG, "JSONException");
+			}finally{
+				if (null != mClient){
+					mClient.close();
+				}
 			}
 			return null;
 		}
 
 		@Override
 		protected void onPostExecute(List<Map<String, Object>> resultArray) {
-			if (null != mClient)
-				mClient.close();
 			if (isAdded() && resultArray != null){		
 			// always test isAdded for a fragment, this help make sure
 			// the getActivity doesn't return null pointer
-				
-				if (mflag_addData == false){
-					mALAdapter = new ArticleListAdapter(
-										mContext, R.layout.article_list_header,
-										R.layout.article_list_item, resultArray);
-					
-					//setup an asynctask to batch download the images, based on all urls from results
-					
-					//getListView().addHeaderView(BuildHeaderView());
-					setListAdapter(mALAdapter);
-				}else{
-					if (resultArray.size() > 0 ){
+				if (resultArray.size() > 0 ){
+					if (mflag_addData == false){
+						mALAdapter = new ArticleListAdapter(
+											mContext, R.layout.article_list_header,
+											R.layout.article_list_item, resultArray);
+					}else{
 						mALAdapter.addAll(resultArray);
 						mflag_addData = false;
 					}
+				}else{
+					// no more articlese to be loaded
+					// change footer text to reflect that
+					TextView tvFooter = (TextView) mfooterview
+											.findViewById(R.id.list_footer_tv_loading);
+					ProgressBar pbFooter = (ProgressBar) mfooterview
+											.findViewById(R.id.list_footer_pb_loading);
+					if (getListView().getCount() <= 1){
+						tvFooter.setText("没有可显示的文章");
+					}else{
+						tvFooter.setText("已获取全部文章");
+					}
+					pbFooter.setVisibility(View.INVISIBLE);
+				}
+				if (getListAdapter() == null){
+					// set adapter only for the first time.
+					setListAdapter(mALAdapter);
 				}
 			}
 		}

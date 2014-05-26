@@ -242,9 +242,7 @@ public class EnquiryListFragment extends ListFragment {
 				if (mPageAllEnqury == 1){
 					mELAdapter = new EnquiryListAdapter(mContext, 
 										R.layout.enquiry_list_item, resultArray);
-					/*TODO: setup an asynctask to batch download the images, 
-					       based on all urls from results*/
-					
+
 					setListAdapter(mELAdapter);
 				}else{
 					mELAdapter.addAll(resultArray);

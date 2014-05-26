@@ -3,6 +3,7 @@
     
     <string name="no_content_available">没有内容显示</string>
     <string name="article_pic">article_pic</string>
+    <string name="loading">加载中</string>
 
     <!-- Home page -->
     <string name="app_name">北美宠物网</string>
