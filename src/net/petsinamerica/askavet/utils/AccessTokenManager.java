@@ -11,6 +11,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -25,6 +27,7 @@ import android.util.Log;
 public class AccessTokenManager {
 	
     private static final String sPREFERENCES_NAME = "net_pets_in_america_askavet";
+    private static final String sPREFERENCES_NAME_WEIBO = sPREFERENCES_NAME +"_weibo";
 
     private static final String sKEY_USERID           = "userid";
     private static final String sKEY_ACCESS_TOKEN  	=  "token";
@@ -33,7 +36,7 @@ public class AccessTokenManager {
     private static final String sTAG = "AccessTokenManager";
     
     /**
-     * Save token into a shared Pref object
+     * Save PIA token into a shared Pref object
      * 
      */
     public static void SaveAccessToken(Context context, AccessToken token) {
@@ -56,9 +59,10 @@ public class AccessTokenManager {
         Editor editor = pref.edit();
         editor.putString(sKEY_USERID, token.getUserId());
         editor.putString(sKEY_ACCESS_TOKEN, token.getToken());
-        editor.putString(sKEY_EXPIRATION, Long.toString(token.getExpiration().getTimeInMillis()));
+        editor.putLong(sKEY_EXPIRATION, token.getExpiration().getTimeInMillis());
         editor.commit();
     }
+    
 
     /**
      * Read token from SharedPreferences
@@ -74,17 +78,52 @@ public class AccessTokenManager {
         SharedPreferences pref = context.getSharedPreferences(sPREFERENCES_NAME, Context.MODE_PRIVATE);
         String uid = pref.getString(sKEY_USERID, "");
         String token = pref.getString(sKEY_ACCESS_TOKEN, "");
-        String dateString = pref.getString(sKEY_EXPIRATION, "");
+        Long dateLong = pref.getLong(sKEY_EXPIRATION, 0);
         
-        if ("" == uid || "" == token || "" == dateString){
+        if ("" == uid || "" == token || 0 == dateLong){
         	clear(context);
         	return null;
         }
         
         Calendar expireIn = Calendar.getInstance(); 
-        expireIn.setTimeInMillis(Long.parseLong(dateString));
+        expireIn.setTimeInMillis(dateLong);
         
         return new AccessToken(uid, token, expireIn);
+    }
+    
+    /**
+     * Save Weibo token into a shared Pref object
+     * 
+     */
+    public static void SaveWeiboAccessToken(Context context, Oauth2AccessToken token) {
+        if (null == context || null == token) {
+            return;
+        }
+        Calendar expiresin = Calendar.getInstance();
+        expiresin.setTimeInMillis(token.getExpiresTime());
+        
+        AccessToken weiboToken = new AccessToken(token.getUid(), 
+        									 token.getToken(),
+        									 expiresin);
+        SharedPreferences pref = context.getSharedPreferences(sPREFERENCES_NAME_WEIBO, Context.MODE_PRIVATE);
+        Editor editor = pref.edit();
+        editor.putString(sKEY_USERID, token.getUid());
+        editor.putString(sKEY_ACCESS_TOKEN, token.getToken());
+        editor.putLong(sKEY_EXPIRATION, token.getExpiresTime());
+        editor.commit();
+    }
+    
+    public static Oauth2AccessToken readWeiboAccessToken(Context context) {
+        if (null == context) {
+            return null;
+        }
+        
+        Oauth2AccessToken token = new Oauth2AccessToken();
+        SharedPreferences pref = context.getSharedPreferences(sPREFERENCES_NAME_WEIBO, Context.MODE_PRIVATE);
+        token.setUid(pref.getString(sKEY_USERID, ""));
+        token.setToken(pref.getString(sKEY_ACCESS_TOKEN, ""));
+        token.setExpiresTime(pref.getLong(sKEY_EXPIRATION, 0));
+        return token;
     }
     
     /**

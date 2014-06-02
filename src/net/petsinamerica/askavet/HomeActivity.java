@@ -156,7 +156,7 @@ public class HomeActivity extends FragmentActivity implements
 			case 2:
 				return getString(R.string.title_section3).toUpperCase(l);
 			case 3:
-				return "abc";
+				return "我的信息";
 			}
 			return null;
 		}

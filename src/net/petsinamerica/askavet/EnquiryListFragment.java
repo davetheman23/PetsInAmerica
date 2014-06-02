@@ -175,9 +175,10 @@ public class EnquiryListFragment extends ListFragment {
 					post = AccessTokenManager.addAccessTokenPost(post, mContext, accessToken);
 				}else{
 					mTvEmpty.setText("请先登录!");
-					// TODO: handle when access token is expired, such as display a login button and ask for login
+					Intent intent = new Intent(getActivity(), LoginActivity.class);
+					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(intent);
 				}
-				
 			}
 			
 			HttpResponse response = null;		

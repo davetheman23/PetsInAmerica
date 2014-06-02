@@ -14,7 +14,7 @@
         android:layout_marginRight="6dip"
         android:contentDescription="article_pic"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/ic_pia_logo" />
 
     <LinearLayout
         android:layout_width="match_parent"

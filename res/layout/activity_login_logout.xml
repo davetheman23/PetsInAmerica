@@ -14,7 +14,7 @@
         android:layout_marginTop="50dp"
         android:layout_gravity="center"
         android:contentDescription="launcher"
-        android:src="@drawable/pia_logo_large_w_text"/>
+        android:src="@drawable/ic_pia_logo_large_w_text"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

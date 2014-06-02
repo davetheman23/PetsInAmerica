@@ -17,7 +17,7 @@
         android:layout_alignParentTop="true"
         android:contentDescription="first_article_pic"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/ic_pia_logo" />
 
     <TextView
         android:id="@+id/list_header_title"

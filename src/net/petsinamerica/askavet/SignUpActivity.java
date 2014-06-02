@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-public class RegistrationActivity extends Activity {
+public class SignUpActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Complete the registration process
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_register);
+		setContentView(R.layout.activity_signup);
 		
 		// set click listener for login link
 		TextView tv_login = (TextView) findViewById(R.id.link_to_login);
@@ -22,15 +22,11 @@ public class RegistrationActivity extends Activity {
 			public void onClick(View v) {
 				Intent intent = new Intent(getApplicationContext(), 
 										LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 				startActivity(intent);
 			}
 		});
 		
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		finish();
-	}
 }

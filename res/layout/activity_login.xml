@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
-  xmlns:android="http://schemas.android.com/apk/res/android"
+   xmlns:android="http://schemas.android.com/apk/res/android"
+   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:fillViewport="true">
@@ -26,7 +27,7 @@
                     android:layout_centerVertical="true"
                     android:contentDescription="PIA logo"
                     android:scaleType="centerInside"
-                    android:src="@drawable/pia_logo_large_w_text" />
+                    android:src="@drawable/ic_pia_logo_large_w_text" />
 
         </RelativeLayout>
         <!--  Header Ends -->
@@ -89,12 +90,21 @@
                 />
           <!-- Login button -->
           <Button android:id="@+id/button_login"
-                android:layout_width="fill_parent"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dip"
                 android:text="@string/button_login_login"
                 android:textColor="@color/Red"
                 android:textSize="18sp"/>
+         <com.sina.weibo.sdk.widget.LoginButton
+            android:id="@+id/button_login_weibo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center_horizontal"
+            />
+          
           <!-- Link to Registration Screen -->
           <TextView android:id="@+id/link_to_register"
                 android:layout_width="fill_parent"
@@ -108,5 +118,6 @@
  
         </LinearLayout>
         <!-- Login Form Ends -->
+        
   </RelativeLayout>
 </ScrollView>

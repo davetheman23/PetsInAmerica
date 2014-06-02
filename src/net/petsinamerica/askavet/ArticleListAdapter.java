@@ -157,7 +157,7 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String, Object>> {
 		}else if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
 			Picasso.with(mContext)
 				.load(sImgURL)
-				.placeholder(R.drawable.ic_launcher)
+				.placeholder(R.drawable.ic_pia_logo)
 				.resize(150, 120)
 				.into(viewHolder.iv);
 		}

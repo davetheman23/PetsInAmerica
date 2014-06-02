@@ -1,6 +1,9 @@
 package net.petsinamerica.askavet.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Define the behavior of the Access Token & related methods
@@ -79,6 +82,7 @@ public class AccessToken {
 	public boolean isExpired(){
 		// get current time and test if token expired 
 		Calendar time = Calendar.getInstance();
+		
 		if (time.before(expiration)){
 			return false;
 		}
