@@ -1,9 +1,8 @@
 package net.petsinamerica.askavet.utils;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+
+import android.util.Log;
 
 /**
  * Define the behavior of the Access Token & related methods
@@ -16,6 +15,8 @@ public class AccessToken {
 	private static String accessToken = "";
 	private static Calendar expiration = null;
 	private static int renewHours = 1;
+	
+	private static String sTAG = "Access Token";
 	
 	/*App Key for website: 3684625824*/
 	
@@ -86,6 +87,7 @@ public class AccessToken {
 		if (time.before(expiration)){
 			return false;
 		}
+		Log.i(sTAG, "Access Token is Expired!");
 		return true;
 	}
 	

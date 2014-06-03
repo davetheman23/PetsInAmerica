@@ -1,22 +1,53 @@
 package net.petsinamerica.askavet;
 
+import java.io.IOException;
 import java.util.Locale;
+import java.util.Map;
 
-import net.petsinamerica.askavet.R;
+import net.petsinamerica.askavet.LoginActivity.AlertDialogFragment;
+import net.petsinamerica.askavet.utils.AccessToken;
+import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.JsonHelper;
+import net.petsinamerica.askavet.utils.PiaApplication;
+import net.petsinamerica.askavet.utils.UserInfoManager;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import android.app.ActionBar;
+import android.app.DialogFragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.http.AndroidHttpClient;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+import com.sina.weibo.sdk.exception.WeiboException;
+import com.sina.weibo.sdk.net.RequestListener;
+import com.sina.weibo.sdk.openapi.UsersAPI;
+import com.sina.weibo.sdk.openapi.models.ErrorInfo;
+import com.sina.weibo.sdk.openapi.models.User;
+import com.sina.weibo.sdk.utils.LogUtil;
+import com.squareup.picasso.Picasso;
 
 public class HomeActivity extends FragmentActivity implements
 		ActionBar.TabListener {
@@ -37,11 +68,40 @@ public class HomeActivity extends FragmentActivity implements
 	ViewPager mViewPager;
 	
 	private static final int sTOTAL_PAGES = 4;
+	
+	private Context mContext;
+	private static String sTAG_RESULT;
+	private AccessToken mToken;
+	
+	private UsersAPI mUsersAPI;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
+		
+		//initialize local variables
+		mContext = getApplicationContext();
+		sTAG_RESULT = getResources().getString(R.string.JSON_tag_result);
+		mToken =  AccessTokenManager.readAccessToken(mContext);
+		// get userinfo
+		if (!UserInfoManager.isInfoAvailable() && mToken != null 
+											   && !mToken.isExpired()){
+			String url = PiaApplication.URL_USERINFO + "/" + mToken.getUserId();
+			new GetUserInfoTask().execute(url);
+		}
+		
+		// get weibo userinfo
+		// 获取当前已保存过的 Token
+		Oauth2AccessToken weiboToken = AccessTokenManager.readWeiboAccessToken(this);
+		if (!UserInfoManager.isWeiboInfoAvailable() && weiboToken != null 
+													&& weiboToken.isSessionValid()){
+			// instantiate UsersAPI to get weibo user info
+			mUsersAPI = new UsersAPI(weiboToken);
+			mUsersAPI.show(Long.parseLong(weiboToken.getUid()), mListener);
+		}		
+	    // 对statusAPI实例化
+	    //StatusesAPI statusesAPI = new StatusesAPI(weiboToken);
 
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
@@ -80,6 +140,8 @@ public class HomeActivity extends FragmentActivity implements
 		
 		// this option will cache the view Hierachy of the pagers
 		mViewPager.setOffscreenPageLimit(2);
+		
+		
 	}
 
 	@Override
@@ -128,6 +190,9 @@ public class HomeActivity extends FragmentActivity implements
 			case 1:
 				fragment = (Fragment) new ArticleListFragment();
 				break;
+			case 2:
+				fragment = (Fragment) new PetListFragment();
+				break;
 			default:
 				fragment = new DummySectionFragment();
 				Bundle args = new Bundle();
@@ -156,7 +221,7 @@ public class HomeActivity extends FragmentActivity implements
 			case 2:
 				return getString(R.string.title_section3).toUpperCase(l);
 			case 3:
-				return "我的信息";
+				return "我的宠物";
 			}
 			return null;
 		}
@@ -188,5 +253,116 @@ public class HomeActivity extends FragmentActivity implements
 			return rootView;
 		}
 	}
+	
+	/**
+	 * A subclass of AsyncTask to get userinfo after user verification
+	 */
+	public class GetUserInfoTask extends AsyncTask<String, Void, Integer> {
+		
+		private static final int sSUCCEED = 0;
+		private static final int sFAIL = 1;
+
+		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
+		
+		@Override
+		protected void onPreExecute() {
+			// TODO show a dialog box with a loading icon
+			super.onPreExecute();
+		}
+
+		
+		@Override
+		protected Integer doInBackground(String... params) {
+			String url = params[0];			
+			
+			HttpPost post = new HttpPost(url);
+			
+			if (!mToken.isExpired()){
+				post = AccessTokenManager.addAccessTokenPost(post, mContext, mToken);
+			}else{
+				// TODO: report problem here
+				
+			}
+			
+			try {				
+				HttpResponse response = mClient.execute(post);
+				
+				// obtain response from login
+				String loginResponse = new BasicResponseHandler().handleResponse(response);
+				
+				// parse response as JSON object
+				JSONObject responseObject = (JSONObject) new JSONTokener(loginResponse).nextValue();
+				
+				Map<String, Object> resultMap = JsonHelper
+											.toMap(responseObject.getJSONObject(sTAG_RESULT));
+
+				// store the userinfo in a global scope
+				UserInfoManager.cacheUserInfo(resultMap);
+				
+				return sSUCCEED;
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return sFAIL;
+		}
+
+		@Override
+		protected void onPostExecute(Integer loginresult) {
+			if (null != mClient)
+				mClient.close();
+			
+			DialogFragment df;
+			switch (loginresult){
+			case sSUCCEED:
+				
+				df = AlertDialogFragment.newInstance();
+				df.show(getFragmentManager(), "Successed");
+				break;
+			case sFAIL:
+				df = AlertDialogFragment.newInstance();
+				df.show(getFragmentManager(), "Failed");
+				break;
+				// == do something 
+			}
+			
+		}
+
+		@Override
+		protected void onCancelled() {
+			// TODO develop handler for cancel event if necessary
+			super.onCancelled();
+		}
+		
+	}
+	
+	/**
+     * 微博 OpenAPI 回调接口。
+     */
+    private RequestListener mListener = new RequestListener() {
+    	private static final String TAG = "Request Listener";
+        @Override
+        public void onComplete(String response) {
+            if (!TextUtils.isEmpty(response)) {
+                // 调用 User#parse 将JSON串解析成User对象
+                User user = User.parse(response);
+                if (user != null) {
+                	UserInfoManager.cacheWeiboUserInfo(user, getApplicationContext());
+                } else {
+                    Toast.makeText(HomeActivity.this, response, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+        @Override
+        public void onWeiboException(WeiboException e) {
+            LogUtil.e(TAG, e.getMessage());
+            ErrorInfo info = ErrorInfo.parse(e.getMessage());
+            Toast.makeText(HomeActivity.this, info.toString(), Toast.LENGTH_LONG).show();
+        }
+    };
 
 }

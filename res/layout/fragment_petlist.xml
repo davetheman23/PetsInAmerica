@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin" 
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    android:layout_marginBottom="@dimen/activity_vertical_margin"
+    android:padding="5dp">
+
+    <ImageView
+        android:id="@+id/frag_petlist_image"
+        android:layout_width="77dp"
+        android:layout_height="85dp"
+        android:contentDescription="ProfilePic"
+        android:src="@drawable/someone" 
+        android:padding="5dp"/>
+
+    <LinearLayout
+        android:id="@+id/frag_petlist_linearlayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/frag_petlist_image"
+        android:gravity="left|center_vertical"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+       	>
+
+        <TextView 
+	       	android:id="@+id/frag_petlist_username"
+	       	android:layout_width="fill_parent"
+	       	android:layout_height="0dp"
+	       	android:layout_weight="1"
+	       	android:text="@string/label_username" 
+	       	android:layout_marginBottom="10dp"/>
+
+       	<TextView
+       	    android:id="@+id/frag_petlist_email"
+       	    android:layout_width="fill_parent"
+       	    android:layout_height="0dp"
+       	    android:layout_weight="1"
+       	    android:text="@string/label_email" 
+       	    android:layout_marginBottom="10dp"/>
+    </LinearLayout>
+    <!-- 
+    <RelativeLayout 
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/frag_petlist_image"
+        android:padding="5dp">
+        <ListView 
+            android:id="@android:id/list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+        </ListView>
+        <TextView
+	        android:id="@android:id/empty"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" 
+	        android:text="@string/no_content_available"
+	        android:layout_centerInParent="true"/>
+    </RelativeLayout>
+	 -->
+</RelativeLayout>

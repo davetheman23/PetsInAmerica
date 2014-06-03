@@ -7,6 +7,7 @@ import java.util.Map;
 import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.JsonHelper;
+import net.petsinamerica.askavet.utils.PiaApplication;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -24,6 +25,7 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +43,7 @@ public class EnquiryListFragment extends ListFragment {
 	
 	private static String sTAG_RESULT;
 	private static String sTAG_CONTENT;
+	private static final String sTAG = "EnquireListFragment";
 	
 	private String mUrl = sURL_ENQUIRY;		// default URL, use setUrl() to change URL
 	private int mUrlType = URL_ALL_ENQUIRY;		// default URL type, use setUrl() to change type
@@ -119,8 +122,10 @@ public class EnquiryListFragment extends ListFragment {
 			@Override
 			public void onClick(View v) {
 				if (URL_MY_ENQUIRY != mUrlType){
-					setUrl(URL_MY_ENQUIRY);
-					loadEnquiryList(mUrl, mPageMyEnqury);
+					//setUrl(URL_MY_ENQUIRY);
+					//loadEnquiryList(mUrl, mPageMyEnqury);
+					Intent intent = new Intent(getActivity(), PetListFragment.class);
+					startActivity(intent);
 				}else{
 					// TODO: refresh the contents if necessary
 				}
@@ -163,6 +168,7 @@ public class EnquiryListFragment extends ListFragment {
 			mProgBar.setVisibility(View.VISIBLE);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		protected List<Map<String, String>> doInBackground(String... params) {
 			String url = params[0];
@@ -172,8 +178,14 @@ public class EnquiryListFragment extends ListFragment {
 			if (mUrlType == URL_MY_ENQUIRY){
 				AccessToken accessToken = AccessTokenManager.readAccessToken(mContext);
 				if (!accessToken.isExpired()){
+					if (PiaApplication.DEBUGTAG){
+						Log.d(sTAG, "token not expired");
+					}
 					post = AccessTokenManager.addAccessTokenPost(post, mContext, accessToken);
 				}else{
+					if (PiaApplication.DEBUGTAG){
+						Log.d(sTAG, "token expired");
+					}					
 					mTvEmpty.setText("请先登录!");
 					Intent intent = new Intent(getActivity(), LoginActivity.class);
 					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -199,8 +211,7 @@ public class EnquiryListFragment extends ListFragment {
 						JSONResponse).nextValue();
 				enqueries = responseObject.getJSONArray(sTAG_RESULT);
 				if (enqueries != null){
-					JsonHelper jhelper = new JsonHelper(); 
-					enquiryList = jhelper.toList(enqueries);
+					enquiryList = JsonHelper.toList(enqueries);
 				}			
 				return enquiryList;
 			} catch (ClientProtocolException e) {

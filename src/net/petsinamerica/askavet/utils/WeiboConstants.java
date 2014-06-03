@@ -38,6 +38,7 @@ public interface WeiboConstants {
      * 建议使用默认回调页：https://api.weibo.com/oauth2/default.html
      * </p>
      */
+    //public static final String REDIRECT_URL = "https://api.weibo.com/oauth2/default.html";
     public static final String REDIRECT_URL = "https://api.weibo.com/oauth2/default.html";
 
     /**

@@ -26,7 +26,7 @@ import android.util.Log;
  */
 public class AccessTokenManager {
 	
-    private static final String sPREFERENCES_NAME = "net_pets_in_america_askavet";
+    private static final String sPREFERENCES_NAME = PiaApplication.PREFERENCES_NAME;
     private static final String sPREFERENCES_NAME_WEIBO = sPREFERENCES_NAME +"_weibo";
 
     private static final String sKEY_USERID           = "userid";
@@ -92,6 +92,20 @@ public class AccessTokenManager {
     }
     
     /**
+     * clear token from SharedPreferences
+     * 
+     */
+    public static void clear(Context context) {
+        if (null == context) {
+            return;
+        }
+        SharedPreferences pref = context.getSharedPreferences(sPREFERENCES_NAME, Context.MODE_PRIVATE);
+        Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
+    }
+    
+    /**
      * Save Weibo token into a shared Pref object
      * 
      */
@@ -120,10 +134,33 @@ public class AccessTokenManager {
         
         Oauth2AccessToken token = new Oauth2AccessToken();
         SharedPreferences pref = context.getSharedPreferences(sPREFERENCES_NAME_WEIBO, Context.MODE_PRIVATE);
-        token.setUid(pref.getString(sKEY_USERID, ""));
-        token.setToken(pref.getString(sKEY_ACCESS_TOKEN, ""));
-        token.setExpiresTime(pref.getLong(sKEY_EXPIRATION, 0));
+        String uid = pref.getString(sKEY_USERID, "");
+        String tokenstring = pref.getString(sKEY_ACCESS_TOKEN, "");
+        long expiresin = pref.getLong(sKEY_EXPIRATION, 0);
+        
+        if ("" == uid || "" == tokenstring || 0 == expiresin){
+        	clearWeiboToken(context);
+        	return null;
+        }
+        
+        token.setUid(uid);
+        token.setToken(tokenstring);
+        token.setExpiresTime(expiresin);
         return token;
+    }
+    
+    /**
+     * clear token from SharedPreferences
+     * 
+     */
+    public static void clearWeiboToken(Context context) {
+        if (null == context) {
+            return;
+        }
+        SharedPreferences pref = context.getSharedPreferences(sPREFERENCES_NAME_WEIBO, Context.MODE_PRIVATE);
+        Editor editor = pref.edit();
+        editor.clear();
+        editor.commit();
     }
     
     /**
@@ -164,18 +201,6 @@ public class AccessTokenManager {
     	return post;
     }
     
-    /**
-     * clear token from SharedPreferences
-     * 
-     */
-    public static void clear(Context context) {
-        if (null == context) {
-            return;
-        }
-        SharedPreferences pref = context.getSharedPreferences(sPREFERENCES_NAME, Context.MODE_PRIVATE);
-        Editor editor = pref.edit();
-        editor.clear();
-        editor.commit();
-    }
+    
 
 }

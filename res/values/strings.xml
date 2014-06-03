@@ -25,13 +25,18 @@
     <string name="label_login_password">密码</string>
     <string name="label_login_username">用户名 或 电子邮箱</string>
     
-    <!-- Registration page  -->
+    <!-- Signup page  -->
     <string name="label_reg_email">电子邮箱</string>
     <string name="label_reg_username">用户名</string>
     <string name="label_reg_password">密码</string>
     <string name="label_reg_password_confirm">再次输入密码</string>
     <string name="button_reg_signup">注册</string>
     <string name="link_reg_login">已经注册？点这里登录！</string>
+    
+    <!-- Profile page  -->
+    <string name="label_username">用户名</string>
+    <string name="label_email">邮箱</string>
+    <string name="label_weibo_name">微博名</string>
     
     <!--resource for reading Json objects --> 
     <string name = "JSON_tag_title">title</string>
