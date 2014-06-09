@@ -92,7 +92,7 @@ public class EnquiryListFragment2 extends BaseListFragment {
 		sTAG_CONTENT = mContext.getResources().getString(R.string.JSON_tag_content);
 		sTAG_RESULT = getResources().getString(R.string.JSON_tag_result);
 		
-		setParameters(Constants.URL_ENQUIRY, sTAG_RESULT);
+		setParameters(Constants.URL_ENQUIRY, sTAG_RESULT,true);
 	}
 	
 	@Override
@@ -136,7 +136,7 @@ public class EnquiryListFragment2 extends BaseListFragment {
 	public void setEnquiryType(EnquiryType enquiryType){
 		
 		if (enquiryType == EnquiryType.ALL_ENQUIRY){
-			setParameters(Constants.URL_ENQUIRY, sTAG_RESULT);
+			setParameters(Constants.URL_ENQUIRY, sTAG_RESULT,true);
 			setUserDataFlag(false);
 			mPageMyEnqury = getPage();
 			setPage(mPageAllEnqury);
@@ -146,7 +146,7 @@ public class EnquiryListFragment2 extends BaseListFragment {
 				loadListInBackground();
 			}
 		}else if (enquiryType == EnquiryType.MY_ENQUIRY){
-			setParameters(Constants.URL_MYENQUIRY, sTAG_RESULT);
+			setParameters(Constants.URL_MYENQUIRY, sTAG_RESULT,true);
 			setUserDataFlag(true);
 			mPageAllEnqury = getPage();
 			setPage(mPageMyEnqury);

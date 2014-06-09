@@ -18,6 +18,7 @@ public class UserInfoManager {
 	
 	public static interface Listener{
 		public void onWeiboInfoStateChange();
+		public void onPiaInfoStateChange();
 	}
 	
 	private static boolean infoAvailable = false;
@@ -38,8 +39,12 @@ public class UserInfoManager {
 	public static User weiboUser = null;
 	
 	private static Listener mWeiboInfoListener = null;
-	public static void registerListener (Listener listener){
+	private static Listener mPiaInfoListener = null;
+	public static void registerWeiboInfoListener (Listener listener){
 		mWeiboInfoListener = listener;
+	}
+	public static void registerPiaInfoListener (Listener listener){
+		mPiaInfoListener = listener;
 	}
 	
 	public static void cacheUserInfo(Map<String, Object> resultMap){
@@ -54,6 +59,9 @@ public class UserInfoManager {
 		language = resultMap.get("language").toString();
 		
 		infoAvailable = true;
+		if (mPiaInfoListener!= null){
+			mPiaInfoListener.onPiaInfoStateChange();
+		}
 	}
 	
 	public static void clearUserInfo(){
@@ -67,12 +75,10 @@ public class UserInfoManager {
 		language = null;
 		
 		infoAvailable = false;
+		if (mPiaInfoListener!= null){
+			mPiaInfoListener.onPiaInfoStateChange();
+		}
 		
-		weiboToken = null;
-		weiboUser = null;
-		weiboUsername = null;
-		
-		infoWeiboAvailable = false;
 	}
 	
 	public static void cacheWeiboUserInfo(User user, Context context){
@@ -94,7 +100,6 @@ public class UserInfoManager {
 	public static void cacheUserAvatar(Bitmap userAvatar){
 		avatar = userAvatar;
 	}
-	
 	
 	public static boolean isInfoAvailable(){
 		return infoAvailable;

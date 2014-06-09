@@ -1,6 +1,8 @@
 package net.petsinamerica.askavet.utils;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,19 +46,28 @@ public abstract class BaseListFragment extends ListFragment{
 	//public static final String KEY_ARTICLE_READ = "Article_Read";
 
 	private static final String TAG = "BaseListFragment";
+	private static final String KEY_ERR = "error";
 	
 	/*
 	 * the key at the first level of the JSON response object
+	 * Note: don't make it static, because each instance of this fragment class
+	 *       may have different key_list value. 
 	 */
 	private String KEY_LIST;
 	
+	/*
+	 * mPage will be appended to the URL, for some API calls, it indicates 
+	 * the page of the list, for other API calls, it could mean userid.  
+	 */
 	private int mPage = 1;
 	private boolean mflag_addData = false;		// false-don't add data
 	private boolean mIsUserSpecific = false;	// flag for user specific data
+	private boolean mHasFooter = true;			// flag to indicate if footer is needed
 	private ArrayAdapter<Map<String, Object>> mBaseAdapter;
 	private Context mContext;
 	private String mUrl;
-	private View mfooterview; 
+	private View mfooterview = null; 
+	
 	
 	/**
 	 * Set the custom list adapter to use when the Http request is completed,
@@ -69,20 +80,21 @@ public abstract class BaseListFragment extends ListFragment{
 	
 	protected abstract void onItemClickAction(View v, int position, long id);
 	
-	protected void setPage(int page){
+	public void setPage(int page){
 		mPage = page;
 	}
 	
-	protected int getPage(){
+	public int getPage(){
 		return mPage;
 	}
 	
 	//Set<String> mReadArticleList = null;		// the article list that has been read by the user
 	//SharedPreferences mUsageData;
 		
-	public void setParameters(String url,  String jsonListKey) {
+	public void setParameters(String url,  String jsonListKey, boolean hasfooter) {
 		mUrl = url;
 		KEY_LIST = jsonListKey;
+		mHasFooter = hasfooter;
 	}
 	public void setUserDataFlag(boolean isUserSpecific){
 		mIsUserSpecific = isUserSpecific;
@@ -98,7 +110,7 @@ public abstract class BaseListFragment extends ListFragment{
 	
 	public void loadListInBackground(){
 		// fetch list data from the network
-		new HttpPostTask().execute(mUrl + "/" + Integer.toString(mPage));
+		new HttpPostTask().execute(mUrl + Integer.toString(mPage));
 	}
 
 	@Override
@@ -110,15 +122,16 @@ public abstract class BaseListFragment extends ListFragment{
 		}
 		
 		// set up footer 
-		LayoutInflater inflater = (LayoutInflater) mContext
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		mfooterview = (View) inflater.inflate(R.layout.list_footer, null);
-		getListView().addFooterView(mfooterview);
-		getListView().setFooterDividersEnabled(true);
-		// set the footer as invisible only make it visible when needed
-		mfooterview.setVisibility(View.GONE);
-		mfooterview.setClickable(false);
-		
+		if (mHasFooter){
+			LayoutInflater inflater = (LayoutInflater) mContext
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			mfooterview = (View) inflater.inflate(R.layout.list_footer, null);
+			getListView().addFooterView(mfooterview);
+			getListView().setFooterDividersEnabled(true);
+			// set the footer as invisible only make it visible when needed
+			mfooterview.setVisibility(View.GONE);
+			mfooterview.setClickable(false);
+		}
 		//mReadArticleList = new HashSet<String>();
 		
 		// disable scroll bar
@@ -145,7 +158,9 @@ public abstract class BaseListFragment extends ListFragment{
 						mPage += 1;
 						mflag_addData = true;
 						loadListInBackground();
-						mfooterview.setVisibility(View.VISIBLE);
+						if (mfooterview != null){
+							mfooterview.setVisibility(View.VISIBLE);
+						}
 					}
 				}
 			}
@@ -174,13 +189,15 @@ public abstract class BaseListFragment extends ListFragment{
 	 * when the list is empty 
 	 */
 	protected void handleEmptyList(){
-		TextView tvFooter = (TextView) mfooterview
-				.findViewById(R.id.list_footer_tv_loading);
-		tvFooter.setText("没有可显示的文章");
-		
-		ProgressBar pbFooter = (ProgressBar) mfooterview
-						.findViewById(R.id.list_footer_pb_loading);
-		pbFooter.setVisibility(View.INVISIBLE);
+		if (mfooterview!=null){
+			TextView tvFooter = (TextView) mfooterview
+					.findViewById(R.id.list_footer_tv_loading);
+			tvFooter.setText("没有可显示的文章");
+			
+			ProgressBar pbFooter = (ProgressBar) mfooterview
+							.findViewById(R.id.list_footer_pb_loading);
+			pbFooter.setVisibility(View.INVISIBLE);
+		}
 		
 	}
 	
@@ -191,14 +208,15 @@ public abstract class BaseListFragment extends ListFragment{
 	 * when the list is complete
 	 */
 	protected void handleEndofList(){
-		TextView tvFooter = (TextView) mfooterview
-				.findViewById(R.id.list_footer_tv_loading);
-		tvFooter.setText("已获取全部文章");
-		
-		ProgressBar pbFooter = (ProgressBar) mfooterview
-						.findViewById(R.id.list_footer_pb_loading);
-		pbFooter.setVisibility(View.INVISIBLE);
-
+		if (mfooterview!=null){
+			TextView tvFooter = (TextView) mfooterview
+					.findViewById(R.id.list_footer_tv_loading);
+			tvFooter.setText("已获取全部文章");
+			
+			ProgressBar pbFooter = (ProgressBar) mfooterview
+							.findViewById(R.id.list_footer_pb_loading);
+			pbFooter.setVisibility(View.INVISIBLE);
+		}
 	}
 	
 	
@@ -243,12 +261,14 @@ public abstract class BaseListFragment extends ListFragment{
 				responseObject = (JSONObject) new JSONTokener(
 						JSONResponse).nextValue();
 				if (responseObject !=null){
+					/*int errorCode = responseObject.getInt(KEY_ERR);
+					if (errorCode != Constants.NO_ERROR){
+						return arrayList;
+					}*/
 					String listObject = responseObject.getString(KEY_LIST);
 					if (listObject.equalsIgnoreCase("null")){
 						return arrayList;
 					}
-				}
-				if (responseObject !=null){
 					responseArray = responseObject.getJSONArray(KEY_LIST);
 					if (responseArray != null){
 						arrayList = JsonHelper.toList(responseArray);
@@ -263,6 +283,8 @@ public abstract class BaseListFragment extends ListFragment{
 			}catch (JSONException e) {
 				e.printStackTrace();
 				Log.e(TAG, "JSONException");
+				Log.e(TAG, "Currently Loading URL:" + url);
+				// TODO Log.d(TAG, "Please handle exception here");
 			}finally{
 				if (null != mClient){
 					mClient.close();
@@ -288,8 +310,9 @@ public abstract class BaseListFragment extends ListFragment{
 							// it is not normal resultArray.size() >0 but mflag_addData is true
 							Log.e(TAG, "ListAdapter is not set properly, plese check!");
 						}
-						
-						mfooterview.setVisibility(View.GONE);
+						if (mfooterview!=null){
+							mfooterview.setVisibility(View.GONE);
+						}
 					}
 				}else{
 					// no more list items to be displayed
@@ -301,6 +324,9 @@ public abstract class BaseListFragment extends ListFragment{
 					}
 				}
 				
+			}
+			else{
+				Log.d(TAG, "Need to handle null return result cases");
 			}
 		}
 	}

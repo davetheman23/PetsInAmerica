@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import net.petsinamerica.askavet.LoginActivity.AlertDialogFragment;
 import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.BaseListFragment;
@@ -23,7 +22,6 @@ import org.json.JSONTokener;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
@@ -36,10 +34,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.openapi.UsersAPI;
@@ -50,6 +50,7 @@ import com.sina.weibo.sdk.utils.LogUtil;
 public class HomeActivity extends FragmentActivity implements
 		ActionBar.TabListener {
 
+	private static final String sTAG = "HomeActivity"; 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -87,19 +88,19 @@ public class HomeActivity extends FragmentActivity implements
 		// get userinfo
 		if (!UserInfoManager.isInfoAvailable() && mToken != null 
 											   && !mToken.isExpired()){
-			String url = Constants.URL_USERINFO + "/" + mToken.getUserId();
-			new GetUserInfoTask().execute(url);
+			new GetUserInfoTask().execute(Constants.URL_USERINFO 
+												+ mToken.getUserId());
 		}
 		
 		// get weibo userinfo
 		// 获取当前已保存过的 Token
-		/*Oauth2AccessToken weiboToken = AccessTokenManager.readWeiboAccessToken(this);
+		Oauth2AccessToken weiboToken = AccessTokenManager.readWeiboAccessToken(this);
 		if (!UserInfoManager.isWeiboInfoAvailable() && weiboToken != null 
 													&& weiboToken.isSessionValid()){
 			// instantiate UsersAPI to get weibo user info
 			mUsersAPI = new UsersAPI(weiboToken);
 			mUsersAPI.show(Long.parseLong(weiboToken.getUid()), mListener);
-		}*/		
+		}		
 	    // 对statusAPI实例化
 	    //StatusesAPI statusesAPI = new StatusesAPI(weiboToken);
 
@@ -194,7 +195,7 @@ public class HomeActivity extends FragmentActivity implements
 				fragment = new ProductListFragment();
 				break;
 			case 3:
-				fragment = (Fragment) new PetListFragment();
+				fragment = new UserInfoFragment();
 				break;	
 			}
 
@@ -212,13 +213,13 @@ public class HomeActivity extends FragmentActivity implements
 			Locale l = Locale.getDefault();
 			switch (position) {
 			case 0:
-				return getString(R.string.title_section1).toUpperCase(l);
+				return getString(R.string.viewpager_title_section1).toUpperCase(l);
 			case 1:
-				return getString(R.string.title_section2).toUpperCase(l);
+				return getString(R.string.viewpager_title_section2).toUpperCase(l);
 			case 2:
-				return getString(R.string.title_section3).toUpperCase(l);
+				return getString(R.string.viewpager_title_section3).toUpperCase(l);
 			case 3:
-				return "我的信息";
+				return getString(R.string.viewpager_title_section4).toUpperCase(l);
 			}
 			return null;
 		}
@@ -232,7 +233,7 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_BLOGCN, sTAG_LIST);
+			setParameters(Constants.URL_BLOGCN, sTAG_LIST,true);
 		}
 
 		@Override
@@ -264,7 +265,7 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_PRODUCTLIST, sTAG_LIST);
+			setParameters(Constants.URL_PRODUCTLIST, sTAG_LIST,true);
 		}
 
 		@Override
@@ -293,33 +294,21 @@ public class HomeActivity extends FragmentActivity implements
 	/**
 	 * A subclass of AsyncTask to get userinfo after user verification
 	 */
-	public class GetUserInfoTask extends AsyncTask<String, Void, Integer> {
-		
-		private static final int sSUCCEED = 0;
-		private static final int sFAIL = 1;
+	public class GetUserInfoTask extends AsyncTask<String, Void, Map<String, Object>> {
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
-		
-		@Override
-		protected void onPreExecute() {
-			// TODO show a dialog box with a loading icon
-			super.onPreExecute();
-		}
 
-		
 		@Override
-		protected Integer doInBackground(String... params) {
-			String url = params[0];			
-			
+		protected Map<String, Object> doInBackground(String... params) {
+			String url = params[0];				
 			HttpPost post = new HttpPost(url);
-			
+
 			if (!mToken.isExpired()){
 				post = AccessTokenManager.addAccessTokenPost(post, mContext, mToken);
 			}else{
 				// TODO: report problem here
-				
+				Log.d(sTAG, "Token expired");
 			}
-			
 			try {				
 				HttpResponse response = mClient.execute(post);
 				
@@ -328,51 +317,39 @@ public class HomeActivity extends FragmentActivity implements
 				
 				// parse response as JSON object
 				JSONObject responseObject = (JSONObject) new JSONTokener(loginResponse).nextValue();
-				
 				Map<String, Object> resultMap = JsonHelper
 											.toMap(responseObject.getJSONObject(sTAG_RESULT));
-
-				// store the userinfo in a global scope
-				UserInfoManager.cacheUserInfo(resultMap);
-				
-				return sSUCCEED;
+				return resultMap;
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}catch (JSONException e) {
 				e.printStackTrace();
+			}finally{
+				if (null != mClient)
+					mClient.close();
 			}
-			return sFAIL;
+			return null;
 		}
 
-		@Override
-		protected void onPostExecute(Integer loginresult) {
-			if (null != mClient)
-				mClient.close();
-			
-			/*DialogFragment df;
-			switch (loginresult){
-			case sSUCCEED:
-				
-				df = AlertDialogFragment.newInstance();
-				df.show(getFragmentManager(), "Successed");
-				break;
-			case sFAIL:
-				df = AlertDialogFragment.newInstance();
-				df.show(getFragmentManager(), "Failed");
-				break;
-				// == do something 
-			}*/
-			
-		}
 
 		@Override
-		protected void onCancelled() {
-			// TODO develop handler for cancel event if necessary
-			super.onCancelled();
+		protected void onPostExecute(Map<String, Object> result) {
+			super.onPostExecute(result);
+			
+			if (result != null){
+				/*
+				 *  Store the userinfo in a global scope
+				 *  Note: cache action needs to be done at the UI thread because
+				 *  it may invoke other actions that will run in background once
+				 *  the userinfo is available in the UserInfoManager 
+				 */
+				UserInfoManager.cacheUserInfo(result);
+			}
 		}
 		
+
 	}
 	
 	/**

@@ -29,39 +29,34 @@ import com.squareup.picasso.Picasso;
  *  listAdapter to display product list
  *  layout file list_item.xml 
  */
-public class ProductListAdapter extends ArrayAdapter<Map<String, Object>> {
+public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 	private final Context mContext;
 	private final int mResource;
 	
 	// these tags are those for reading the JSON objects
-	private static String TAG_TITLE;
-	private static String TAG_IMAGE;
-	private static String TAG_ID;
-	private static String TAG_CONTENT;
+	private static String KEY_AVATAR;
+	private static String KEY_ID;
+	private static String KEY_NAME;
 	
 	private class ViewHolder{
 		ImageView iv;
 		TextView tv_firstline;
-		TextView tv_secondline;
-		//TextView[] tv_tags;
-		//LinearLayout linearLayout;
 		int itemId;
 	}
 	
 	/**
 	 *  Standard constructer
 	 */
-	public ProductListAdapter(Context context, int resource,
+	public PetListAdapter(Context context, int resource,
 			List<Map<String, Object>> objects) {
 		super(context, resource, objects);
 		
 		mContext = context;
 		mResource = resource;
 		
-		TAG_TITLE = mContext.getResources().getString(R.string.JSON_tag_title);
-		TAG_IMAGE = mContext.getResources().getString(R.string.JSON_tag_image);
-		TAG_ID = mContext.getResources().getString(R.string.JSON_tag_id);
-		TAG_CONTENT = mContext.getResources().getString(R.string.JSON_tag_content);
+		KEY_AVATAR = mContext.getResources().getString(R.string.JSON_tag_petavatar);
+		KEY_ID = mContext.getResources().getString(R.string.JSON_tag_id);
+		KEY_NAME = mContext.getResources().getString(R.string.JSON_tag_petname);
 		
 	}
 
@@ -82,12 +77,10 @@ public class ProductListAdapter extends ArrayAdapter<Map<String, Object>> {
 			viewHolder = new ViewHolder();
 			
 			// inflate the layout view, and get individual views
-			rowview = inflater.inflate(R.layout.list_large_item, parent, false);
-			viewHolder.iv = (ImageView) rowview.findViewById(R.id.list_large_item_image);
+			rowview = inflater.inflate(R.layout.pet_list_item, parent, false);
+			viewHolder.iv = (ImageView) rowview.findViewById(R.id.pet_list_item_image);
 			viewHolder.tv_firstline = (TextView) rowview
-											.findViewById(R.id.list_large_item_1stline);
-			viewHolder.tv_secondline = (TextView) rowview
-											.findViewById(R.id.list_large_item_2ndline);
+											.findViewById(R.id.pet_list_item_name);
 			// set tag for future reuse of the view
 			rowview.setTag(viewHolder);
 		}else{
@@ -96,18 +89,18 @@ public class ProductListAdapter extends ArrayAdapter<Map<String, Object>> {
 		}
 		
 		Map<String, Object> listItem = getItem(position); 
-		String sTitle, sContent, sImgURL, sItemId;
-		sTitle = (String) listItem.get(TAG_TITLE);
-		sTitle = sTitle.trim();
-		sContent = (String) listItem.get(TAG_CONTENT);
-		sContent = sContent.trim();
-		sImgURL = (String) listItem.get(TAG_IMAGE);
-		sItemId = (String) listItem.get(TAG_ID);
+		String sName, sImgURL, sItemId;
+		sName = (String) listItem.get(KEY_NAME);
+		sName = sName.trim();
+		sImgURL = (String) listItem.get(KEY_AVATAR);
+		sItemId = (String) listItem.get(KEY_ID);
 		
 		viewHolder.itemId = Integer.parseInt(sItemId);
-		viewHolder.tv_firstline.setText(sTitle);
-		viewHolder.tv_secondline.setText(sTitle);
+		viewHolder.tv_firstline.setText(sName);
 		
+		if (sImgURL!= null && !sImgURL.startsWith("http")){
+			sImgURL = "http://petsinamerica.net/new/../upload/" + sImgURL;
+		}
 		
 		// image loading procedure:
 		// 1. check if image available in memory / disk
@@ -115,9 +108,12 @@ public class ProductListAdapter extends ArrayAdapter<Map<String, Object>> {
 		// Note: currently, use picasso instead
 		Picasso.with(mContext)
 			.load(sImgURL)
-			.placeholder(R.drawable.ic_pia_logo)
+			.placeholder(R.drawable.somepet)
 			.into(viewHolder.iv);
-
+		if (sImgURL== null || sImgURL.endsWith("somepet.png")){
+			Picasso.with(mContext)
+				.cancelRequest(viewHolder.iv);
+		}
 		return rowview;
 		
 	}

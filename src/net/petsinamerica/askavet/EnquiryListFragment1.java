@@ -132,7 +132,7 @@ public class EnquiryListFragment1 extends Fragment {
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_ENQUIRY, sTAG_RESULT);
+			setParameters(Constants.URL_ENQUIRY, sTAG_RESULT,true);
 		}
 
 		@Override
@@ -161,7 +161,7 @@ public class EnquiryListFragment1 extends Fragment {
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_MYENQUIRY, sTAG_RESULT);
+			setParameters(Constants.URL_MYENQUIRY, sTAG_RESULT,true);
 			setUserDataFlag(true);
 		}
 

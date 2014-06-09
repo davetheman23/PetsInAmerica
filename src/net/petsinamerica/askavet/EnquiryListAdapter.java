@@ -51,7 +51,6 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 		super(context, resource, objects);
 		
 		mContext = context;
-		//mEnquiries = objects;
 		mResource = resource;
 		
 		TAG_TITLE = mContext.getResources().getString(R.string.JSON_tag_title);
@@ -146,9 +145,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 				.resize(70, 70)
 				.into(viewHolder.iv);
 		
-		String urlPattern = "(http.*/)(.*?)(\\.[jp][pn]g)";
-		String avatarFile = userAvatarURL.replaceAll(urlPattern, "$2");
-		if (avatarFile.equals("someone")){			
+		if (userAvatarURL ==null || userAvatarURL.endsWith("someone.png")){			
 			// cancel request when download is not needed
 			Picasso.with(mContext)
 				.cancelRequest(viewHolder.iv);

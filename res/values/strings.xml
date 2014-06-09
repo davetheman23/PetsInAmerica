@@ -11,9 +11,10 @@
     <string name="action_search">搜索</string>
     <string name="page_title_article">文章</string>
     <string name="page_title_enquiry">提问</string>
-    <string name="title_section2">文章列表</string>
-    <string name="title_section1">宠物提问</string>
-    <string name="title_section3">宠物用品</string>
+    <string name="viewpager_title_section2">文章列表</string>
+    <string name="viewpager_title_section1">宠物提问</string>
+    <string name="viewpager_title_section3">宠物用品</string>
+    <string name="viewpager_title_section4">我的信息</string>
     <string name="label_my_enquiry">我的提问</string>
     <string name="label_all_enquiry">所有提问</string>
     
@@ -54,9 +55,11 @@
     <string name = "JSON_tag_result">result</string>
     <string name = "JSON_tag_status">status</string>
     <string name = "JSON_tag_avatar">useravatar</string>
+    <string name = "JSON_tag_petavatar">avatar</string>
     <string name = "JSON_tag_maintag_cn">maintag_cn</string>
     <string name = "JSON_tag_ownername">ownername</string>
     <string name = "JSON_tag_username">username</string>
+    <string name = "JSON_tag_petname">name</string>
     <string name = "JSON_tag_password">password</string>
     <string name = "JSON_tag_login">login</string>
     
