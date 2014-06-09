@@ -31,6 +31,7 @@ public class UserInfoManager {
 	public static String avatarURL = null;
 	public static Bitmap avatar = null;			// a decoded bitmap
 	public static String language = null;
+	public static String city = null;
 	
 	public static String weiboToken = null;		// the weibo token saved in the server
 	public static String weiboUsername = null;	// the weibo username saved in the server
@@ -47,6 +48,7 @@ public class UserInfoManager {
 		userName = resultMap.get("name").toString();
 		userDisplayName = resultMap.get("displayname").toString();
 		email = resultMap.get("email").toString();
+		city = resultMap.get("city").toString();
 		weiboUsername = resultMap.get("weibo").toString();
 		avatarURL = resultMap.get("avatar").toString();
 		language = resultMap.get("language").toString();

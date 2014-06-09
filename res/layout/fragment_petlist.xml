@@ -8,14 +8,14 @@
     android:layout_marginTop="@dimen/activity_vertical_margin"
     android:layout_marginBottom="@dimen/activity_vertical_margin"
     android:padding="5dp">
-
     <ImageView
-        android:id="@+id/frag_petlist_image"
-        android:layout_width="77dp"
-        android:layout_height="85dp"
-        android:contentDescription="ProfilePic"
-        android:src="@drawable/someone" 
-        android:padding="5dp"/>
+           android:id="@+id/frag_petlist_image"
+           android:layout_width="77dp"
+           android:layout_height="85dp"
+           android:layout_centerHorizontal="true"
+           android:contentDescription="ProfilePic"
+           android:padding="5dp"
+           android:src="@drawable/someone" />
 
     <LinearLayout
         android:id="@+id/frag_petlist_linearlayout"
@@ -27,28 +27,123 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
        	>
-
-        <TextView 
-	       	android:id="@+id/frag_petlist_username"
-	       	android:layout_width="fill_parent"
-	       	android:layout_height="0dp"
-	       	android:layout_weight="1"
-	       	android:text="@string/label_username" 
-	       	android:layout_marginBottom="10dp"/>
-
-       	<TextView
-       	    android:id="@+id/frag_petlist_email"
-       	    android:layout_width="fill_parent"
-       	    android:layout_height="0dp"
-       	    android:layout_weight="1"
-       	    android:text="@string/label_email" 
-       	    android:layout_marginBottom="10dp"/>
     </LinearLayout>
-    <!-- 
+    
+       <TableLayout
+            android:id="@+id/frag_petlist_tablelayout"
+        	android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_below="@id/frag_petlist_image"
+            android:gravity="center_horizontal"
+            android:background="@drawable/table_round_shape">
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="right"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="@string/label_username" />
+            <TextView
+                android:id="@+id/frag_petlist_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp" />
+        </TableRow>
+        <TableRow>
+            <View
+                android:layout_span="2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#999" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="right"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="@string/label_email" />
+            <TextView
+                android:id="@+id/frag_petlist_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp" />
+        </TableRow>
+        <TableRow>
+            <View
+                android:layout_span="2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#999" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="right"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="微博用户名" />
+            <TextView
+                android:id="@+id/frag_petlist_weibousername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:text="test"
+                android:textSize="16sp" />
+        </TableRow>
+        <TableRow>
+            <View
+                android:layout_span="2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#999" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="right"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="城市" />
+            <TextView
+                android:id="@+id/frag_petlist_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp" />
+        </TableRow>
+    </TableLayout>
+
     <RelativeLayout 
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/frag_petlist_image"
+        android:layout_below="@id/frag_petlist_tablelayout"
         android:padding="5dp">
         <ListView 
             android:id="@android:id/list"
@@ -64,5 +159,12 @@
 	        android:text="@string/no_content_available"
 	        android:layout_centerInParent="true"/>
     </RelativeLayout>
-	 -->
+<!-- 	 
+	<android.support.v4.view.ViewPager 
+    	xmlns:tools="http://schemas.android.com/tools"
+    	android:id="@+id/pager"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	tools:context=".HomeActivity" />
+ -->
 </RelativeLayout>

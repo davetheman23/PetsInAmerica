@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:orientation="horizontal">
+ <!-- This layout has image on the Right side -->
+    <ImageView
+        android:id="@+id/list_large_item_image"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:padding="10dp"
+        android:contentDescription="product_pic"
+        android:scaleType="center"
+        android:src="@drawable/ic_pia_logo_large_w_text" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:paddingTop="3dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:gravity="left"
+        android:orientation="vertical" >
+
+        <TextView
+	        android:id="@+id/list_large_item_1stline"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:ellipsize="marquee"
+	        android:layout_marginBottom="5dp"
+	        android:text="Title"
+	        android:textSize="18sp" 
+	        android:textColor="@color/Black"/>
+        <TextView
+	        android:id="@+id/list_large_item_2ndline"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:ellipsize="marquee"
+	        android:text="Description"
+	        android:textSize="12sp" 
+	        android:textColor="@color/Black"/>
+    </LinearLayout>
+    
+</LinearLayout>

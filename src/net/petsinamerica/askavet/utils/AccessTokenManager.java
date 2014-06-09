@@ -26,7 +26,7 @@ import android.util.Log;
  */
 public class AccessTokenManager {
 	
-    private static final String sPREFERENCES_NAME = PiaApplication.PREFERENCES_NAME;
+    private static final String sPREFERENCES_NAME = Constants.PREFERENCES_NAME;
     private static final String sPREFERENCES_NAME_WEIBO = sPREFERENCES_NAME +"_weibo";
 
     private static final String sKEY_USERID           = "userid";

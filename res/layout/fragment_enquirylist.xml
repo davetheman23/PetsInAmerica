@@ -28,8 +28,17 @@
             android:textColor="@color/Black"
             android:textAppearance="@android:style/TextAppearance.Small"/>
     </LinearLayout>
+ 
+<!-- Uncomment the following element if EnquiryListFragment1 is to be used -->
+    <FrameLayout 
+        android:id="@+id/frag_enquirylist_listframe"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:layout_below="@id/frag_enquirylist_header"/>
     
-    
+
+<!-- Uncomment the following two element if EnquiryListFragment2 is to be used -->
+<!--    
     <ListView 
         android:id="@android:id/list"
         android:layout_width="fill_parent"
@@ -43,7 +52,8 @@
         android:layout_height="wrap_content" 
         android:text="@string/no_content_available"
         android:layout_centerInParent="true"/>
-
+--> 
+   
     <ProgressBar
         android:id="@+id/frag_enquirylist_progressbar"
         android:layout_width="wrap_content"

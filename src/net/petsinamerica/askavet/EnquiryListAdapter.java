@@ -17,7 +17,7 @@ import com.squareup.picasso.Picasso;
  *  listAdapter to display article summaries
  *  layout file list_item.xml 
  */
-public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
+public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 	private final Context mContext;
 	//private final List<Map<String, String>> mEnquiries;
 	private final int mResource;
@@ -47,7 +47,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 	 *  Standard constructer
 	 */
 	public EnquiryListAdapter(Context context, int resource,
-			List<Map<String, String>> objects) {
+			List<Map<String, Object>> objects) {
 		super(context, resource, objects);
 		
 		mContext = context;
@@ -98,15 +98,15 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,String>> {
 		
 		
 		//Map<String,String> enquiry = mEnquiries.get(position);
-		Map<String,String> enquiry = getItem(position);
+		Map<String,Object> enquiry = getItem(position);
 		
-		String title = enquiry.get(TAG_TITLE);
-		String userAvatarURL = enquiry.get(TAG_AVATAR);
-		String ownerName = enquiry.get(TAG_OWNERNAME);
-		String queryID = enquiry.get(TAG_ID);
-		String date = enquiry.get(TAG_DATE);
-		String content = enquiry.get(TAG_CONTENT);
-		int status = Integer.parseInt(enquiry.get(TAG_STATUS));
+		String title = enquiry.get(TAG_TITLE).toString();
+		String userAvatarURL = enquiry.get(TAG_AVATAR).toString();
+		String ownerName = enquiry.get(TAG_OWNERNAME).toString();
+		String queryID = enquiry.get(TAG_ID).toString();
+		String date = enquiry.get(TAG_DATE).toString();
+		String content = enquiry.get(TAG_CONTENT).toString();
+		int status = Integer.parseInt(enquiry.get(TAG_STATUS).toString());
 		int status_color = android.R.color.black;
 		// TODO need to convert these hard-coded strings 
 		String sStatus = null;

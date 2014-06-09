@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.squareup.picasso.Picasso;
 
 import net.petsinamerica.askavet.utils.UserInfoManager;
+import android.R.anim;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class PetListFragment extends Fragment implements UserInfoManager.Listener {
@@ -24,6 +26,8 @@ public class PetListFragment extends Fragment implements UserInfoManager.Listene
 	private Context mContext;
 	private TextView tv_username;
 	private TextView tv_email;
+	private TextView tv_weiboUsername;
+	private TextView tv_city;
 	public static ImageView iv_avatar;
 
 	@Override
@@ -41,10 +45,14 @@ public class PetListFragment extends Fragment implements UserInfoManager.Listene
 		// setup page header that includes basic userinfo
 		tv_username = (TextView) rootview.findViewById(R.id.frag_petlist_username);
 		tv_email = (TextView) rootview.findViewById(R.id.frag_petlist_email);
+		tv_weiboUsername = (TextView) rootview.findViewById(R.id.frag_petlist_weibousername);
+		tv_city = (TextView) rootview.findViewById(R.id.frag_petlist_city);
 		iv_avatar = (ImageView) rootview.findViewById(R.id.frag_petlist_image);
+		
 		
 		UserInfoManager.registerListener(this);
 		
+
 		return rootview;
 	}
 
@@ -57,11 +65,12 @@ public class PetListFragment extends Fragment implements UserInfoManager.Listene
 		if (UserInfoManager.isInfoAvailable()){
 			tv_username.setText(UserInfoManager.userDisplayName);
 			tv_email.setText(UserInfoManager.email);
+			tv_weiboUsername.setText(UserInfoManager.weiboUsername);
+			tv_city.setText(UserInfoManager.city);
 			if (UserInfoManager.avatar != null){
 				iv_avatar.setImageBitmap(UserInfoManager.avatar);
 			}
 		}
-		
 	}
 
 	@Override

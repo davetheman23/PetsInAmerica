@@ -7,8 +7,8 @@ import java.util.Map;
 
 import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.JsonHelper;
-import net.petsinamerica.askavet.utils.PiaApplication;
 import net.petsinamerica.askavet.utils.WeiboConstants;
 
 import org.apache.http.HttpResponse;
@@ -48,8 +48,6 @@ public class LoginActivity extends Activity{
 	
 	private static final int sLOGIN_FAIL = 0;
 	private static final int sLOGIN_SUCCEED = 1;
-	private static final String sTAG_USERNAME = PiaApplication.sTAG_USERNAME;
-	private static final String sTAG_PASSWORD = PiaApplication.sTAG_PASSWORD;
 	private static String sTAG_LOGIN;
 	private String mUsername;
 	private String mPassword;
@@ -108,7 +106,7 @@ public class LoginActivity extends Activity{
 				// - collect password
 				EditText et_password = (EditText) findViewById(R.id.login_password);
 				mPassword = et_password.getText().toString();
-				new LoginTask().execute(PiaApplication.URL_LOGIN);
+				new LoginTask().execute(Constants.URL_LOGIN);
 			}
 		});
 		
@@ -168,8 +166,8 @@ public class LoginActivity extends Activity{
 			
 			try {
 				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-				nameValuePairs.add(new BasicNameValuePair(sTAG_USERNAME, mUsername));
-				nameValuePairs.add(new BasicNameValuePair(sTAG_PASSWORD, mPassword));
+				nameValuePairs.add(new BasicNameValuePair(Constants.TAG_USERNAME, mUsername));
+				nameValuePairs.add(new BasicNameValuePair(Constants.TAG_PASSWORD, mPassword));
 				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 				
 				HttpResponse response = mClient.execute(post);

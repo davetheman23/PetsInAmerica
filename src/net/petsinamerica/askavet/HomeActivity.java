@@ -1,14 +1,16 @@
 package net.petsinamerica.askavet;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import net.petsinamerica.askavet.LoginActivity.AlertDialogFragment;
 import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.BaseListFragment;
+import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.JsonHelper;
-import net.petsinamerica.askavet.utils.PiaApplication;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 
 import org.apache.http.HttpResponse;
@@ -20,10 +22,11 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.Intent;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,21 +36,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.openapi.UsersAPI;
 import com.sina.weibo.sdk.openapi.models.ErrorInfo;
 import com.sina.weibo.sdk.openapi.models.User;
 import com.sina.weibo.sdk.utils.LogUtil;
-import com.squareup.picasso.Picasso;
 
 public class HomeActivity extends FragmentActivity implements
 		ActionBar.TabListener {
@@ -69,9 +67,10 @@ public class HomeActivity extends FragmentActivity implements
 	
 	private static final int sTOTAL_PAGES = 4;
 	
-	private Context mContext;
+	private static Context mContext;
 	private static String sTAG_RESULT;
-	private AccessToken mToken;
+	private static String sTAG_LIST;
+	private static AccessToken mToken;
 	
 	private UsersAPI mUsersAPI;
 
@@ -83,23 +82,24 @@ public class HomeActivity extends FragmentActivity implements
 		//initialize local variables
 		mContext = getApplicationContext();
 		sTAG_RESULT = getResources().getString(R.string.JSON_tag_result);
+		sTAG_LIST = getResources().getString(R.string.JSON_tag_list);
 		mToken =  AccessTokenManager.readAccessToken(mContext);
 		// get userinfo
 		if (!UserInfoManager.isInfoAvailable() && mToken != null 
 											   && !mToken.isExpired()){
-			String url = PiaApplication.URL_USERINFO + "/" + mToken.getUserId();
+			String url = Constants.URL_USERINFO + "/" + mToken.getUserId();
 			new GetUserInfoTask().execute(url);
 		}
 		
 		// get weibo userinfo
 		// 获取当前已保存过的 Token
-		Oauth2AccessToken weiboToken = AccessTokenManager.readWeiboAccessToken(this);
+		/*Oauth2AccessToken weiboToken = AccessTokenManager.readWeiboAccessToken(this);
 		if (!UserInfoManager.isWeiboInfoAvailable() && weiboToken != null 
 													&& weiboToken.isSessionValid()){
 			// instantiate UsersAPI to get weibo user info
 			mUsersAPI = new UsersAPI(weiboToken);
 			mUsersAPI.show(Long.parseLong(weiboToken.getUid()), mListener);
-		}		
+		}*/		
 	    // 对statusAPI实例化
 	    //StatusesAPI statusesAPI = new StatusesAPI(weiboToken);
 
@@ -185,20 +185,17 @@ public class HomeActivity extends FragmentActivity implements
 			Fragment fragment =  null;
 			switch (position){
 			case 0:
-				fragment = (Fragment) new EnquiryListFragment();
+				fragment = new EnquiryListFragment1();
 				break;
 			case 1:
-				fragment = (Fragment) new ArticleListFragment();
+				fragment = new ArticleListFragment();
 				break;
 			case 2:
-				fragment = (Fragment) new PetListFragment();
+				fragment = new ProductListFragment();
 				break;
-			default:
-				fragment = new DummySectionFragment();
-				Bundle args = new Bundle();
-				args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-				fragment.setArguments(args);
-				break;				
+			case 3:
+				fragment = (Fragment) new PetListFragment();
+				break;	
 			}
 
 			return fragment;
@@ -221,36 +218,75 @@ public class HomeActivity extends FragmentActivity implements
 			case 2:
 				return getString(R.string.title_section3).toUpperCase(l);
 			case 3:
-				return "我的宠物";
+				return "我的信息";
 			}
 			return null;
 		}
 	}
 
 	/**
-	 * A dummy fragment representing a section of the app, but that simply
-	 * displays dummy text.
+	 * 
 	 */
-	public static class DummySectionFragment extends Fragment {
-		/**
-		 * The fragment argument representing the section number for this
-		 * fragment.
-		 */
-		public static final String ARG_SECTION_NUMBER = "section_number";
-
-		public DummySectionFragment() {
+	public static class ArticleListFragment extends BaseListFragment {
+		
+		@Override
+		public void onAttach(Activity activity) {
+			super.onAttach(activity);
+			setParameters(Constants.URL_BLOGCN, sTAG_LIST);
 		}
 
 		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_home,
-					container, false);
-			TextView dummyTextView = (TextView) rootView
-					.findViewById(android.R.id.empty);
-			dummyTextView.setText(Integer.toString(getArguments().getInt(
-					ARG_SECTION_NUMBER)));
-			return rootView;
+		protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
+			setCustomAdapter(new ArticleListAdapter(
+					this.getActivity(), R.layout.article_list_header,
+					R.layout.article_list_item, resultArray));
+		}
+
+		@Override
+		protected void onItemClickAction(View v, int position, long id) {
+			// obtain the article ID clicked
+			int articleID = ((ArticleListAdapter)this.getListAdapter()).getArticleID(v);
+			
+			// store the article ID clicked
+			//Record_Usage(articleID);
+			
+			// start a new activity 
+			String articleURL_API = Constants.URL_ARTICLE_API + articleID;
+			Intent newIntent = new Intent(this.getActivity(), ArticleActivity.class);
+			newIntent.putExtra("URL_API", articleURL_API);
+			startActivity(newIntent);
+			
+		}
+	}
+	
+	public static class ProductListFragment extends BaseListFragment {
+		
+		@Override
+		public void onAttach(Activity activity) {
+			super.onAttach(activity);
+			setParameters(Constants.URL_PRODUCTLIST, sTAG_LIST);
+		}
+
+		@Override
+		protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
+			setCustomAdapter(new ProductListAdapter(mContext,
+					R.layout.list_large_item, resultArray));
+		}
+
+		@Override
+		protected void onItemClickAction(View v, int position, long id) {
+			// obtain the article ID clicked
+			//int articleID = ((ArticleListAdapter)this.getListAdapter()).getArticleID(v);
+			
+			// store the article ID clicked
+			//Record_Usage(articleID);
+			
+			// start a new activity 
+			//String articleURL_API = Constants.URL_ARTICLE_API + articleID;
+			//Intent newIntent = new Intent(this.getActivity(), ArticleActivity.class);
+			//newIntent.putExtra("URL_API", articleURL_API);
+			//startActivity(newIntent);
+			
 		}
 	}
 	
@@ -315,7 +351,7 @@ public class HomeActivity extends FragmentActivity implements
 			if (null != mClient)
 				mClient.close();
 			
-			DialogFragment df;
+			/*DialogFragment df;
 			switch (loginresult){
 			case sSUCCEED:
 				
@@ -327,7 +363,7 @@ public class HomeActivity extends FragmentActivity implements
 				df.show(getFragmentManager(), "Failed");
 				break;
 				// == do something 
-			}
+			}*/
 			
 		}
 
@@ -350,7 +386,7 @@ public class HomeActivity extends FragmentActivity implements
                 // 调用 User#parse 将JSON串解析成User对象
                 User user = User.parse(response);
                 if (user != null) {
-                	UserInfoManager.cacheWeiboUserInfo(user, getApplicationContext());
+                	UserInfoManager.cacheWeiboUserInfo(user, getApplication());
                 } else {
                     Toast.makeText(HomeActivity.this, response, Toast.LENGTH_LONG).show();
                 }
