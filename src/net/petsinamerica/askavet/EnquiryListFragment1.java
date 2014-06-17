@@ -36,6 +36,7 @@ public class EnquiryListFragment1 extends Fragment {
 	private static final String sTAG = "EnquiryListFragment";
 
 	private static Context mContext;
+	private Button mBtnAsk;
 	private Button mBtnMyQuery;
 	private Button mBtnAllQuery;
 	private TextView mTvEmpty;
@@ -99,6 +100,16 @@ public class EnquiryListFragment1 extends Fragment {
 					.replace(R.id.frag_enquirylist_listframe, mMyListFragment)
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 					.commit();
+			}
+		});
+		
+		// set up the ask button and bring up the ask activity
+		mBtnAsk = (Button) rootView.findViewById(R.id.frag_enquirylist_ask);
+		mBtnAsk.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getActivity(), EnquiryFormActivity.class);
+				startActivity(intent);
 			}
 		});
 		

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+   <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" 
+        android:layout_margin="5dp">
+        
+
+
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:hint="请您填写一个标题"
+            android:ems="10" >
+            <requestFocus />
+        </EditText>
+
+        <GridView
+            android:id="@+id/gridView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:numColumns="3"
+            android:padding="5dp" >
+        </GridView>
+        
+        <TableLayout
+            android:id="@+id/frag_userinfo_tablelayout"
+        	android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="center_horizontal">
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="选择宠物的食物类别" />
+            <TextView
+                android:id="@+id/frag_userinfo_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp" />
+        </TableRow>
+        <TableRow>
+            <View
+                android:layout_span="2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#999" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="请描述宠物的食物" />
+            <TextView
+                android:id="@+id/frag_userinfo_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp" />
+        </TableRow>
+        <TableRow>
+            <View
+                android:layout_span="2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#999" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="当前体重" />
+            <TextView
+                android:id="@+id/frag_userinfo_weibousername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:text=""
+                android:textSize="16sp" />
+        </TableRow>
+        <TableRow>
+            <View
+                android:layout_span="2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#999" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="精神是否正常"
+                 />
+            <TextView
+                android:id="@+id/frag_userinfo_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp" />
+        </TableRow>
+        <TableRow>
+            <View
+                android:layout_span="2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#999" />
+        </TableRow>
+         <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:text="食欲如何" />
+            <TextView
+                android:id="@+id/frag_userinfo_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="left"
+                android:textSize="16sp" />
+        </TableRow>
+        <TableRow>
+            <View
+                android:layout_span="2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#999" />
+        </TableRow>
+    </TableLayout>
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:minLines="5"
+            android:hint="请尽量详细地描述宠物的症状或问题。"
+            android:gravity="top|left"
+            android:ems="10"
+            android:inputType="textMultiLine" />
+		<LinearLayout 
+		    android:layout_width="fill_parent"
+		    android:layout_height="wrap_content"
+		    android:orientation="horizontal">
+		    <Button
+	            android:id="@+id/frag_enquiry_btn_uploadImg"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:layout_marginRight="30dp"
+	            android:text="上传图片" />
+		    <Button
+	            android:id="@+id/frag_enquiry_btn_post"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:layout_marginLeft="30dp"
+	            android:text="提问" />
+		</LinearLayout>
+        
+
+    </LinearLayout>
+    
+
+</ScrollView>

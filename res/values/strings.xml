@@ -11,6 +11,7 @@
     <string name="action_search">搜索</string>
     <string name="page_title_article">文章</string>
     <string name="page_title_enquiry">提问</string>
+    <string name="page_title_ask">问题</string>
     <string name="viewpager_title_section2">文章列表</string>
     <string name="viewpager_title_section1">宠物提问</string>
     <string name="viewpager_title_section3">宠物用品</string>
@@ -48,6 +49,7 @@
     <string name = "JSON_tag_time">time</string>
     <string name = "JSON_tag_date">date</string>
     <string name = "JSON_tag_content">content</string>
+    <string name = "JSON_tag_snapshot">snapshot</string>
     <string name = "JSON_tag_owner">owner</string>
     <string name = "JSON_tag_author">author</string>
     <string name = "JSON_tag_maintag">maintag</string>

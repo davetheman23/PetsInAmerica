@@ -271,7 +271,7 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
 			setCustomAdapter(new ProductListAdapter(mContext,
-					R.layout.list_large_item, resultArray));
+					R.layout.list_large_item2, resultArray));
 		}
 
 		@Override

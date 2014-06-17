@@ -27,6 +27,14 @@
             android:text="@string/label_all_enquiry"
             android:textColor="@color/Black"
             android:textAppearance="@android:style/TextAppearance.Small"/>
+
+        <Button
+            android:id="@+id/frag_enquirylist_ask"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="我要提问" />
+
     </LinearLayout>
  
 <!-- Uncomment the following element if EnquiryListFragment1 is to be used -->

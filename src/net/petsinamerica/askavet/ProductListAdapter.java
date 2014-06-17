@@ -13,6 +13,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.util.Xml;
 import android.view.LayoutInflater;
@@ -82,7 +83,7 @@ public class ProductListAdapter extends ArrayAdapter<Map<String, Object>> {
 			viewHolder = new ViewHolder();
 			
 			// inflate the layout view, and get individual views
-			rowview = inflater.inflate(R.layout.list_large_item, parent, false);
+			rowview = inflater.inflate(mResource, parent, false);
 			viewHolder.iv = (ImageView) rowview.findViewById(R.id.list_large_item_image);
 			viewHolder.tv_firstline = (TextView) rowview
 											.findViewById(R.id.list_large_item_1stline);
@@ -101,12 +102,14 @@ public class ProductListAdapter extends ArrayAdapter<Map<String, Object>> {
 		sTitle = sTitle.trim();
 		sContent = (String) listItem.get(TAG_CONTENT);
 		sContent = sContent.trim();
+		sContent = sContent.replace("<br /><br />", "<br>");
+		sContent = sContent.replace("<br />", "");
 		sImgURL = (String) listItem.get(TAG_IMAGE);
 		sItemId = (String) listItem.get(TAG_ID);
 		
 		viewHolder.itemId = Integer.parseInt(sItemId);
 		viewHolder.tv_firstline.setText(sTitle);
-		viewHolder.tv_secondline.setText(sTitle);
+		viewHolder.tv_secondline.setText(Html.fromHtml("<Html>" + sContent + "</Html>"));
 		
 		
 		// image loading procedure:

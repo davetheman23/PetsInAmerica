@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -30,6 +31,7 @@ public class EnquiryActivity extends Activity {
 	private WebView mWebView;
 	private TextView mTitleTextView;
 	private ProgressBar mProgBarView;
+	private ImageView mWeiboShare;
 	//private ImageView mImageView = null;
 	private static final String HTML_CONTENT = "Html_Content";
 	private static final String HTML_TITLE = "Html_Title";
@@ -46,12 +48,12 @@ public class EnquiryActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_article);
 		
-		mTitleTextView = (TextView) findViewById(R.id.article_title);
+		mTitleTextView = (TextView) findViewById(R.id.article_activity_title);
 		//mImageView = (ImageView) findViewById(R.id.article_image);
-		mProgBarView = (ProgressBar) findViewById(R.id.article_load_progressbar);
+		mProgBarView = (ProgressBar) findViewById(R.id.article_activity_load_progressbar);
 		mProgBarView.setVisibility(View.VISIBLE);
 		
-		mWebView = (WebView) findViewById(R.id.web_view);
+		mWebView = (WebView) findViewById(R.id.article_activity_web_view);
 		mWebView.setWebViewClient(new WebViewClient());
 		mWebView.getSettings().setBuiltInZoomControls(true);
 		mWebView.getSettings().setSupportZoom(true);

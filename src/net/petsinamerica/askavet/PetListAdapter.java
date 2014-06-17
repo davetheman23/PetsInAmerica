@@ -77,7 +77,7 @@ public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 			viewHolder = new ViewHolder();
 			
 			// inflate the layout view, and get individual views
-			rowview = inflater.inflate(R.layout.pet_list_item, parent, false);
+			rowview = inflater.inflate(mResource, parent, false);
 			viewHolder.iv = (ImageView) rowview.findViewById(R.id.pet_list_item_image);
 			viewHolder.tv_firstline = (TextView) rowview
 											.findViewById(R.id.pet_list_item_name);

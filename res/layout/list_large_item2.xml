@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:gravity="center_horizontal">
+ <!-- This layout has image on the Right side -->
+    <ImageView
+        android:id="@+id/list_large_item_image"
+        android:layout_width="fill_parent"
+        android:layout_height="250dp"
+        android:padding="10dp"
+        android:contentDescription="product_pic"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_pia_logo_large_w_text" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/list_large_item_image"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="3dp"
+        android:gravity="center_horizontal" >
+
+        <TextView
+            android:id="@+id/list_large_item_1stline"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:ellipsize="marquee"
+            android:text="Title"
+            android:textColor="@color/Black"
+            android:gravity="center_horizontal"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/list_large_item_2ndline"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:text="Description"
+            android:textColor="@color/Black"
+            android:maxLines="5"
+            android:textSize="12sp" />
+    </LinearLayout>
+    
+</RelativeLayout>
