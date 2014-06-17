@@ -1,8 +1,11 @@
 package net.petsinamerica.askavet;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +23,17 @@ import org.json.JSONTokener;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.LabeledIntent;
 import android.content.pm.ResolveInfo;
-import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.text.format.Time;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -35,29 +42,47 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Picasso.LoadedFrom;
+import com.squareup.picasso.Target;
+
 /*
  *  Need to combine this with the Article List activity,
  *  and make this just a fragment
  */
 
 public class ArticleActivity extends Activity {
+	
+	private static final int SHARE_TO_WEIBO = 1;
+	private static final int SHARE_TO_WEIXIN = 2;
+	private static final int SHARE_TO_TWITTER = 3;
+	private static final int SHARE_TO_FACEBOOK = 4;
+	
 
 	private WebView mWebView;
 	private TextView mTitleTextView;
+	private TextView mSubTitleTextView;
 	private ProgressBar mProgBarView;
 	private ImageView mWeiboShareIcon;
+	private ImageView mWeixinShareIcon;
+	private ImageView mFacebookShareIcon;
 	
 	private static final String HTML_CONTENT = "Html_Content";
 	private static final String HTML_TITLE = "Html_Title";
 	private static final String HTML_SNAPSHOT_URL = "Html_SnapShot_Url";
-	
-	private String mSnapShotUrl = null; 
+	private static final String HTML_SUB_TITLE = "Html_SubTitle";
+
+	private Uri mShareText = null;
+	private Uri mShareImage = null;
 	
 	// these tags are those for reading the JSON objects
 	private static String TAG_TITLE;
 	private static String TAG_IMAGE;
 	private static String TAG_SNAPSHOT;
 	private static String TAG_CONTENT;
+	private static String KEY_AUTHOR;
+	private static String KEY_TIME;
+	
 	
 	
 	@Override
@@ -66,26 +91,26 @@ public class ArticleActivity extends Activity {
 		setContentView(R.layout.activity_article);
 		
 		mTitleTextView = (TextView) findViewById(R.id.article_activity_title);
-		//mImageView = (ImageView) findViewById(R.id.article_image);
+		mSubTitleTextView = (TextView) findViewById(R.id.article_activity_author_date);
 		mProgBarView = (ProgressBar) findViewById(R.id.article_activity_load_progressbar);
 		mProgBarView.setVisibility(View.VISIBLE);
 		
+		// set up the weibo share icon, share with text and image
 		mWeiboShareIcon = (ImageView) findViewById(R.id.article_activity_weibo_share);
-		mWeiboShareIcon.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (mSnapShotUrl == null){
-					Toast.makeText(getApplicationContext(), 
-								   "Try again after webpage is fully loaded", 
-								   Toast.LENGTH_LONG)
-								   .show();
-				}else{
-					Uri uriText = Uri.parse("@北美宠物网");
-					Uri uriImage = Uri.parse(mSnapShotUrl);
-					shareByApp("weibo", uriText, uriImage);
-				}
-			}
-		});
+		
+		mWeiboShareIcon.setOnClickListener(new ShareIconClickListener("weibo"));
+		mWeiboShareIcon.setTag(SHARE_TO_WEIBO);
+		
+		// set up the weixin share icon, share with text and image
+		mWeixinShareIcon = (ImageView) findViewById(R.id.article_activity_weixin_share);
+		mWeixinShareIcon.setOnClickListener(new ShareIconClickListener("tencent.mm"));
+		mWeixinShareIcon.setTag(SHARE_TO_WEIXIN);
+		
+		// set up the weixin share icon, share with text and image
+		mFacebookShareIcon = (ImageView) findViewById(R.id.article_activity_facebook_share);
+		mFacebookShareIcon.setOnClickListener(new ShareIconClickListener("facebook"));
+		mFacebookShareIcon.setTag(SHARE_TO_FACEBOOK);
+		
 		
 		mWebView = (WebView) findViewById(R.id.article_activity_web_view);
 		mWebView.setWebViewClient(new WebViewClient());
@@ -96,10 +121,41 @@ public class ArticleActivity extends Activity {
 		TAG_SNAPSHOT = getResources().getString(R.string.JSON_tag_snapshot);
 		TAG_IMAGE = getResources().getString(R.string.JSON_tag_image);
 		TAG_CONTENT = getResources().getString(R.string.JSON_tag_content);		
+		KEY_AUTHOR = getResources().getString(R.string.JSON_tag_owner);
+		KEY_TIME = getResources().getString(R.string.JSON_tag_time);
 		
 		String articleURL_API = getIntent().getStringExtra("URL_API");
 		
 		new HttpGetTask().execute(articleURL_API);
+	}
+	
+	class ShareIconClickListener implements View.OnClickListener{
+		private String appName = "";
+		private Uri shareTextUri = null;
+		
+		public ShareIconClickListener(String namePart){
+			appName = namePart;
+		}
+		@Override
+		public void onClick(View v) {
+			// 
+			switch (Integer.parseInt(v.getTag().toString())){
+			case SHARE_TO_WEIBO:
+				shareTextUri = Uri.parse("@北美宠物网");
+				break;
+			default:
+				shareTextUri = Uri.parse("--来自于 北美宠物网");
+			}
+			if (mShareImage == null){
+				Toast.makeText(getApplicationContext(), 
+							   "Try again after webpage is fully loaded", 
+							   Toast.LENGTH_LONG)
+							   .show();
+			}else{
+				shareByApp(appName, shareTextUri, mShareImage);
+			}
+			
+		}
 	}
 	
 	/**
@@ -118,19 +174,37 @@ public class ArticleActivity extends Activity {
 	    share.setType("image/*");
 	    List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(share, 0);
 
+	    boolean appAvailable = true;
 	    if (!resInfo.isEmpty()){
 	        for (ResolveInfo info : resInfo) {
 	            Intent targetedShare = new Intent(android.content.Intent.ACTION_SEND);
 	            targetedShare.setType("image/*"); // put here your mime type
 	            
-	            if (info.activityInfo.name.toLowerCase().contains(nameApp)) {
+	            // get the activity that matching the name provided
+	            if (info.activityInfo.name.toLowerCase().contains(nameApp) || 
+	            	info.activityInfo.packageName.toLowerCase().contains(nameApp)) {
 	                targetedShare.putExtra(Intent.EXTRA_TEXT, textUri.toString());
 	                targetedShare.putExtra(Intent.EXTRA_STREAM, imageUri);
 	                targetedShare.setPackage(info.activityInfo.packageName);
-	                targetedShareIntents.add(targetedShare);
+	                
+	                // set the correct label name for each app/activity
+	                CharSequence label = info.loadLabel(getPackageManager());
+	                Intent extraIntents = new LabeledIntent(targetedShare, 
+	                										info.activityInfo.name, 
+	                										label, 
+	                										info.activityInfo.icon);
+	                targetedShareIntents.add(extraIntents);
+	                //targetedShareIntents.add(targetedShare);
 	            }
 	        }
-
+	        if (targetedShareIntents.size() == 0){
+	        	appAvailable = false;
+	        }
+	    }else{
+	    	appAvailable = false;
+	    }
+	    // create intent chooser and start activity as a result of user action
+	    if (appAvailable){
 	        Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), "Select app to share");
 	        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
 	        startActivity(chooserIntent);
@@ -172,6 +246,12 @@ public class ArticleActivity extends Activity {
 				String imageURL = responseObject.get(TAG_IMAGE).toString();
 				String snapshotURL = responseObject.get(TAG_SNAPSHOT).toString();
 				String sContent = responseObject.get(TAG_CONTENT).toString();
+				String author = responseObject.get(KEY_AUTHOR).toString();
+				String time = responseObject.get(KEY_TIME).toString();
+				String subTitle = "作者：" + author + " 发表于  " + " date here "; 
+				// TODO  Use shorter date format	  (new Date(Long.parseLong(time) * 1000)).toString();
+				
+				
 				String html_string = null;
 				if (imageURL != null && sContent != null){
 					html_string = "<body>" + "<img src=\"" + imageURL + "\">" + sContent + "</body>";
@@ -184,16 +264,13 @@ public class ArticleActivity extends Activity {
 				results.put(HTML_TITLE, sTitle);
 				results.put(HTML_CONTENT, html_string);
 				results.put(HTML_SNAPSHOT_URL, snapshotURL);
-				
+				results.put(HTML_SUB_TITLE, subTitle);
 				return results;
 			} catch (HttpResponseException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}			
 			return null;
@@ -203,7 +280,7 @@ public class ArticleActivity extends Activity {
 		protected void onPostExecute(Map<String, String> results) {
 			if (null != mClient)
 				mClient.close();
-			
+			// display title and subtitle (author, date)
 			String noContent = getResources().getString(R.string.no_content_available);
 			String sTitle = results.get(HTML_TITLE); 
 			if (sTitle != null){
@@ -211,24 +288,64 @@ public class ArticleActivity extends Activity {
 			}else{
 				mTitleTextView.setText(noContent);
 			}
+			String subTitle = results.get(HTML_SUB_TITLE);
+			mSubTitleTextView.setText(subTitle);
 			
+			// display html content in a webview
 			String html_string = results.get(HTML_CONTENT);
 			if (html_string == null){
 				html_string = "<body>" + noContent + "</body>";
 			}
 			mWebView.loadDataWithBaseURL(null, html_string, "text/html", HTTP.UTF_8, null);
 			
-			mSnapShotUrl = results.get(HTML_SNAPSHOT_URL);
-			
-			File tmpFile = GeneralHelpers.getOutputMediaFile(GeneralHelpers.MEDIA_TYPE_IMAGE);
-			
-			
+			/* set up a background task to load the snapshot url into the target
+			 	in case user will share it, so it can be ready after user read */
+			String snapShotUrl = results.get(HTML_SNAPSHOT_URL);
+			Picasso.with(getApplication())
+					.load(Uri.parse(snapShotUrl))
+					.into(target);
 			
 			mProgBarView.setVisibility(View.GONE);
 			
 			
 		}
 	}
+	private Target target = new Target() {
+		@Override
+		public void onPrepareLoad(Drawable placeHolderDrawable) {
+		}
+		
+		@Override
+		public void onBitmapLoaded(final Bitmap bitmap, LoadedFrom from) {
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					File tmpFile = GeneralHelpers.getOutputMediaFile(
+							GeneralHelpers.MEDIA_TYPE_IMAGE);					
+					try 
+					{
+						tmpFile.createNewFile();
+						FileOutputStream ostream = new FileOutputStream(tmpFile);
+						bitmap.compress(CompressFormat.JPEG, 75, ostream);
+						ostream.close();
+					} 
+					catch (IOException e) 
+					{
+						e.printStackTrace();
+					}
+					mShareImage = Uri.fromFile(tmpFile);
+					
+				}
+			}).start();
+
+		}
+		
+		@Override
+		public void onBitmapFailed(Drawable errorDrawable) {
+
+		}
+	};
 	
 	
 
