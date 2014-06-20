@@ -3,11 +3,13 @@ package net.petsinamerica.askavet;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import net.petsinamerica.askavet.utils.GeneralHelpers;
@@ -152,68 +154,13 @@ public class ArticleActivity extends Activity {
 							   Toast.LENGTH_LONG)
 							   .show();
 			}else{
-				shareByApp(appName, shareTextUri, mShareImage);
+				GeneralHelpers.shareByApp(appName, shareTextUri, mShareImage);
 			}
 			
 		}
 	}
 	
-	/**
-	 * Share a text and an image to a native app via implicit intents, if the name supplied
-	 * is specific enough, then it starts the app with matching name immediately; if empty 
-	 * string is provided for nameApp, all apps that can accept Intent.ACTION_SEND intent 
-	 * will be shown for user selection. 
-	 * 
-	 * @param nameApp 	part of the name of the app to be shared content with
-	 * @param textUri 	a Uri for a text, supply null if no text to be shared
-	 * @param imageUri 	a Uri for an image, supply null if no image to be shared
-	 */
-	private void shareByApp(String nameApp, Uri textUri, Uri imageUri) {
-	    List<Intent> targetedShareIntents = new ArrayList<Intent>();
-	    Intent share = new Intent(android.content.Intent.ACTION_SEND);
-	    share.setType("image/*");
-	    List<ResolveInfo> resInfo = getPackageManager().queryIntentActivities(share, 0);
-
-	    boolean appAvailable = true;
-	    if (!resInfo.isEmpty()){
-	        for (ResolveInfo info : resInfo) {
-	            Intent targetedShare = new Intent(android.content.Intent.ACTION_SEND);
-	            targetedShare.setType("image/*"); // put here your mime type
-	            
-	            // get the activity that matching the name provided
-	            if (info.activityInfo.name.toLowerCase().contains(nameApp) || 
-	            	info.activityInfo.packageName.toLowerCase().contains(nameApp)) {
-	                targetedShare.putExtra(Intent.EXTRA_TEXT, textUri.toString());
-	                targetedShare.putExtra(Intent.EXTRA_STREAM, imageUri);
-	                targetedShare.setPackage(info.activityInfo.packageName);
-	                
-	                // set the correct label name for each app/activity
-	                CharSequence label = info.loadLabel(getPackageManager());
-	                Intent extraIntents = new LabeledIntent(targetedShare, 
-	                										info.activityInfo.name, 
-	                										label, 
-	                										info.activityInfo.icon);
-	                targetedShareIntents.add(extraIntents);
-	                //targetedShareIntents.add(targetedShare);
-	            }
-	        }
-	        if (targetedShareIntents.size() == 0){
-	        	appAvailable = false;
-	        }
-	    }else{
-	    	appAvailable = false;
-	    }
-	    // create intent chooser and start activity as a result of user action
-	    if (appAvailable){
-	        Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), "Select app to share");
-	        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
-	        startActivity(chooserIntent);
-	    }else{
-	    	/* TODO handle no native app with part of its name matching nameApp, 
-	    	 * possibly needing to bring up the browswer and share there
-	    	 */
-	    }
-	}
+	
 	
 	
 	private class HttpGetTask extends AsyncTask<String, Void, Map<String, String>> {
@@ -248,9 +195,11 @@ public class ArticleActivity extends Activity {
 				String sContent = responseObject.get(TAG_CONTENT).toString();
 				String author = responseObject.get(KEY_AUTHOR).toString();
 				String time = responseObject.get(KEY_TIME).toString();
-				String subTitle = "作者：" + author + " 发表于  " + " date here "; 
-				// TODO  Use shorter date format	  (new Date(Long.parseLong(time) * 1000)).toString();
 				
+				String format = "MMM-dd, YYYY";
+				SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
+				String subTitle = "作者：" + author + " 发表于  " + 
+								sdf.format(new Date(Long.parseLong(time) * 1000)); 
 				
 				String html_string = null;
 				if (imageURL != null && sContent != null){
@@ -310,6 +259,10 @@ public class ArticleActivity extends Activity {
 			
 		}
 	}
+	
+	/*
+	 * define a private variable of the class Target to be used for Picasso
+	 */
 	private Target target = new Target() {
 		@Override
 		public void onPrepareLoad(Drawable placeHolderDrawable) {

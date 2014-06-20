@@ -40,6 +40,32 @@
     <string name="label_email">邮箱</string>
     <string name="label_weibo_name">微博名</string>
     
+    <!-- Enquiry form page -->
+    <string name="prompt_please_select">请选择</string>
+    <string-array name="pet_diet_selection">
+        <item>商业粮 commercial</item>
+        <item>自制粮 home-made</item>
+    </string-array>
+    <string-array name="pet_mentation">
+        <item>安静 (QAR)</item>
+        <item>正常 (BAR)</item>
+        <item>低迷 Depressed</item>
+        <item>迟钝 Obtunded</item>
+        <item>昏迷 Comatose</item>
+    </string-array>
+    <string-array name="pet_appetite">
+        <item>正常 Normal</item>
+        <item>比原来差 Decreased appetite</item>
+        <item>食欲差 Poor appetite</item>
+        <item>完全不进食 No appetite</item>
+    </string-array>
+    <string-array name="pet_bowel_movement">
+        <item>正常 Normal</item>
+        <item>便秘 Constipated</item>
+        <item>干燥 Dry</item>
+        <item>拉稀 Diarrhea</item>
+    </string-array>
+    
     <!--resource for reading Json objects --> 
     <string name = "JSON_tag_title">title</string>
     <string name = "JSON_tag_image">img</string>

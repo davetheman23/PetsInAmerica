@@ -16,14 +16,14 @@ import com.sina.weibo.sdk.openapi.models.User;
  */
 public class UserInfoManager {
 	
-	public static interface Listener{
-		public void onWeiboInfoStateChange();
-		public void onPiaInfoStateChange();
-	}
+	
 	
 	private static boolean infoAvailable = false;
 	private static boolean infoWeiboAvailable = false;
 	
+	/*
+	 * pia specific data available from pia server
+	 */
 	public static String piaToken = null;
 	public static String userid = null;
 	public static String userName = null;
@@ -34,10 +34,26 @@ public class UserInfoManager {
 	public static String language = null;
 	public static String city = null;
 	
+	/*
+	 * weibo data available from pia server
+	 */
 	public static String weiboToken = null;		// the weibo token saved in the server
 	public static String weiboUsername = null;	// the weibo username saved in the server
+	
+	/*
+	 * weibo data available from weibo server
+	 */
 	public static User weiboUser = null;
 	
+	
+	/*
+	 * listener interface, this will help trigger events on its subscriber
+	 * currently, using static modifer to allow only one subscriber 
+	 */
+	public static interface Listener{
+		public void onWeiboInfoStateChange();
+		public void onPiaInfoStateChange();
+	}
 	private static Listener mWeiboInfoListener = null;
 	private static Listener mPiaInfoListener = null;
 	public static void registerWeiboInfoListener (Listener listener){

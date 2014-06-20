@@ -1,212 +1,279 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:widget="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical" 
         android:layout_margin="5dp">
         
 
 
         <EditText
-            android:id="@+id/editText1"
+            android:id="@+id/activity_enquiry_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:hint="请您填写一个标题"
+            android:text = "测试"
             android:ems="10" >
             <requestFocus />
         </EditText>
-
+        
+        
+        <com.meetme.android.horizontallistview.HorizontalListView
+            android:id="@+id/activity_enquiry_petlist_horizontal_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:minHeight="150dp"/>
+<!-- 
         <GridView
-            android:id="@+id/gridView1"
+            android:id="@+id/activity_enquiry_petlist_grid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:numColumns="3"
+            android:numColumns="2"
             android:padding="5dp" >
         </GridView>
-        
-        <TableLayout
-            android:id="@+id/frag_userinfo_tablelayout"
-        	android:layout_width="match_parent"
+      -->
+         
+      <TableLayout
+            android:id="@+id/activity_enquiry_tablelayout"
+        	android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:gravity="center_horizontal">
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
+            <TableRow
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="left"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:text="选择宠物的食物类别" />
-            <TextView
-                android:id="@+id/frag_userinfo_username"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="left"
-                android:textSize="16sp" />
-        </TableRow>
-        <TableRow>
-            <View
-                android:layout_span="2"
-                android:layout_width="wrap_content"
-                android:layout_height="0.5dp"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="#999" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="left"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:text="请描述宠物的食物" />
-            <TextView
-                android:id="@+id/frag_userinfo_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="left"
-                android:textSize="16sp" />
-        </TableRow>
-        <TableRow>
-            <View
-                android:layout_span="2"
-                android:layout_width="wrap_content"
-                android:layout_height="0.5dp"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="#999" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="left"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:text="当前体重" />
-            <TextView
-                android:id="@+id/frag_userinfo_weibousername"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="left"
-                android:text=""
-                android:textSize="16sp" />
-        </TableRow>
-        <TableRow>
-            <View
-                android:layout_span="2"
-                android:layout_width="wrap_content"
-                android:layout_height="0.5dp"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="#999" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="left"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:text="精神是否正常"
-                 />
-            <TextView
-                android:id="@+id/frag_userinfo_city"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="left"
-                android:textSize="16sp" />
-        </TableRow>
-        <TableRow>
-            <View
-                android:layout_span="2"
-                android:layout_width="wrap_content"
-                android:layout_height="0.5dp"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="#999" />
-        </TableRow>
-         <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="left"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:text="食欲如何" />
-            <TextView
-                android:id="@+id/frag_userinfo_city"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="left"
-                android:textSize="16sp" />
-        </TableRow>
-        <TableRow>
-            <View
-                android:layout_span="2"
-                android:layout_width="wrap_content"
-                android:layout_height="0.5dp"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="#999" />
-        </TableRow>
-    </TableLayout>
+	            android:layout_width="fill_parent"
+	            android:padding="1dp">
+	            <View
+	                android:layout_span="2"
+	                android:layout_width="fill_parent"
+	                android:layout_height="0.5dp"
+	                android:layout_weight="1"
+	                android:layout_marginTop="5dp"
+	                android:layout_marginBottom="10dp"
+	                android:background="#999" />
+	        </TableRow>
+	        <TableRow
+	            android:layout_height="wrap_content"
+	            android:layout_width="fill_parent"
+	            android:padding="1dp">
+	            <TextView
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:layout_marginLeft="10dp"
+	                android:layout_gravity="left"
+	                android:textSize="14sp"
+	                android:textStyle="bold"
+	                android:text="宠物的食物类别" />
+
+	            <Spinner
+	                android:id="@+id/activity_enquiry_pet_diet_sel"
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:entries="@array/pet_diet_selection"
+	                android:gravity="right" />
+
+	        </TableRow>
+
+	        <TableRow
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:padding="1dp" >
+
+	            <TextView
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:layout_marginLeft="10dp"
+	                android:layout_gravity="left"
+	                android:textSize="14sp"
+	                android:textStyle="bold"
+	                android:text="宠物的食物" />
+	            <EditText 
+	                android:id="@+id/activity_enquiry_pet_diet_description"
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:gravity="right"
+	                android:textSize="14sp"
+	                android:ellipsize="end"
+	                android:text="品牌"
+	                android:hint="品牌，味道，原料等"/>
+	        </TableRow>
+	        <TableRow
+	            android:layout_height="wrap_content"
+	            android:layout_width="fill_parent"
+	            android:padding="1dp">
+	            <TextView
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:layout_marginLeft="10dp"
+	                android:layout_gravity="left"
+	                android:textSize="14sp"
+	                android:textStyle="bold"
+	                android:text="当前体重" />
+	            <EditText 
+	                android:id="@+id/activity_enquiry_body_weight"
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:gravity="right"
+	                android:textSize="14sp"
+	                android:text="10"
+	                android:hint="公斤"/>
+	            
+	        </TableRow>
+	        <TableRow
+	            android:layout_height="wrap_content"
+	            android:layout_width="fill_parent"
+	            android:padding="1dp">
+	            <TextView
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:layout_marginLeft="10dp"
+	                android:layout_gravity="left"
+	                android:textSize="14sp"
+	                android:textStyle="bold"
+	                android:text="精神是否正常"
+	                 />
+	            <Spinner
+	                android:id="@+id/activity_enquiry_mentation"
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:gravity="right"
+	                android:entries="@array/pet_mentation"/>
+	        </TableRow>
+	         <TableRow
+	             android:layout_height="wrap_content"
+	            android:layout_width="fill_parent"
+	            android:padding="1dp">
+	            <TextView
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:layout_marginLeft="10dp"
+	                android:layout_gravity="left"
+	                android:textSize="14sp"
+	                android:textStyle="bold"
+	                android:text="食欲如何" />
+	            <Spinner
+	                android:id="@+id/activity_enquiry_appetite"
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:gravity="right"
+	                android:entries="@array/pet_appetite"/>
+	        </TableRow>
+	        <TableRow
+	            android:layout_height="wrap_content"
+	            android:layout_width="fill_parent"
+	            android:padding="1dp">
+	            <TextView
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:layout_marginLeft="10dp"
+	                android:layout_gravity="left"
+	                android:textSize="14sp"
+	                android:textStyle="bold"
+	                android:text="大便是否正常" />
+	            <Spinner
+	                android:id="@+id/activity_enquiry_bowel_movement"
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:gravity="right"
+	                android:entries="@array/pet_bowel_movement"/>
+	        </TableRow>
+
+    	</TableLayout>
 
         <EditText
-            android:id="@+id/editText2"
+            android:id="@+id/activity_enquiry_problem_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_margin="5dp"
             android:minLines="5"
             android:hint="请尽量详细地描述宠物的症状或问题。"
             android:gravity="top|left"
             android:ems="10"
-            android:inputType="textMultiLine" />
-		<LinearLayout 
-		    android:layout_width="fill_parent"
+            android:inputType="textMultiLine"
+            android:text="看来一切正常，还有更多的测试，都不需要回复！"
+            android:background="@drawable/textbox_outline" />
+       
+        <LinearLayout 
+            android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
+		    android:gravity="top"
 		    android:orientation="horizontal">
-		    <Button
-	            android:id="@+id/frag_enquiry_btn_uploadImg"
-	            android:layout_width="0dp"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
-	            android:layout_marginRight="30dp"
-	            android:text="上传图片" />
-		    <Button
-	            android:id="@+id/frag_enquiry_btn_post"
-	            android:layout_width="0dp"
-	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
-	            android:layout_marginLeft="30dp"
-	            android:text="提问" />
+			<LinearLayout 
+			    android:layout_width="0dp"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal"
+			    android:gravity="left"
+			    android:layout_weight="2">
+		        <Button
+		            android:id="@+id/activity_enquiry_btn_insertImage"
+		            android:layout_width="30dp"
+		            android:layout_height="30dp"
+		            android:layout_marginLeft="10dp"
+		            android:layout_marginBottom="10dp"
+		            android:background="@drawable/mail_attachment"
+		            android:text="" />
+		        <TextView
+		            android:id="@+id/activity_enquiry_tv_imagepath"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginLeft="10dp"
+	                android:layout_gravity="left|center_vertical"
+	                android:textSize="14sp"
+	                android:textStyle="bold"
+	                android:text="上传图片" />
+			</LinearLayout>
+			<LinearLayout 
+			    android:layout_width="0dp"
+			    android:gravity="right"
+			    android:layout_weight="1"
+			    android:layout_height="wrap_content"
+			    android:orientation="horizontal">
+				<CheckBox
+				    android:id="@+id/activity_enquiry_show_public"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:textSize="14sp"
+				    android:checked="false"
+				    android:text="是否公开？" />
+			</LinearLayout>
 		</LinearLayout>
-        
+		<View 
+    	    android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="4dip"
+            android:layout_marginRight="4dip"
+            android:background="?android:attr/dividerHorizontal"/>
+        <Button
+	            android:id="@+id/activity_enquiry_btn_post"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center_horizontal"
+	            android:background="?android:attr/selectableItemBackground"
+	            android:text="提交问题" />
 
     </LinearLayout>
     

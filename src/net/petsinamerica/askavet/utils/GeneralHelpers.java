@@ -4,17 +4,21 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import android.content.Intent;
+import android.content.pm.LabeledIntent;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v4.util.LruCache;
 import android.util.Log;
-import android.widget.ImageView;
 
 public class GeneralHelpers {
-	
-	private static final String TEMP_SUBDIR = "temp";
 	
 	/*
 	 * define the media type int, for 
@@ -33,14 +37,14 @@ public class GeneralHelpers {
 		}
 
 	    File mediaStorageDir = new File(storageDir + File.separator +
-        		TEMP_SUBDIR);
+        		Constants.TEMP_SUBDIR);
 	    // This location works best if you want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
 
 	    // Create the storage directory if it does not exist
 	    if (! mediaStorageDir.exists()){
 	        if (! mediaStorageDir.mkdirs()){
-	            Log.d(App.PIA_ROOT_DIR, "failed to create directory");
+	            Log.d(Constants.PIA_ROOT_DIR, "failed to create directory");
 	            return null;
 	        }
 	    }
@@ -59,6 +63,63 @@ public class GeneralHelpers {
 	    }
 
 	    return mediaFile;
+	}
+	
+	/**
+	 * Share a text and an image to a native app via implicit intents, if the name supplied
+	 * is specific enough, then it starts the app with matching name immediately; if empty 
+	 * string is provided for nameApp, all apps that can accept Intent.ACTION_SEND intent 
+	 * will be shown for user selection. 
+	 * 
+	 * @param nameApp 	part of the name of the app to be shared content with
+	 * @param textUri 	a Uri for a text, supply null if no text to be shared
+	 * @param imageUri 	a Uri for an image, supply null if no image to be shared
+	 */
+	public static void shareByApp(String nameApp, Uri textUri, Uri imageUri) {
+	    List<Intent> targetedShareIntents = new ArrayList<Intent>();
+	    Intent share = new Intent(android.content.Intent.ACTION_SEND);
+	    share.setType("image/*");
+	    List<ResolveInfo> resInfo = App.appContext.getPackageManager().queryIntentActivities(share, 0);
+
+	    boolean appAvailable = true;
+	    if (!resInfo.isEmpty()){
+	        for (ResolveInfo info : resInfo) {
+	            Intent targetedShare = new Intent(android.content.Intent.ACTION_SEND);
+	            targetedShare.setType("image/*"); // put here your mime type
+	            
+	            // get the activity that matching the name provided
+	            if (info.activityInfo.name.toLowerCase().contains(nameApp) || 
+	            	info.activityInfo.packageName.toLowerCase().contains(nameApp)) {
+	                targetedShare.putExtra(Intent.EXTRA_TEXT, textUri.toString());
+	                targetedShare.putExtra(Intent.EXTRA_STREAM, imageUri);
+	                targetedShare.setPackage(info.activityInfo.packageName);
+	                
+	                // set the correct label name for each app/activity
+	                CharSequence label = info.loadLabel(App.appContext.getPackageManager());
+	                Intent extraIntents = new LabeledIntent(targetedShare, 
+	                										info.activityInfo.name, 
+	                										label, 
+	                										info.activityInfo.icon);
+	                targetedShareIntents.add(extraIntents);
+	                //targetedShareIntents.add(targetedShare);
+	            }
+	        }
+	        if (targetedShareIntents.size() == 0){
+	        	appAvailable = false;
+	        }
+	    }else{
+	    	appAvailable = false;
+	    }
+	    // create intent chooser and start activity as a result of user action
+	    if (appAvailable){
+	        Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), "Select app to share");
+	        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
+	        App.appContext.startActivity(chooserIntent);
+	    }else{
+	    	/* TODO handle no native app with part of its name matching nameApp, 
+	    	 * possibly needing to bring up the browswer and share there
+	    	 */
+	    }
 	}
 
 	/*

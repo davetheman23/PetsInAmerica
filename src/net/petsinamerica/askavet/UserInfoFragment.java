@@ -127,7 +127,7 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 		protected void onHttpDoneSetAdapter(
 				List<Map<String, Object>> resultArray) {
 			setCustomAdapter(new PetListAdapter(mContext, 
-						R.layout.pet_list_item, resultArray));
+						R.layout.pet_list_item_with_selection, resultArray));
 		}
 
 		@Override

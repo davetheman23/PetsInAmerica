@@ -78,6 +78,12 @@ public abstract class BaseListFragment extends ListFragment{
 	 */
 	protected abstract void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray);
 	
+	/**
+	 *	 
+	 * @param v
+	 * @param position
+	 * @param id
+	 */
 	protected abstract void onItemClickAction(View v, int position, long id);
 	
 	public void setPage(int page){
@@ -180,6 +186,7 @@ public abstract class BaseListFragment extends ListFragment{
 			return;
 		}
 		onItemClickAction(v, position, id);
+		
 	}
 	
 	/**

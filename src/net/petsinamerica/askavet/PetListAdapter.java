@@ -1,6 +1,8 @@
 package net.petsinamerica.askavet;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,6 +35,10 @@ import com.squareup.picasso.Picasso;
 public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 	private final Context mContext;
 	private final int mResource;
+	private ViewGroup mParent;
+	
+	private boolean[] selectStates;
+	private int selectItemId = -1;
 	
 	// these tags are those for reading the JSON objects
 	private static String KEY_AVATAR;
@@ -40,7 +47,7 @@ public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 	
 	private class ViewHolder{
 		ImageView iv;
-		TextView tv_firstline;
+		CheckBox checkBox;
 		int itemId;
 	}
 	
@@ -53,6 +60,8 @@ public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 		
 		mContext = context;
 		mResource = resource;
+		selectStates = new boolean[objects.size()];
+		Arrays.fill(selectStates, false);
 		
 		KEY_AVATAR = mContext.getResources().getString(R.string.JSON_tag_petavatar);
 		KEY_ID = mContext.getResources().getString(R.string.JSON_tag_id);
@@ -66,6 +75,10 @@ public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 	 */
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		
+		if (mParent == null){
+			mParent = parent;
+		}
 
 		// reuse views - for faster loading, avoid inflation everytime
 		ViewHolder viewHolder = null;
@@ -78,9 +91,10 @@ public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 			
 			// inflate the layout view, and get individual views
 			rowview = inflater.inflate(mResource, parent, false);
-			viewHolder.iv = (ImageView) rowview.findViewById(R.id.pet_list_item_image);
-			viewHolder.tv_firstline = (TextView) rowview
-											.findViewById(R.id.pet_list_item_name);
+			viewHolder.iv = (ImageView) rowview.findViewById(R.id.pet_list_item_with_sel_image);
+			viewHolder.checkBox = (CheckBox) rowview.findViewById(
+													R.id.pet_list_item_with_sel_checkbox);
+			
 			// set tag for future reuse of the view
 			rowview.setTag(viewHolder);
 		}else{
@@ -96,7 +110,7 @@ public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 		sItemId = (String) listItem.get(KEY_ID);
 		
 		viewHolder.itemId = Integer.parseInt(sItemId);
-		viewHolder.tv_firstline.setText(sName);
+		viewHolder.checkBox.setChecked(selectStates[position]);
 		
 		if (sImgURL!= null && !sImgURL.startsWith("http")){
 			sImgURL = "http://petsinamerica.net/new/../upload/" + sImgURL;
@@ -130,4 +144,65 @@ public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 		}
 		return -1;	
 	}
+	
+	/**
+	 * check if the view supplied have been checked
+	 */
+	public boolean getItemCheckState(View v){
+		
+		ViewHolder vh = (ViewHolder) v.getTag();
+		if (vh != null){
+			return vh.checkBox.isChecked();
+		}
+		return false;
+	}
+	/**
+	 * set the check state of the view supplied, check box behavior 
+	 * @param v the view of an item in the list 
+	 * @param position the position of the view in the list
+	 * @param state the check state to be set to this view
+	 * @see {@link PetListAdapter#setItemSelected(View, int)}
+	 */
+	public void setItemCheckState(View v, int position, boolean state){
+		ViewHolder vh = (ViewHolder) v.getTag();
+		if (vh != null){
+			vh.checkBox.setChecked(state);
+			selectStates[position] = state;
+		}
+	}
+	
+	/**
+	 * set the item as selected, radio box behavior
+	 * @param v the view of an item in the list 
+	 * @param position the position of the view in the list
+	 * @see {@link PetListAdapter#setItemCheckState(View, int, boolean)}
+	 */
+	public void setItemSelected(View v, int position){
+		ViewHolder vh = (ViewHolder) v.getTag();
+		if (vh != null){
+			// flush out all the check marks for all items
+			for (int i = 0; i < selectStates.length; i++){
+				selectStates[i] = false;
+				View child = mParent.getChildAt(i);
+				if (child != null){
+					setItemCheckState(mParent.getChildAt(i), i, false);
+				}
+			}
+			// set the item that was selected a check 
+			selectStates[position] = true;
+			setItemCheckState(v, position, true);
+			selectItemId = vh.itemId;
+		}
+	}
+	
+	/**
+	 * return the item id (the downloaded id) for the item selected, need
+	 * another function if multiple selected items need to be returned 
+	 * @return the item id is the pet id in this adapter, return -1 if no 
+	 *         item has been selected
+	 */
+	public int getSelectedItemId(){
+		return selectItemId;
+	}
+
 }
