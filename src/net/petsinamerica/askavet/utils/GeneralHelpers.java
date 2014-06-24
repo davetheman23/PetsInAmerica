@@ -74,8 +74,9 @@ public class GeneralHelpers {
 	 * @param nameApp 	part of the name of the app to be shared content with
 	 * @param textUri 	a Uri for a text, supply null if no text to be shared
 	 * @param imageUri 	a Uri for an image, supply null if no image to be shared
+	 * @return gives back an intent that the activity can directly use to startActivity()
 	 */
-	public static void shareByApp(String nameApp, Uri textUri, Uri imageUri) {
+	public static Intent shareByApp(String nameApp, Uri textUri, Uri imageUri) {
 	    List<Intent> targetedShareIntents = new ArrayList<Intent>();
 	    Intent share = new Intent(android.content.Intent.ACTION_SEND);
 	    share.setType("image/*");
@@ -114,12 +115,13 @@ public class GeneralHelpers {
 	    if (appAvailable){
 	        Intent chooserIntent = Intent.createChooser(targetedShareIntents.remove(0), "Select app to share");
 	        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, targetedShareIntents.toArray(new Parcelable[]{}));
-	        App.appContext.startActivity(chooserIntent);
+	        return chooserIntent;
 	    }else{
 	    	/* TODO handle no native app with part of its name matching nameApp, 
 	    	 * possibly needing to bring up the browswer and share there
 	    	 */
 	    }
+	    return null;
 	}
 
 	/*

@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -25,8 +22,6 @@ import org.json.JSONTokener;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.LabeledIntent;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.Drawable;
@@ -34,8 +29,6 @@ import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.text.format.Time;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -154,7 +147,8 @@ public class ArticleActivity extends Activity {
 							   Toast.LENGTH_LONG)
 							   .show();
 			}else{
-				GeneralHelpers.shareByApp(appName, shareTextUri, mShareImage);
+				Intent intent = GeneralHelpers.shareByApp(appName, shareTextUri, mShareImage);
+				startActivity(intent);
 			}
 			
 		}
@@ -196,10 +190,10 @@ public class ArticleActivity extends Activity {
 				String author = responseObject.get(KEY_AUTHOR).toString();
 				String time = responseObject.get(KEY_TIME).toString();
 				
-				String format = "MMM-dd, YYYY";
+				String format = "MMM-dd, yyyy";
 				SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
 				String subTitle = "作者：" + author + " 发表于  " + 
-								sdf.format(new Date(Long.parseLong(time) * 1000)); 
+								sdf.format(new Date(Long.parseLong(time))); 
 				
 				String html_string = null;
 				if (imageURL != null && sContent != null){
