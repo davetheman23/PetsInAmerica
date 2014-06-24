@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
+    <string name="app_name">北美宠物网</string>
+    
     <string name="no_content_available">没有内容显示</string>
     <string name="article_pic">article_pic</string>
     <string name="loading">加载中</string>
-
-    <!-- Home page -->
-    <string name="app_name">北美宠物网</string>
+    
+    <!-- menus -->
+    <string name="action_logout">登出</string>
     <string name="action_settings">设置</string>
     <string name="action_search">搜索</string>
+    <string name="action_like">赞</string>
+    <string name="action_share">分享</string>
+
+    <!-- Home page -->
     <string name="page_title_article">文章</string>
     <string name="page_title_enquiry">提问</string>
     <string name="page_title_ask">问题</string>
@@ -66,6 +72,7 @@
         <item>拉稀 Diarrhea</item>
     </string-array>
     
+    
     <!--resource for reading Json objects --> 
     <string name = "JSON_tag_title">title</string>
     <string name = "JSON_tag_image">img</string>
@@ -90,6 +97,10 @@
     <string name = "JSON_tag_petname">name</string>
     <string name = "JSON_tag_password">password</string>
     <string name = "JSON_tag_login">login</string>
+    <string name = "JSON_tag_error">error</string>
+    <string name = "JSON_tag_errorMessage">errorMsg</string>
+    <string name = "JSON_tag_admin">admin</string>
+    
     
    
 </resources>

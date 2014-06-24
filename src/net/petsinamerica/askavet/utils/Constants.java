@@ -13,25 +13,31 @@ public interface Constants {
 	 */
 	public static final String PREFERENCES_NAME = "net_pets_in_america_askavet";
 	
-	public static final String URL_BASE = "http://petsinamerica.net/new/api";
+	public static final String URL_BASE = "http://petsinamerica.net/new/";
 	
-	public static final String URL_BLOGCN = URL_BASE + "/" + "blogCN/";
+	public static final String URL_API = URL_BASE + "api/";
 	
-	public static final String URL_ARTICLE_API = URL_BASE + "/" + "article/";
+	public static final String URL_BLOGCN = URL_API + "blogCN/";
 	
-	public static final String URL_USERINFO = URL_BASE + "/" + "userinfo/";
+	public static final String URL_ARTICLE_API = URL_API + "article/";
 	
-	public static final String URL_LOGIN = URL_BASE + "/" + "login/";
+	public static final String URL_USERINFO = URL_API  + "userinfo/";
 	
-	public static final String URL_ENQUIRY = URL_BASE + "/" + "publicQueryList/";
+	public static final String URL_LOGIN = URL_API  + "login/";
 	
-	public static final String URL_MYENQUIRY = URL_BASE + "/" + "userQueryList/";
+	public static final String URL_ENQUIRY = URL_API  + "publicQueryList/";
 	
-	public static final String URL_NEWENQUIRY = URL_BASE + "/" + "newQuery/";
+	public static final String URL_MYENQUIRY = URL_API  + "userQueryList/";
 	
-	public static final String URL_PRODUCTLIST = URL_BASE + "/" + "productlist/";
+	public static final String URL_NEWENQUIRY = URL_API  + "newQuery/";
 	
-	public static final String URL_USERPETS = URL_BASE + "/" + "userpets/";
+	public static final String URL_PRODUCTLIST = URL_API  + "productlist/";
+	
+	public static final String URL_USERPETS = URL_API  + "userpets/";
+	
+	public static final String URL_ARTICLE_LIKES = URL_API  + "zan/";
+	
+	public static final String URL_UPLOAD_IMAGE = URL_API  + "uploadImg/";
 	
     public static final String TAG_USERNAME = "username";
     

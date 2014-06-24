@@ -9,11 +9,15 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import net.petsinamerica.askavet.utils.AccessToken;
+import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.App;
+import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
@@ -29,6 +33,8 @@ import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -53,7 +59,28 @@ public class ArticleActivity extends Activity {
 	private static final int SHARE_TO_TWITTER = 3;
 	private static final int SHARE_TO_FACEBOOK = 4;
 	
+	private static final String HTML_CONTENT = "Html_Content";
+	private static final String HTML_TITLE = "Html_Title";
+	private static final String HTML_SNAPSHOT_URL = "Html_SnapShot_Url";
+	private static final String HTML_SUB_TITLE = "Html_SubTitle";
 
+	
+	// these tags are those for reading the JSON objects
+	private static String KEY_TITLE;
+	private static String KEY_IMAGE;
+	private static String KEY_SNAPSHOT;
+	private static String KEY_CONTENT;
+	private static String KEY_AUTHOR;
+	private static String KEY_TIME;
+	private static String KEY_ARTICLE_LIKES = "like_num";
+	private static String KEY_ERROR;
+	private static String KEY_RESULT;
+	
+	private int articleId; 
+	private Uri mShareText = null;
+	private Uri mShareImage = null;
+	private boolean isClicked = false; 	/* true if article like is clicked */
+	
 	private WebView mWebView;
 	private TextView mTitleTextView;
 	private TextView mSubTitleTextView;
@@ -61,30 +88,27 @@ public class ArticleActivity extends Activity {
 	private ImageView mWeiboShareIcon;
 	private ImageView mWeixinShareIcon;
 	private ImageView mFacebookShareIcon;
+	private Menu mMenu;
 	
-	private static final String HTML_CONTENT = "Html_Content";
-	private static final String HTML_TITLE = "Html_Title";
-	private static final String HTML_SNAPSHOT_URL = "Html_SnapShot_Url";
-	private static final String HTML_SUB_TITLE = "Html_SubTitle";
 
-	private Uri mShareText = null;
-	private Uri mShareImage = null;
-	
-	// these tags are those for reading the JSON objects
-	private static String TAG_TITLE;
-	private static String TAG_IMAGE;
-	private static String TAG_SNAPSHOT;
-	private static String TAG_CONTENT;
-	private static String KEY_AUTHOR;
-	private static String KEY_TIME;
-	
-	
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// get the json keys from the string resource
+		KEY_TITLE = getResources().getString(R.string.JSON_tag_title);
+		KEY_SNAPSHOT = getResources().getString(R.string.JSON_tag_snapshot);
+		KEY_IMAGE = getResources().getString(R.string.JSON_tag_image);
+		KEY_CONTENT = getResources().getString(R.string.JSON_tag_content);		
+		KEY_AUTHOR = getResources().getString(R.string.JSON_tag_owner);
+		KEY_TIME = getResources().getString(R.string.JSON_tag_time);
+		KEY_ERROR = getResources().getString(R.string.JSON_tag_error);
+		KEY_RESULT = getResources().getString(R.string.JSON_tag_result);
+		
+		// inflate the layouts
 		setContentView(R.layout.activity_article);
 		
+		// get references to each layout views
 		mTitleTextView = (TextView) findViewById(R.id.article_activity_title);
 		mSubTitleTextView = (TextView) findViewById(R.id.article_activity_author_date);
 		mProgBarView = (ProgressBar) findViewById(R.id.article_activity_load_progressbar);
@@ -111,17 +135,47 @@ public class ArticleActivity extends Activity {
 		mWebView.setWebViewClient(new WebViewClient());
 		mWebView.getSettings().setBuiltInZoomControls(true);
 		mWebView.getSettings().setSupportZoom(true);
+
+		// get article id from the extra that was set when the activity was started
+		articleId = getIntent().getIntExtra("ArticleId", 0);
 		
-		TAG_TITLE = getResources().getString(R.string.JSON_tag_title);
-		TAG_SNAPSHOT = getResources().getString(R.string.JSON_tag_snapshot);
-		TAG_IMAGE = getResources().getString(R.string.JSON_tag_image);
-		TAG_CONTENT = getResources().getString(R.string.JSON_tag_content);		
-		KEY_AUTHOR = getResources().getString(R.string.JSON_tag_owner);
-		KEY_TIME = getResources().getString(R.string.JSON_tag_time);
+		if (articleId != 0){
+			String articleURL_API = Constants.URL_ARTICLE_API + Integer.toString(articleId);
+			new GetArticleInBackground().execute(articleURL_API);
+		}else{
+			//TODO notify the user
+		}
+	}
+	
 		
-		String articleURL_API = getIntent().getStringExtra("URL_API");
-		
-		new HttpGetTask().execute(articleURL_API);
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.article_activity_menu, menu);
+		mMenu = menu;
+		return true;
+	}
+	
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()){
+			case R.id.action_like:
+				if (!isClicked){
+					new SendLikeInBackground().execute(Constants.URL_ARTICLE_LIKES 
+													+ Integer.toString(articleId));
+					isClicked = true;
+				}else{
+					showMessage("你已经点过赞了，谢谢你的支持");
+				}
+				return true;
+			//case R.id.action_share:
+				//return true;
+			case R.id.action_logout:
+				
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);			
+		}		
 	}
 	
 	class ShareIconClickListener implements View.OnClickListener{
@@ -154,41 +208,104 @@ public class ArticleActivity extends Activity {
 		}
 	}
 	
+	private class SendLikeInBackground extends AsyncTask<String, Void, Integer>{
+		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
+
+		@Override
+		protected Integer doInBackground(String... params) {
+			String url = params[0];
+			HttpPost post = new HttpPost(url);
+			
+			post = AccessTokenManager.addAccessTokenPost(post, getApplicationContext());
+			JSONObject responseObject = null;
+			try {
+				HttpResponse response = mClient.execute(post);
+				String JSONResponse = new BasicResponseHandler().handleResponse(response);
+				
+				// -- Parse Json object, 
+				responseObject = (JSONObject) new JSONTokener(
+						JSONResponse).nextValue();
+				int error = responseObject.getInt(KEY_ERROR);
+				switch (error){
+					case 0:
+						return responseObject.getInt(KEY_RESULT);
+					default:
+						return -error;
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return 0;
+		}
+
+		
+		@Override
+		protected void onPostExecute(Integer result) {
+			super.onPostExecute(result);
+			if (mClient != null){
+				mClient.close();
+			}
+			/*
+			 * if results is negative, then its absolute value is the error code
+			 * else, it is the number of likes for the article
+			 */
+			if (result >= 0){
+				if (mMenu != null){
+					MenuItem item = mMenu.findItem(R.id.action_like);
+					String likeString = getResources().getString(R.string.action_like);
+					item.setTitle(likeString + " " + result);
+				}
+			}else{
+				result = -result;
+				if (result == 13){
+					showMessage("你已经点过赞了，谢谢你的支持");
+				}else{
+					showMessage("unknown error, possibly network connection failure");
+				}
+			}
+		}
+	}
 	
-	
-	
-	private class HttpGetTask extends AsyncTask<String, Void, Map<String, String>> {
+	private void showMessage(String message){
+		Toast.makeText(getApplication(), 
+				   message, 
+				   Toast.LENGTH_LONG)
+				   .show();
+	}
+
+	private class GetArticleInBackground extends AsyncTask<String, Void, Map<String, String>> {
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
-		
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			
 			mProgBarView.setVisibility(View.VISIBLE);
 		}
 
 		@Override
 		protected Map<String, String> doInBackground(String... params) {
 			String url = params[0];
-			HttpGet request = new HttpGet(url);
+			HttpPost post = new HttpPost(url);
 			
 			HttpResponse response = null;		
 			String JSONResponse = null;
 			try {
-				response = mClient.execute(request);
+				response = mClient.execute(post);
 				JSONResponse = new BasicResponseHandler().handleResponse(response);
 				
 				// -- Parse Json object, 
 				JSONObject responseObject = (JSONObject) new JSONTokener(
 						JSONResponse).nextValue();
-				String sTitle = responseObject.get(TAG_TITLE).toString();
-				String imageURL = responseObject.get(TAG_IMAGE).toString();
-				String snapshotURL = responseObject.get(TAG_SNAPSHOT).toString();
-				String sContent = responseObject.get(TAG_CONTENT).toString();
+				String sTitle = responseObject.get(KEY_TITLE).toString();
+				String imageURL = responseObject.get(KEY_IMAGE).toString();
+				String snapshotURL = responseObject.get(KEY_SNAPSHOT).toString();
+				String sContent = responseObject.get(KEY_CONTENT).toString();
 				String author = responseObject.get(KEY_AUTHOR).toString();
 				String time = responseObject.get(KEY_TIME).toString();
+				String like_nums = responseObject.get(KEY_ARTICLE_LIKES).toString();
 				
 				String format = "MMM-dd, yyyy";
 				SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
@@ -208,6 +325,7 @@ public class ArticleActivity extends Activity {
 				results.put(HTML_CONTENT, html_string);
 				results.put(HTML_SNAPSHOT_URL, snapshotURL);
 				results.put(HTML_SUB_TITLE, subTitle);
+				results.put(KEY_ARTICLE_LIKES, like_nums);
 				return results;
 			} catch (HttpResponseException e) {
 				e.printStackTrace();
@@ -248,9 +366,14 @@ public class ArticleActivity extends Activity {
 					.load(Uri.parse(snapShotUrl))
 					.into(target);
 			
+			int like_nums = Integer.parseInt(results.get(KEY_ARTICLE_LIKES));
+			if (mMenu != null){
+				MenuItem item = mMenu.findItem(R.id.action_like);
+				String likeString = getResources().getString(R.string.action_like);
+				item.setTitle(likeString + " " + like_nums);
+			}
+			
 			mProgBarView.setVisibility(View.GONE);
-			
-			
 		}
 	}
 	

@@ -252,9 +252,8 @@ public class HomeActivity extends FragmentActivity implements
 			//Record_Usage(articleID);
 			
 			// start a new activity 
-			String articleURL_API = Constants.URL_ARTICLE_API + articleID;
 			Intent newIntent = new Intent(this.getActivity(), ArticleActivity.class);
-			newIntent.putExtra("URL_API", articleURL_API);
+			newIntent.putExtra("ArticleId", articleID);
 			startActivity(newIntent);
 			
 		}
