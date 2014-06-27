@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.Constants;
@@ -26,6 +25,7 @@ import org.json.JSONTokener;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.Drawable;
@@ -38,6 +38,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -66,15 +67,18 @@ public class ArticleActivity extends Activity {
 
 	
 	// these tags are those for reading the JSON objects
-	private static String KEY_TITLE;
-	private static String KEY_IMAGE;
-	private static String KEY_SNAPSHOT;
-	private static String KEY_CONTENT;
-	private static String KEY_AUTHOR;
-	private static String KEY_TIME;
-	private static String KEY_ARTICLE_LIKES = "like_num";
-	private static String KEY_ERROR;
-	private static String KEY_RESULT;
+	private static Resources res = App.appContext.getResources();
+	private static final String KEY_TITLE = res.getString(R.string.JSON_tag_title);
+	private static final String KEY_IMAGE = res.getString(R.string.JSON_tag_image);
+	private static final String KEY_SNAPSHOT = res.getString(R.string.JSON_tag_snapshot);
+	private static final String KEY_CONTENT = res.getString(R.string.JSON_tag_content);
+	private static final String KEY_AUTHOR = res.getString(R.string.JSON_tag_owner);
+	private static final String KEY_TIME = res.getString(R.string.JSON_tag_time);
+	private static final String KEY_ARTICLE_LIKES = "like_num";
+	private static final String KEY_ERROR = res.getString(R.string.JSON_tag_error);
+	private static final String KEY_RESULT = res.getString(R.string.JSON_tag_result);
+	
+	private static final String likeString = res.getString(R.string.action_like);
 	
 	private int articleId; 
 	private Uri mShareText = null;
@@ -85,6 +89,9 @@ public class ArticleActivity extends Activity {
 	private TextView mTitleTextView;
 	private TextView mSubTitleTextView;
 	private ProgressBar mProgBarView;
+	private Button mShareButton;
+	private Button mCommentButton;
+	private Button mLikeButton;
 	private ImageView mWeiboShareIcon;
 	private ImageView mWeixinShareIcon;
 	private ImageView mFacebookShareIcon;
@@ -94,17 +101,6 @@ public class ArticleActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		// get the json keys from the string resource
-		KEY_TITLE = getResources().getString(R.string.JSON_tag_title);
-		KEY_SNAPSHOT = getResources().getString(R.string.JSON_tag_snapshot);
-		KEY_IMAGE = getResources().getString(R.string.JSON_tag_image);
-		KEY_CONTENT = getResources().getString(R.string.JSON_tag_content);		
-		KEY_AUTHOR = getResources().getString(R.string.JSON_tag_owner);
-		KEY_TIME = getResources().getString(R.string.JSON_tag_time);
-		KEY_ERROR = getResources().getString(R.string.JSON_tag_error);
-		KEY_RESULT = getResources().getString(R.string.JSON_tag_result);
-		
 		// inflate the layouts
 		setContentView(R.layout.activity_article);
 		
@@ -114,9 +110,35 @@ public class ArticleActivity extends Activity {
 		mProgBarView = (ProgressBar) findViewById(R.id.article_activity_load_progressbar);
 		mProgBarView.setVisibility(View.VISIBLE);
 		
+		mShareButton = (Button) findViewById(R.id.article_activity_btn_share);
+		mShareButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showMessage("分享功能还在完善中！");
+			}
+		});
+		
+		mCommentButton = (Button) findViewById(R.id.article_activity_btn_comment);
+		mCommentButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				showMessage("评论功能还在完善中！");
+			}
+		});
+		
+		mLikeButton = (Button) findViewById(R.id.article_activity_btn_like);
+		mLikeButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new SendLikeInBackground().execute(Constants.URL_ARTICLE_LIKES 
+						+ Integer.toString(articleId));
+			}
+		});
+		
+		
+		/*
 		// set up the weibo share icon, share with text and image
 		mWeiboShareIcon = (ImageView) findViewById(R.id.article_activity_weibo_share);
-		
 		mWeiboShareIcon.setOnClickListener(new ShareIconClickListener("weibo"));
 		mWeiboShareIcon.setTag(SHARE_TO_WEIBO);
 		
@@ -129,16 +151,15 @@ public class ArticleActivity extends Activity {
 		mFacebookShareIcon = (ImageView) findViewById(R.id.article_activity_facebook_share);
 		mFacebookShareIcon.setOnClickListener(new ShareIconClickListener("facebook"));
 		mFacebookShareIcon.setTag(SHARE_TO_FACEBOOK);
-		
+		*/
 		
 		mWebView = (WebView) findViewById(R.id.article_activity_web_view);
 		mWebView.setWebViewClient(new WebViewClient());
-		mWebView.getSettings().setBuiltInZoomControls(true);
-		mWebView.getSettings().setSupportZoom(true);
+		mWebView.getSettings().setBuiltInZoomControls(false);
+		mWebView.getSettings().setSupportZoom(false);
 
 		// get article id from the extra that was set when the activity was started
 		articleId = getIntent().getIntExtra("ArticleId", 0);
-		
 		if (articleId != 0){
 			String articleURL_API = Constants.URL_ARTICLE_API + Integer.toString(articleId);
 			new GetArticleInBackground().execute(articleURL_API);
@@ -150,7 +171,7 @@ public class ArticleActivity extends Activity {
 		
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.article_activity_menu, menu);
+		getMenuInflater().inflate(R.menu.article_activity_menu2, menu);
 		mMenu = menu;
 		return true;
 	}
@@ -196,10 +217,7 @@ public class ArticleActivity extends Activity {
 				shareTextUri = Uri.parse("--来自于 北美宠物网");
 			}
 			if (mShareImage == null){
-				Toast.makeText(getApplicationContext(), 
-							   "Try again after webpage is fully loaded", 
-							   Toast.LENGTH_LONG)
-							   .show();
+				showMessage("页面还未完全读取完成，请稍后再试");
 			}else{
 				Intent intent = GeneralHelpers.shareByApp(appName, shareTextUri, mShareImage);
 				startActivity(intent);
@@ -252,11 +270,7 @@ public class ArticleActivity extends Activity {
 			 * else, it is the number of likes for the article
 			 */
 			if (result >= 0){
-				if (mMenu != null){
-					MenuItem item = mMenu.findItem(R.id.action_like);
-					String likeString = getResources().getString(R.string.action_like);
-					item.setTitle(likeString + " " + result);
-				}
+				mLikeButton.setText(likeString + " " + result);
 			}else{
 				result = -result;
 				if (result == 13){
@@ -367,11 +381,13 @@ public class ArticleActivity extends Activity {
 					.into(target);
 			
 			int like_nums = Integer.parseInt(results.get(KEY_ARTICLE_LIKES));
-			if (mMenu != null){
+			/*if (mMenu != null){
 				MenuItem item = mMenu.findItem(R.id.action_like);
 				String likeString = getResources().getString(R.string.action_like);
 				item.setTitle(likeString + " " + like_nums);
-			}
+			}*/
+			
+			mLikeButton.setText(likeString + " " + like_nums);
 			
 			mProgBarView.setVisibility(View.GONE);
 		}

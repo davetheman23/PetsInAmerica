@@ -63,9 +63,6 @@ public class LoginActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		
-		int id = 1;
-		
-		
 		KEY_LOGIN = getResources().getString(R.string.JSON_tag_login);
 
 		// 创建微博实例

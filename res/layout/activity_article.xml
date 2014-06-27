@@ -1,84 +1,92 @@
-<LinearLayout 
+<RelativeLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="5dp"
-    android:orientation="vertical">
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<LinearLayout 
+          android:id="@+id/article_activity_bottom"          
+          android:layout_width="fill_parent"
+          android:layout_height="40dp"
+          android:padding="5dp"
+          android:layout_alignParentBottom="true"
+          android:orientation="horizontal"
+          android:background="@drawable/border_top">
+          <Button 
+              android:id="@+id/article_activity_btn_share"
+              android:layout_width="0dp"
+	          	android:layout_height="wrap_content"
+	          	android:layout_weight="1"
+	          	android:background="?android:attr/selectableItemBackground"
+	          	android:text="分享"
+	          	android:textAppearance="@android:style/TextAppearance.Small"/>
+          <View
+	           android:layout_width="1dip"
+	           android:layout_height="match_parent"
+	           android:layout_marginTop="6dip"
+	           android:layout_marginBottom="6dip"
+	           android:background="?android:attr/dividerVertical"/>
+          <Button 
+	              android:id="@+id/article_activity_btn_comment"
+	              android:layout_width="0dp"
+	          	android:layout_height="wrap_content"
+	          	android:layout_weight="1"
+	          	android:background="?android:attr/selectableItemBackground"
+	          	android:text="评论"
+	          	android:textAppearance="@android:style/TextAppearance.Small"/>
+          <View
+	           android:layout_width="1dip"
+	           android:layout_height="match_parent"
+	           android:layout_marginTop="6dip"
+	           android:layout_marginBottom="6dip"
+	           android:background="?android:attr/dividerVertical"/>
+          <Button 
+	              android:id="@+id/article_activity_btn_like"
+	              android:layout_width="0dp"
+	          	android:layout_height="wrap_content"
+	          	android:layout_weight="1"
+	          	android:background="?android:attr/selectableItemBackground"
+	          	android:text="赞"
+	          	android:textAppearance="@android:style/TextAppearance.Small"/>
+      </LinearLayout>
+    
+	<LinearLayout 
+	    android:id="@+id/article_activity_top"
+	    android:layout_width="match_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_above="@id/article_activity_bottom"
+	    android:padding="5dp"
+	    android:layout_marginBottom="5dp"
+	    android:orientation="vertical"
+	    android:layout_alignParentTop="true">
+	
+	    <TextView 
+	        android:id = "@+id/article_activity_title"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:text=""
+	        android:textSize="20sp"/>
+	    <TextView 
+	            android:id="@+id/article_activity_author_date"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="5dp"
+	            android:layout_marginLeft="5dp"
+	            android:textSize="12sp"
+	            android:text=""/>
 
-    <TextView 
-        android:id = "@+id/article_activity_title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Title"
-        android:textSize="20sp"/>
-    <RelativeLayout 
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical">
-        
-        <TextView 
-            android:id="@+id/article_activity_author_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:textSize="12sp"
-            android:text="author_date"/>
-        
-        <LinearLayout 
-            android:id="@+id/article_activity_share_icons_top"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin = "5dp"
-            android:layout_alignParentRight="true"
-            
-            android:orientation="horizontal">
-            <ImageView 
-                android:id="@+id/article_activity_weibo_share"
-                android:layout_width="30dp"
-            	android:layout_height="30dp"
-            	android:layout_marginRight="5dp"
-            	android:contentDescription="Share to Weibo"
-            	android:src="@drawable/ic_com_sina_weibo_sdk_logo"/>
-            <ImageView 
-                android:id="@+id/article_activity_weixin_share"
-                android:layout_width="30dp"
-            	android:layout_height="30dp"
-            	android:layout_marginRight="5dp"
-            	android:contentDescription="Share to Weixin"
-            	android:src="@drawable/ic_weixin_logo"/>
-            <ImageView 
-                android:id="@+id/article_activity_facebook_share"
-                android:layout_width="30dp"
-            	android:layout_height="30dp"
-            	android:layout_marginRight="5dp"
-            	android:contentDescription="Share to Facebook"
-            	android:src="@drawable/ic_facebook_share_logo"/>
-        </LinearLayout>
-        
-    </RelativeLayout>
-    <!--  <ImageView 
-        android:id = "@+id/article_image"
-        android:layout_below="@id/article_title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:contentDescription="Article Pic"
-        android:src="@drawable/ic_launcher" />
-        -->
-    <WebView 
-		android:id = "@+id/article_activity_web_view"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content" 
-		/>
-
-    <ProgressBar
-        android:id="@+id/article_activity_load_progressbar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="visible"/>
-
-</LinearLayout>
+	    <WebView 
+			android:id = "@+id/article_activity_web_view"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content" 
+			/>
+	
+	    <ProgressBar
+	        android:id="@+id/article_activity_load_progressbar"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:visibility="visible"/>
+	</LinearLayout>
+	
+</RelativeLayout>
