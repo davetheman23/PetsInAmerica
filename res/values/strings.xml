@@ -72,6 +72,11 @@
         <item>拉稀 Diarrhea</item>
     </string-array>
     
+    <!-- Share panel -->
+    <string name="label_weibo">微博</string>
+    <string name="label_weixin">微信</string>
+    <string name="label_facebook">Facebook</string>
+    
     
     <!--resource for reading Json objects --> 
     <string name = "JSON_tag_title">title</string>

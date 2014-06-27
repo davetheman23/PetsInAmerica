@@ -7,22 +7,24 @@
      android:layout_width="match_parent"
      android:layout_height="match_parent"
      android:gravity="bottom"
-     sothree:panelHeight="1dp"
+     sothree:panelHeight="0dp"
      sothree:shadowHeight="4dp"
      sothree:paralaxOffset="100dp"
      sothree:dragView="@+id/dragView">
 
      <!-- MAIN CONTENT -->
       <RelativeLayout 
-	    xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:tools="http://schemas.android.com/tools"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+		android:layout_height="fill_parent"
+		android:id="@+id/article_activity_main_view"
+		android:clickable="true">
 		<LinearLayout 
 	          android:id="@+id/article_activity_bottom"          
 	          android:layout_width="fill_parent"
 	          android:layout_height="40dp"
-	          android:padding="5dp"
+	          android:paddingTop="5dp"
+	          android:paddingLeft="5dp"
+	          android:paddingRight="5dp"
 	          android:layout_alignParentBottom="true"
 	          android:orientation="horizontal"
 	          android:background="@drawable/border_top">
@@ -79,16 +81,16 @@
 		        android:layout_width="fill_parent"
 		        android:layout_height="wrap_content"
 		        android:layout_marginTop="5dp"
-		        android:text=""
+		        android:text="标题"
 		        android:textSize="20sp"/>
 		    <TextView 
 		            android:id="@+id/article_activity_author_date"
-		            android:layout_width="wrap_content"
+		            android:layout_width="fill_parent"
 		            android:layout_height="wrap_content"
 		            android:layout_marginTop="5dp"
 		            android:layout_marginLeft="5dp"
 		            android:textSize="12sp"
-		            android:text=""/>
+		            android:text="作者和日期"/>
 	
 		    <WebView 
 				android:id = "@+id/article_activity_web_view"
@@ -107,31 +109,8 @@
 	</RelativeLayout>
 
       <!-- SLIDING LAYOUT -->
-     <LinearLayout
-         android:layout_width="match_parent"
-         android:layout_height="match_parent"
-         android:background="#eeeeee"
-         android:orientation="vertical"
-         android:clickable="true"
-         android:focusable="false"
-         android:id="@+id/dragView">
-		
-         <TextView
-               android:id="@+id/activity_article_"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:textSize="14sp"
-               android:gravity="left"
-               android:paddingLeft="10dp"
-               android:text="分享到"/>
-
-         <ImageView
-             android:layout_width="match_parent"
-             android:layout_height="0dp"
-             android:layout_weight="1"
-             android:scaleType="fitStart" >
-         </ImageView>
-     </LinearLayout>
- </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+      <include layout="@layout/share_icon_collection_layout"/>
+    
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
 

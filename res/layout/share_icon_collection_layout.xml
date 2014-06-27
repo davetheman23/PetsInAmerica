@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    
+    <TextView
+        android:id="@+id/activity_article_"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:gravity="left"
+        android:paddingLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="分享到"/>
+    <View 
+	    android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="4dip"
+        android:layout_marginRight="4dip"
+        android:background="?android:attr/dividerHorizontal"/>
+         <LinearLayout
+	         android:layout_width="match_parent"
+	         android:layout_height="wrap_content"
+	         android:orientation="horizontal"
+	         android:padding="10dp"
+	         android:focusable="false">
+	         <LinearLayout
+		         android:layout_width="wrap_content"
+		         android:layout_height="wrap_content"
+		         android:orientation="vertical"
+	             android:layout_marginRight="5dp"
+		         android:padding="10dp"
+		         android:focusable="false">
+		        <ImageView 
+	                android:id="@+id/article_activity_weibo_share"
+	                android:layout_width="match_parent"
+	            	android:layout_height="match_parent"
+	            	android:contentDescription="Share to Weibo"
+	            	android:src="@drawable/ic_com_sina_weibo_sdk_logo"/>
+		    </LinearLayout>
+		    <LinearLayout
+		         android:layout_width="wrap_content"
+		         android:layout_height="wrap_content"
+		         android:orientation="vertical"
+	             android:layout_marginRight="5dp"
+		         android:padding="10dp"
+		         android:focusable="false">
+		        <ImageView 
+	                android:id="@+id/article_activity_weixin_share"
+	                android:layout_width="30dp"
+	            	android:layout_height="30dp"
+	            	android:layout_marginRight="5dp"
+	            	android:contentDescription="Share to Weixin"
+	            	android:src="@drawable/ic_weixin_logo"/>
+		    </LinearLayout>
+		    <LinearLayout
+		         android:layout_width="wrap_content"
+		         android:layout_height="wrap_content"
+		         android:orientation="vertical"
+	             android:layout_marginRight="5dp"
+		         android:padding="10dp"
+		         android:focusable="false">
+		        <ImageView 
+	                android:id="@+id/article_activity_facebook_share"
+	                android:layout_width="30dp"
+	            	android:layout_height="30dp"
+	            	android:layout_marginRight="5dp"
+	            	android:contentDescription="Share to Facebook"
+	            	android:src="@drawable/ic_facebook_share_logo"/>
+		    </LinearLayout>
+		    <LinearLayout
+		         android:layout_width="wrap_content"
+		         android:layout_height="wrap_content"
+		         android:orientation="vertical"
+	             android:layout_marginRight="5dp"
+		         android:padding="10dp"
+		         android:focusable="false">
+		        <ImageView 
+	                android:id="@+id/article_activity_more_share"
+	                android:layout_width="30dp"
+	            	android:layout_height="30dp"
+	            	android:layout_marginRight="5dp"
+	            	android:contentDescription="more shares"
+	            	android:src="@drawable/ic_plus"/>
+		    </LinearLayout>
+
+      </LinearLayout>
+    
+
+</LinearLayout>

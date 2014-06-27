@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,9 +42,11 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Picasso.LoadedFrom;
 import com.squareup.picasso.Target;
@@ -97,12 +100,35 @@ public class ArticleActivity extends Activity {
 	private ImageView mFacebookShareIcon;
 	private Menu mMenu;
 	
+	private SlidingUpPanelLayout mSlideUpPanelLayout;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		// inflate the layouts
-		setContentView(R.layout.activity_article);
+		setContentView(R.layout.activity_article2);
+		
+		// get a screen height
+		DisplayMetrics displaymetrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+		int height = displaymetrics.heightPixels;
+		
+        mSlideUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+		mSlideUpPanelLayout.setOverlayed(false);
+		mSlideUpPanelLayout.setMaxSlideRange((int)(height * 0.3));
+		
+		View mainLayout = findViewById(R.id.article_activity_main_view);
+		mainLayout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mSlideUpPanelLayout != null && mSlideUpPanelLayout.isPanelExpanded()){
+					mSlideUpPanelLayout.collapsePanel();
+				}
+			}
+		});
+		
 		
 		// get references to each layout views
 		mTitleTextView = (TextView) findViewById(R.id.article_activity_title);
@@ -110,14 +136,14 @@ public class ArticleActivity extends Activity {
 		mProgBarView = (ProgressBar) findViewById(R.id.article_activity_load_progressbar);
 		mProgBarView.setVisibility(View.VISIBLE);
 		
+		
 		mShareButton = (Button) findViewById(R.id.article_activity_btn_share);
 		mShareButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showMessage("分享功能还在完善中！");
+				mSlideUpPanelLayout.expandPanel();
 			}
 		});
-		
 		mCommentButton = (Button) findViewById(R.id.article_activity_btn_comment);
 		mCommentButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -125,7 +151,6 @@ public class ArticleActivity extends Activity {
 				showMessage("评论功能还在完善中！");
 			}
 		});
-		
 		mLikeButton = (Button) findViewById(R.id.article_activity_btn_like);
 		mLikeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -135,8 +160,6 @@ public class ArticleActivity extends Activity {
 			}
 		});
 		
-		
-		/*
 		// set up the weibo share icon, share with text and image
 		mWeiboShareIcon = (ImageView) findViewById(R.id.article_activity_weibo_share);
 		mWeiboShareIcon.setOnClickListener(new ShareIconClickListener("weibo"));
@@ -151,8 +174,8 @@ public class ArticleActivity extends Activity {
 		mFacebookShareIcon = (ImageView) findViewById(R.id.article_activity_facebook_share);
 		mFacebookShareIcon.setOnClickListener(new ShareIconClickListener("facebook"));
 		mFacebookShareIcon.setTag(SHARE_TO_FACEBOOK);
-		*/
 		
+
 		mWebView = (WebView) findViewById(R.id.article_activity_web_view);
 		mWebView.setWebViewClient(new WebViewClient());
 		mWebView.getSettings().setBuiltInZoomControls(false);
@@ -175,7 +198,7 @@ public class ArticleActivity extends Activity {
 		mMenu = menu;
 		return true;
 	}
-	
+
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -199,6 +222,20 @@ public class ArticleActivity extends Activity {
 		}		
 	}
 	
+	
+	
+	@Override
+	public void onBackPressed() {
+		if (mSlideUpPanelLayout != null && mSlideUpPanelLayout.isPanelExpanded()){
+			mSlideUpPanelLayout.collapsePanel();
+			return;
+		}else{
+			super.onBackPressed();
+		}
+	}
+
+
+
 	class ShareIconClickListener implements View.OnClickListener{
 		private String appName = "";
 		private Uri shareTextUri = null;
@@ -223,6 +260,10 @@ public class ArticleActivity extends Activity {
 				startActivity(intent);
 			}
 			
+			// close up the share panel
+			if (mSlideUpPanelLayout != null){
+				mSlideUpPanelLayout.collapsePanel();
+			}
 		}
 	}
 	
