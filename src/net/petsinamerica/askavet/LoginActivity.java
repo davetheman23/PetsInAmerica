@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
@@ -48,7 +49,7 @@ public class LoginActivity extends Activity{
 	
 	private static final int sLOGIN_FAIL = 0;
 	private static final int sLOGIN_SUCCEED = 1;
-	private static String sTAG_LOGIN;
+	private static String KEY_LOGIN;
 	private String mUsername;
 	private String mPassword;
 
@@ -62,8 +63,10 @@ public class LoginActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		
-		sTAG_LOGIN = getResources().getString(R.string.JSON_tag_login);
+		int id = 1;
 		
+		
+		KEY_LOGIN = getResources().getString(R.string.JSON_tag_login);
 
 		// 创建微博实例
 		mWeiboAuth = new WeiboAuth(this, WeiboConstants.APP_KEY, 
@@ -180,7 +183,7 @@ public class LoginActivity extends Activity{
 
 				Map<String, Object> responseMap = JsonHelper.toMap(responseObject);
 				
-				String loginToken = responseMap.get(sTAG_LOGIN).toString();
+				String loginToken = responseMap.get(KEY_LOGIN).toString();
 				if (Integer.parseInt(loginToken) == 1){
 					Log.i("Http_Post", "Login successfully");
 					 

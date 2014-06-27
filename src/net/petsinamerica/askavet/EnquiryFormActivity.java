@@ -3,6 +3,8 @@ package net.petsinamerica.askavet;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,12 +15,17 @@ import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.BaseListFragment;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
+import net.petsinamerica.askavet.utils.JsonHelper;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
@@ -30,6 +37,7 @@ import org.json.JSONTokener;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
@@ -43,7 +51,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.meetme.android.horizontallistview.HorizontalListView;
@@ -53,15 +60,23 @@ public class EnquiryFormActivity extends FragmentActivity {
 	
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	
-	private static final String KEY_RESULT = App.appContext.getResources()
-												.getString(R.string.JSON_tag_result);
+	private static final Resources res = App.appContext.getResources();
+	
+	private static final String KEY_RESULT = res.getString(R.string.JSON_tag_result);
+	
+	private static final String KEY_ERROR = res.getString(R.string.JSON_tag_error);
+	
 	
 	
 	private static HorizontalListView mHLview = null;
 	
 	private static PetListAdapter petAdapter = null;
 	
-	private static String savedImageFilePath = null;
+	private ArrayList<Bundle> imageData = null;
+	
+	private Uri tmpFileUri = null;
+	
+	private static int imageId = 0;
 	
 	/*
 	 * the class that holds all questions entries
@@ -77,6 +92,10 @@ public class EnquiryFormActivity extends FragmentActivity {
 	private static final String PET_STOOL = "stool";
 	private static final String PROBLEM_DESCRIPTION = "content";
 	private static final String SHOW_PUBLIC = "public";
+
+	private static final String KEY_URI = "uri";
+	private static final String KEY_URL = "url";
+	private static final String KEY_ID = "id";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,13 +120,12 @@ public class EnquiryFormActivity extends FragmentActivity {
 				File imageFile = GeneralHelpers.getOutputMediaFile(
 									GeneralHelpers.MEDIA_TYPE_IMAGE);
 				if (imageFile != null){
-					Uri uriSavedImage = Uri.fromFile(imageFile);
-					intent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
+					tmpFileUri = Uri.fromFile(imageFile);
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, tmpFileUri);
 					startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
 				}else{
 					// do something to advise user
 				}
-
 			}
 		});
 		
@@ -160,26 +178,38 @@ public class EnquiryFormActivity extends FragmentActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE){
 			if (resultCode == Activity.RESULT_OK){
-				// TODO change the icon of the upload button, such bring in a preview of the picture taken
+				
 				Toast.makeText(this, "Image taken", Toast.LENGTH_LONG).show();
 				
-				File imageFile = GeneralHelpers.getOutputMediaFile(
-						GeneralHelpers.MEDIA_TYPE_IMAGE);
-				Uri uriFile = Uri.fromFile(imageFile);
-				savedImageFilePath = uriFile.getPath();
-				TextView imagePathView = (TextView) findViewById(R.id.activity_enquiry_tv_imagepath);
-				imagePathView.setText("暂存在 " + uriFile.getLastPathSegment());
+				// add the uri to an array that will be used to upload images separated from 
+				addUploadImageUri(tmpFileUri);
 				
+				// TODO compress file to a reasonable size
+				//File file = new File(tmpFileUri.getPath());
+
 			}else if(resultCode == Activity.RESULT_CANCELED){
 				Toast.makeText(this, "Action cancelled", Toast.LENGTH_LONG).show();
 			}else{
 				// Image capture failed, advise user
 			}
 		}
-		
 	}
 	
 	private boolean isEntryValid(){
+		extractUserInputs();
+		if (mUserInputs == null){
+			return false;
+		}
+		if (mUserInputs.getInt(PET_ID, -1) == -1){
+			Toast.makeText(getApplication(), "请选择宠物", Toast.LENGTH_LONG).show();
+			return false;
+		}
+		if (mUserInputs.getInt(PET_WEIGHT, -999) < 0){
+			Toast.makeText(getApplication(), "请确认宠物重量是否输入正确", Toast.LENGTH_LONG).show();
+		}
+		if (mUserInputs.getString(TITLE,"").equals("")){
+			Toast.makeText(getApplication(), "请输入一个标题", Toast.LENGTH_LONG).show();
+		}
 		return true;
 	}
 	
@@ -190,10 +220,79 @@ public class EnquiryFormActivity extends FragmentActivity {
 		
 	}
 	
+	private void addUploadImageUri(Uri uriFile){
+		if (imageData == null){
+			imageData = new ArrayList<Bundle>();
+		}
+		imageId = imageId + 1;
+		
+		Bundle bundle = new Bundle();
+		bundle.putString(KEY_URI, uriFile.toString());;
+		bundle.putInt(KEY_ID, imageId);
+		bundle.putString(KEY_URL, null);
+		imageData.add(bundle);
+		
+		//String savedImageName = uriFile.getLastPathSegment();
+		EditText problemView = (EditText) findViewById(R.id.activity_enquiry_problem_description);
+		//problemView.append("[Img_"+ imageId + ":" + savedImageName + "]");
+		problemView.append("\n[Img_"+ imageId + "]\n");
+		
+		new HttpUploadImage()
+			.setImageId(imageId)
+			.execute(uriFile);
+	}
+	
+	/**
+	 * when the button post is clicked, it does three things:
+	 * 1. extract the data from the form
+	 * 2. replace the image tag in the text with image url
+	 * 3. setup an async Task to upload data
+	 */
 	private void submitEnquiry(){
 		// get the inputs everytime the submit button is hit
 		extractUserInputs();
 		
+		/*
+		 * if user has inserted some image
+		 */
+		if (imageData != null){
+			for (Bundle data : imageData){
+				String imageurl = data.getString(KEY_URL);
+				
+				//if url is still null, then it means, async task is running in the background 
+				if (imageurl == null){
+					Toast.makeText(getApplication(), 
+								"上传图片还在进行中，请稍后再试", 
+								Toast.LENGTH_LONG).show();
+					return;
+				}
+			}
+			EditText problemView = (EditText) findViewById(
+									R.id.activity_enquiry_problem_description);
+			String text = problemView.getText().toString();
+			
+			for (Bundle data : imageData){
+				// get the image data, including uri, url, id.
+				String imageurl = data.getString(KEY_URL);
+				//Uri imageUri = Uri.parse(data.getString(KEY_URI));
+				//String imageFileName = imageUri.getLastPathSegment();
+				int id = data.getInt(KEY_ID);
+				
+				/*
+				 *  replace the image tag in the paragraph to a html readable string that
+				 *  has also embedded the url of the image 
+				 */
+				//String pattern = "\\[Img_"+ id + ":" + imageFileName + "\\]";
+				String pattern = "\\[Img_"+ id + "\\]";
+				
+				text = text.replaceFirst(pattern, "[img]" + imageurl + "[/img]");
+				
+				mUserInputs.putString(PROBLEM_DESCRIPTION, text);
+				
+			}
+		}
+		
+		// upload enquiry only after all images are uploaded 
 		new HttpUploadEnquiry().execute(Constants.URL_NEWENQUIRY);
 		
 	}
@@ -244,12 +343,12 @@ public class EnquiryFormActivity extends FragmentActivity {
 		
 	}
 	
-	private class HttpUploadEnquiry extends AsyncTask<String, Void, Exception>{
+	private class HttpUploadEnquiry extends AsyncTask<String, Void, Map<String, Object>>{
 		
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 
 		@Override
-		protected Exception doInBackground(String... params) {
+		protected Map<String, Object> doInBackground(String... params) {
 			String url = params[0];
 			HttpPost post = new HttpPost(url);
 			
@@ -284,27 +383,17 @@ public class EnquiryFormActivity extends FragmentActivity {
 				
 				// add the params into the post, make sure to include encoding UTF_8 as follows
 				post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
-				
-				
+
 				// execute post
 				HttpResponse response = mClient.execute(post);
 				
-				String responseString = new BasicResponseHandler().handleResponse(response);
-				
-				JSONObject responseObject = (JSONObject) new JSONTokener(responseString).nextValue(); 
-				
-				int i = 3;
-				i = i+1;
-				
+				return handlePiaResponse(response);
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
-				return e;
 			} catch (IOException e) {
 				e.printStackTrace();
-				return e;
 			} catch (JSONException e) {
 				e.printStackTrace();
-				return e;
 			}finally{
 				if (mClient!=null){
 					mClient.close();
@@ -312,7 +401,126 @@ public class EnquiryFormActivity extends FragmentActivity {
 			}
 			return null;
 		}
+
+		@Override
+		protected void onPostExecute(Map<String, Object> result) {
+			super.onPostExecute(result);
+			
+			
+		}
 		
+	}
+	
+	private class HttpUploadImage extends AsyncTask<Uri, Void, Map<String, Object>>{
+		
+		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
+		private Uri mFileUri = null;
+		
+		/*
+		 * the local id of image currently in the text, needs to be set
+		 * before execute() the asyncTask; 
+		 */
+		private int mImageLocalId = -1; 
+		
+		public HttpUploadImage setImageId(int id){
+			mImageLocalId = id;
+			return this;
+		}
+
+		@Override
+		protected Map<String, Object> doInBackground(Uri... params) {
+			if (mImageLocalId == -1){
+				return null;
+			}
+			mFileUri = params[0];
+			
+			File imageFile = new File(URI.create(mFileUri.toString()));
+			
+			HttpPost post = new HttpPost(Constants.URL_UPLOAD_IMAGE);
+			
+			AccessToken token = AccessTokenManager.readAccessToken(App.appContext);
+			if (token.isExpired()){
+				// TODO do something to report it
+			}
+			
+			try {
+				// creating a file body consisting of the file that we want to
+				// send to the server
+				FileBody fileBody = new FileBody(imageFile);
+				
+				// build the multipart request
+				MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+				builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+				builder.setCharset(Charset.forName(HTTP.UTF_8));
+				
+				// add the parts of file and user Id
+				builder.addPart("userfile", fileBody);
+				builder.addTextBody(Constants.TAG_USERID, token.getUserId());
+				builder.addTextBody(Constants.TAG_USERTOKEN, token.getToken());
+				
+				
+				post.setEntity(builder.build());
+		
+				// execute post
+				HttpResponse response = mClient.execute(post);
+				
+				return handlePiaResponse(response);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}finally{
+				if (mClient!=null){
+					mClient.close();
+				}
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Map<String, Object> result) {
+			super.onPostExecute(result);
+			if (result != null && imageData !=null){
+				Toast.makeText(getApplication(), "上传成功", Toast.LENGTH_LONG).show();
+				String url = result.get(KEY_URL).toString();
+				
+				for (Bundle data : imageData){
+					int id = data.getInt(KEY_ID);
+					if (id == imageId){
+						data.putString(KEY_URL, url);
+					}
+				}
+				
+			}else{
+				Toast.makeText(getApplication(), "上传不成功，请再试一次", Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+
+	/**
+	 * parse the PIA server response, return results in a map if no error
+	 * @param response raw response from PIA server
+	 * @return a data map contains responses from PIA server
+	 */
+	private Map<String, Object> handlePiaResponse(HttpResponse response) throws 
+									JSONException, HttpResponseException, IOException{
+		String responseString = new BasicResponseHandler().handleResponse(response);
+		
+		JSONObject responseObject = (JSONObject) new JSONTokener(responseString).nextValue(); 
+		
+		Map<String, Object> responseMap = JsonHelper.toMap(responseObject);
+		
+		if (responseMap != null){
+			int errorCode = Integer.parseInt(responseMap.get(KEY_ERROR).toString());
+			if (errorCode == 0){
+				@SuppressWarnings("unchecked")
+				Map<String, Object> jObject = (Map<String, Object>)responseMap.get(KEY_RESULT);
+				return jObject;
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -364,9 +572,6 @@ public class EnquiryFormActivity extends FragmentActivity {
 		}
 		return input;
 	}
-	
-	
-	
 	
 
 }

@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.content.Intent;
@@ -50,13 +52,15 @@ public class GeneralHelpers {
 	    }
 
 	    // Create a media file name
-	    //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 	    File mediaFile;
 	    if (type == MEDIA_TYPE_IMAGE){
-	    	String filePath = mediaStorageDir.getPath() + File.separator + "tmp_Image.jpg";
+	    	String filePath = mediaStorageDir.getPath() + File.separator + 
+	    								"img_" + timeStamp + ".jpg";
 	        mediaFile = new File(filePath);
 	    } else if(type == MEDIA_TYPE_VIDEO) {
-	    	String filePath = mediaStorageDir.getPath()  + File.separator + "tmp_video.mp4";
+	    	String filePath = mediaStorageDir.getPath()  + File.separator + 
+	    								"img_" + timeStamp + ".mp4";
 	        mediaFile = new File(filePath);
 	    } else {
 	        return null;
