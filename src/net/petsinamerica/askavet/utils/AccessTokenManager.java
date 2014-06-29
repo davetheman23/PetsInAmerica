@@ -92,7 +92,7 @@ public class AccessTokenManager {
     }
     
     /**
-     * clear token from SharedPreferences
+     * clear only the PIA token from SharedPreferences
      * 
      */
     public static void clear(Context context) {
@@ -150,7 +150,7 @@ public class AccessTokenManager {
     }
     
     /**
-     * clear token from SharedPreferences
+     * clear only the weibo token from SharedPreferences
      * 
      */
     public static void clearWeiboToken(Context context) {
