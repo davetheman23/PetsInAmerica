@@ -36,6 +36,7 @@ import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -66,6 +67,8 @@ public class HomeActivity extends FragmentActivity implements
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
+	
+	Menu menu;
 	
 	private static final int sTOTAL_PAGES = 4;
 	
@@ -105,7 +108,9 @@ public class HomeActivity extends FragmentActivity implements
 			// instantiate UsersAPI to get weibo user info
 			mUsersAPI = new UsersAPI(weiboToken);
 			mUsersAPI.show(Long.parseLong(weiboToken.getUid()), mListener);
-		}		
+		}else{
+			Toast.makeText(this, "微博信息获取失败,请重新登录微博", Toast.LENGTH_LONG);
+		}
 	    // 对statusAPI实例化
 	    //StatusesAPI statusesAPI = new StatusesAPI(weiboToken);
 
@@ -144,8 +149,13 @@ public class HomeActivity extends FragmentActivity implements
 		}
 		actionBar.setSelectedNavigationItem(1);
 		
-		// this option will cache the view Hierachy of the pagers
-		mViewPager.setOffscreenPageLimit(2);
+		/*
+		 *  this option will cache the view Hierachy of the pagers, make sure
+		 *  the limit covers all the pages, benefits are that the user don't 
+		 *  have to reload everything everytime the pages are flipped, and the asynctask
+		 *  will not conflict with fragment create and destroy events
+		 */
+		mViewPager.setOffscreenPageLimit(3);
 		
 		
 	}
@@ -154,6 +164,7 @@ public class HomeActivity extends FragmentActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.home, menu);
+		this.menu = menu;
 		return true;
 	}
 
@@ -173,6 +184,24 @@ public class HomeActivity extends FragmentActivity implements
 	@Override
 	public void onTabReselected(ActionBar.Tab tab,
 			FragmentTransaction fragmentTransaction) {
+	}
+	
+	
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		
+	}
+
+	public void logMeOut(MenuItem item){
+		if (item.getTitle().equals(getResources().getString(R.string.action_logout))){
+			AccessTokenManager.clear(this);
+			AccessTokenManager.clearWeiboToken(this);
+			Intent intent = new Intent(this, LoginActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
+		}
 	}
 
 	/**
@@ -262,6 +291,7 @@ public class HomeActivity extends FragmentActivity implements
 			startActivity(newIntent);
 			
 		}
+	
 	}
 	
 	public static class ProductListFragment extends BaseListFragment {

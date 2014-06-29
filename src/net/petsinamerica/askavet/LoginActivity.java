@@ -82,6 +82,7 @@ public class LoginActivity extends Activity{
             public void onClick(View v) {
                 mSsoHandler = new SsoHandler(LoginActivity.this, mWeiboAuth);
                 mSsoHandler.authorize(new AuthListener());
+            	Toast.makeText(getApplication(), "微博登陆暂不支持未关联的用户", Toast.LENGTH_LONG).show();
             }
         });
         

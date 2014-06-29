@@ -189,6 +189,7 @@ public abstract class BaseListFragment extends ListFragment{
 		
 	}
 	
+
 	/**
 	 * This function displays no content available when the 
 	 * list is empty

@@ -44,6 +44,7 @@ public class EnquiryListFragment1 extends Fragment {
 	
 	private BaseListFragment mAllListFragment = null;
 	private BaseListFragment mMyListFragment = null;
+	private boolean firstAdd = true; 
 	
 
 	@Override
@@ -52,6 +53,14 @@ public class EnquiryListFragment1 extends Fragment {
 		mContext = activity.getApplicationContext();
 		sTAG_CONTENT = mContext.getResources().getString(R.string.JSON_tag_content);
 		sTAG_RESULT = getResources().getString(R.string.JSON_tag_result);
+		
+		
+		// creating the two fragments and keep them in memory for fast swapping
+		mAllListFragment = new AllEnquiryListFragment();
+		
+		mMyListFragment = new MyEnquiryListFragment();
+		
+		
 	}
 	
 	@Override
@@ -61,18 +70,20 @@ public class EnquiryListFragment1 extends Fragment {
 		
 		View rootView = inflater.inflate(R.layout.fragment_enquirylist,container,false);
 
-		
-		if (mAllListFragment == null){
-			mAllListFragment = new AllEnquiryListFragment();
+		// a fragment only needs to be added once, then it can be replaced
+		if (firstAdd){
+			getChildFragmentManager().beginTransaction()
+				.add(R.id.frag_enquirylist_listframe, mAllListFragment)
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+				.commit();
+			firstAdd = false;
+		}else{
+			getChildFragmentManager().beginTransaction()
+				.replace(R.id.frag_enquirylist_listframe, mAllListFragment)
+				.addToBackStack(null)
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+				.commit();
 		}
-		if (mMyListFragment == null){
-			mMyListFragment = new MyEnquiryListFragment();
-		}
-		
-		getFragmentManager().beginTransaction()
-			.add(R.id.frag_enquirylist_listframe, mAllListFragment)
-			.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-			.commit();
 		
 		
 		// set up all query button, and listener load new list if necessary
@@ -80,9 +91,10 @@ public class EnquiryListFragment1 extends Fragment {
 		mBtnAllQuery.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				getFragmentManager()
+				getChildFragmentManager()
 					.beginTransaction()
 					.replace(R.id.frag_enquirylist_listframe, mAllListFragment)
+					.addToBackStack(null)
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 					.commit();
 			}
@@ -95,9 +107,10 @@ public class EnquiryListFragment1 extends Fragment {
 			@Override
 			public void onClick(View v) {
 				
-				getFragmentManager()
+				getChildFragmentManager()
 					.beginTransaction()
 					.replace(R.id.frag_enquirylist_listframe, mMyListFragment)
+					.addToBackStack(null)
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 					.commit();
 			}
@@ -129,11 +142,18 @@ public class EnquiryListFragment1 extends Fragment {
 		
 		// since every time onCreateView will add a new fragment to the parent 
 		// the fragments have to be removed when view is destroyed
-		getFragmentManager()
-			.beginTransaction()
-			.remove(mAllListFragment)
-			.remove(mMyListFragment)
-			.commit();
+		/*if (mAllListFragment != null){
+			getFragmentManager()
+				.beginTransaction()
+				.remove(mAllListFragment)
+				.commit();
+		}
+		if (mMyListFragment != null){
+			getFragmentManager()
+				.beginTransaction()
+				.remove(mMyListFragment)
+				.commit();
+		}*/
 		
 	}
 
