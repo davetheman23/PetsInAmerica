@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.JsonHelper;
 import net.petsinamerica.askavet.utils.WeiboConstants;
@@ -39,6 +40,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.igexin.sdk.PushManager;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.auth.WeiboAuth;
 import com.sina.weibo.sdk.auth.WeiboAuthListener;
@@ -61,6 +63,10 @@ public class LoginActivity extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// initialize push service 
+		PushManager.getInstance().initialize(this.getApplicationContext());
+		
 		setContentView(R.layout.activity_login);
 		
 		KEY_LOGIN = getResources().getString(R.string.JSON_tag_login);

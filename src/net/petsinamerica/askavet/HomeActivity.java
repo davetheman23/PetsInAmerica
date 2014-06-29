@@ -39,6 +39,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import com.igexin.sdk.PushManager;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
@@ -78,6 +79,10 @@ public class HomeActivity extends FragmentActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		// initialize push service 
+		PushManager.getInstance().initialize(this.getApplicationContext());
+		
 		setContentView(R.layout.activity_home);
 		
 		//initialize local variables

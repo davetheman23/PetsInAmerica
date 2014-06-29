@@ -2,6 +2,8 @@ package net.petsinamerica.askavet.utils;
 
 import java.io.File;
 
+import com.igexin.sdk.PushManager;
+
 import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
@@ -36,6 +38,5 @@ public class App extends Application {
 		
 		appContext = getApplicationContext();
 	}
-	
 	
 }

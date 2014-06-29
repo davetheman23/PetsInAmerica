@@ -108,7 +108,7 @@ public class ArticleActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		// inflate the layouts
-		setContentView(R.layout.activity_article2);
+		setContentView(R.layout.activity_article);
 		
 		// get a screen height
 		DisplayMetrics displaymetrics = new DisplayMetrics();
