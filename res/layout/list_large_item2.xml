@@ -2,8 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    android:layout_margin="10dp"
+    android:padding="10dp"
+      android:background="@drawable/layer_card_background">
  <!-- This layout has image on the Right side -->
     <ImageView
         android:id="@+id/list_large_item_image"

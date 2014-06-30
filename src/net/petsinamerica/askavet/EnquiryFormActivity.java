@@ -118,7 +118,7 @@ public class EnquiryFormActivity extends FragmentActivity {
 				// make an intent to bring up a built-in camera
 				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 				File imageFile = GeneralHelpers.getOutputMediaFile(
-									GeneralHelpers.MEDIA_TYPE_IMAGE);
+									GeneralHelpers.MEDIA_TYPE_IMAGE, false);
 				if (imageFile != null){
 					tmpFileUri = Uri.fromFile(imageFile);
 					intent.putExtra(MediaStore.EXTRA_OUTPUT, tmpFileUri);

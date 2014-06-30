@@ -42,7 +42,8 @@ import android.widget.TextView;
 
 public abstract class BaseListFragment extends ListFragment{
 	
-	//public static final String PREFS_NAME = "PetInAmerica_ListArticles";
+	public static final boolean FLAG_URL_NO_PAGE = false;
+	public static final boolean FLAG_URL_HAS_PAGE = true;
 	//public static final String KEY_ARTICLE_READ = "Article_Read";
 
 	private static final String TAG = "BaseListFragment";
@@ -60,6 +61,7 @@ public abstract class BaseListFragment extends ListFragment{
 	 * the page of the list, for other API calls, it could mean userid.  
 	 */
 	private int mPage = 1;
+	private boolean mflag_page = true;		// flag whether a page should be added to url
 	private boolean mflag_addData = false;		// false-don't add data
 	private boolean mIsUserSpecific = false;	// flag for user specific data
 	private boolean mHasFooter = true;			// flag to indicate if footer is needed
@@ -93,6 +95,9 @@ public abstract class BaseListFragment extends ListFragment{
 	public int getPage(){
 		return mPage;
 	}
+	public void setPageFlag(boolean flag){
+		mflag_page = flag;
+	}
 	
 	//Set<String> mReadArticleList = null;		// the article list that has been read by the user
 	//SharedPreferences mUsageData;
@@ -109,14 +114,18 @@ public abstract class BaseListFragment extends ListFragment{
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		mContext = activity.getApplicationContext();
+		mContext = activity;
 		getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
 		
 	}
 	
 	public void loadListInBackground(){
-		// fetch list data from the network
-		new HttpPostTask().execute(mUrl + Integer.toString(mPage));
+		if (!mflag_page){
+			new HttpPostTask().execute(mUrl);
+		}else{
+			// fetch list data from the network
+			new HttpPostTask().execute(mUrl + Integer.toString(mPage));
+		}
 	}
 
 	@Override
@@ -125,19 +134,13 @@ public abstract class BaseListFragment extends ListFragment{
 		if (getListAdapter() == null){
 			// first time the view is created
 			loadListInBackground();
+			// set up footer 
+			if (mHasFooter){
+				setUpFooterView();
+			}
 		}
 		
-		// set up footer 
-		if (mHasFooter){
-			LayoutInflater inflater = (LayoutInflater) mContext
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			mfooterview = (View) inflater.inflate(R.layout.list_footer, null);
-			getListView().addFooterView(mfooterview);
-			getListView().setFooterDividersEnabled(true);
-			// set the footer as invisible only make it visible when needed
-			mfooterview.setVisibility(View.GONE);
-			mfooterview.setClickable(false);
-		}
+		
 		//mReadArticleList = new HashSet<String>();
 		
 		// disable scroll bar
@@ -155,7 +158,7 @@ public abstract class BaseListFragment extends ListFragment{
 			@Override
 			public void onScroll(AbsListView view, int firstVisibleItem,
 					int visibleItemCount, int totalItemCount) {
-				if(firstVisibleItem + visibleItemCount == totalItemCount - 1 && totalItemCount != 0)
+				if(firstVisibleItem + visibleItemCount >= totalItemCount - 1 && totalItemCount != 0)
 				{
 					
 					// when the visible item reaches the last item, 
@@ -164,6 +167,9 @@ public abstract class BaseListFragment extends ListFragment{
 						mPage += 1;
 						mflag_addData = true;
 						loadListInBackground();
+						if (getListView().getFooterViewsCount() == 0){
+							setUpFooterView();
+						}
 						if (mfooterview != null){
 							mfooterview.setVisibility(View.VISIBLE);
 						}
@@ -175,7 +181,16 @@ public abstract class BaseListFragment extends ListFragment{
 	}
 	
 	
-	
+	private void setUpFooterView(){		
+		LayoutInflater inflater = (LayoutInflater) mContext
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mfooterview = (View) inflater.inflate(R.layout.list_footer, null);
+		getListView().addFooterView(mfooterview);
+		getListView().setFooterDividersEnabled(true);
+		// set the footer as invisible only make it visible when needed
+		mfooterview.setVisibility(View.GONE);
+		mfooterview.setClickable(false);
+	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
@@ -229,6 +244,7 @@ public abstract class BaseListFragment extends ListFragment{
 	
 	
 	protected void setCustomAdapter(ArrayAdapter<Map<String, Object>> customAdapter){
+		
 		mBaseAdapter = customAdapter;
 		setListAdapter(mBaseAdapter);
 	}

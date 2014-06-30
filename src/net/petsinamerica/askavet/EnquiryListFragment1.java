@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * This fragment class uses the FragmentManager to swap the two child fragments
@@ -97,6 +98,7 @@ public class EnquiryListFragment1 extends Fragment {
 					.addToBackStack(null)
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 					.commit();
+				
 			}
 		});
 		
@@ -106,13 +108,13 @@ public class EnquiryListFragment1 extends Fragment {
 		mBtnMyQuery.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				
 				getChildFragmentManager()
 					.beginTransaction()
 					.replace(R.id.frag_enquirylist_listframe, mMyListFragment)
 					.addToBackStack(null)
 					.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
 					.commit();
+				
 			}
 		});
 		
@@ -135,27 +137,6 @@ public class EnquiryListFragment1 extends Fragment {
 		return rootView;
 	}
 	
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		
-		// since every time onCreateView will add a new fragment to the parent 
-		// the fragments have to be removed when view is destroyed
-		/*if (mAllListFragment != null){
-			getFragmentManager()
-				.beginTransaction()
-				.remove(mAllListFragment)
-				.commit();
-		}
-		if (mMyListFragment != null){
-			getFragmentManager()
-				.beginTransaction()
-				.remove(mMyListFragment)
-				.commit();
-		}*/
-		
-	}
 
 	
 	public static class AllEnquiryListFragment extends BaseListFragment {

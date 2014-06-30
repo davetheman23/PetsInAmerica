@@ -30,8 +30,14 @@ public class GeneralHelpers {
 	public final static int MEDIA_TYPE_VIDEO = 2;
 
 	
-	/** Create a File for saving an image or video */
-	public static File getOutputMediaFile(int type){
+	/** 
+	 * Create a File for saving an image or video
+	 * @param type MEDIA_TYPE_IMAGE or MEDIA_TYPE_VIDEO 
+	 * @param fileNameWithTimeStamp if false, only "img_temp" will be created, if file 
+	 * 		  already existed, it will be overwriten. 
+	 * @return a file object 
+	 */
+	public static File getOutputMediaFile(int type, boolean fileNameWithTimeStamp){
 	    // To be safe, you should check that the SDCard is mounted
 		String storageDir = App.EXTERNAL_DIRECTORY;
 		if (storageDir == null){
@@ -52,15 +58,19 @@ public class GeneralHelpers {
 	    }
 
 	    // Create a media file name
-	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	    String surfix = "temp";
+	    if (fileNameWithTimeStamp){
+	    	surfix = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	    }
+	    
 	    File mediaFile;
 	    if (type == MEDIA_TYPE_IMAGE){
 	    	String filePath = mediaStorageDir.getPath() + File.separator + 
-	    								"img_" + timeStamp + ".jpg";
+	    								"img_" + surfix + ".jpg";
 	        mediaFile = new File(filePath);
 	    } else if(type == MEDIA_TYPE_VIDEO) {
 	    	String filePath = mediaStorageDir.getPath()  + File.separator + 
-	    								"img_" + timeStamp + ".mp4";
+	    								"img_" + surfix + ".mp4";
 	        mediaFile = new File(filePath);
 	    } else {
 	        return null;
@@ -71,21 +81,25 @@ public class GeneralHelpers {
 	
 	/**
 	 * Share a text and an image to a native app via implicit intents, if the name supplied
-	 * is specific enough, then it starts the app with matching name immediately; if empty 
+	 * is specific enough, then it starts the app with matching name immediately; if null 
 	 * string is provided for nameApp, all apps that can accept Intent.ACTION_SEND intent 
 	 * will be shown for user selection. 
 	 * 
-	 * @param nameApp 	part of the name of the app to be shared content with
+	 * @param nameApp 	part of the name of the app to be shared content with, supply null to share
+	 *    				to all native apps that can share image
 	 * @param textUri 	a Uri for a text, supply null if no text to be shared
 	 * @param imageUri 	a Uri for an image, supply null if no image to be shared
 	 * @return gives back an intent that the activity can directly use to startActivity()
 	 */
 	public static Intent shareByApp(String nameApp, Uri textUri, Uri imageUri) {
-	    List<Intent> targetedShareIntents = new ArrayList<Intent>();
 	    Intent share = new Intent(android.content.Intent.ACTION_SEND);
 	    share.setType("image/*");
+	    if (nameApp == null){
+	    	return share;
+	    }
+	    
+	    List<Intent> targetedShareIntents = new ArrayList<Intent>();
 	    List<ResolveInfo> resInfo = App.appContext.getPackageManager().queryIntentActivities(share, 0);
-
 	    boolean appAvailable = true;
 	    if (!resInfo.isEmpty()){
 	        for (ResolveInfo info : resInfo) {
