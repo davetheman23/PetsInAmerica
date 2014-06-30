@@ -119,12 +119,12 @@ public class LoginActivity extends Activity{
 	protected void onResume() {
 		super.onResume();
 		
-		/*AccessToken token = AccessTokenManager.readAccessToken(getApplicationContext());	    
+		AccessToken token = AccessTokenManager.readAccessToken(getApplicationContext());	    
 		if (token != null && !token.isExpired()){
 			Intent intent = new Intent(this, HomeActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(intent);
-		}*/
+		}
 	}
 
 

@@ -267,7 +267,13 @@ public class HomeActivity extends FragmentActivity implements
 
 		@Override
 		protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
-			setCustomAdapter(new ArticleListAdapter(
+			getListView().setDivider(null);
+			getListView().setDividerHeight(10);
+			getListView().setCacheColorHint(android.R.color.transparent);
+			getListView().setBackgroundColor(mContext.getResources().getColor(R.color.WhiteSmoke));
+			getListView().setHeaderDividersEnabled(true);
+			getListView().addHeaderView(new View(getActivity()));
+			setCustomAdapter(new ArticleListAdapter2(
 					this.getActivity(), R.layout.article_list_header,
 					R.layout.article_list_item, resultArray));
 		}
@@ -275,7 +281,7 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		protected void onItemClickAction(View v, int position, long id) {
 			// obtain the article ID clicked
-			int articleID = ((ArticleListAdapter)this.getListAdapter()).getArticleID(v);
+			int articleID = ((ArticleListAdapter2)this.getListAdapter()).getArticleID(v);
 			
 			// store the article ID clicked
 			//Record_Usage(articleID);

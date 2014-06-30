@@ -5,7 +5,7 @@
     android:orientation="vertical" >
     
     <TextView
-        android:id="@+id/activity_article_"
+        android:id="@+id/activity_article_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="14sp"
@@ -35,10 +35,17 @@
 		         android:focusable="false">
 		        <ImageView 
 	                android:id="@+id/article_activity_weibo_share"
-	                android:layout_width="match_parent"
-	            	android:layout_height="match_parent"
+	                android:layout_width="30dp"
+	            	android:layout_height="30dp"
 	            	android:contentDescription="Share to Weibo"
 	            	android:src="@drawable/ic_com_sina_weibo_sdk_logo"/>
+		        <TextView
+			        android:layout_width="match_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center"
+			        android:gravity="center"
+			        android:textSize="12sp"
+			        android:text="微博"/>
 		    </LinearLayout>
 		    <LinearLayout
 		         android:layout_width="wrap_content"
@@ -54,6 +61,13 @@
 	            	android:layout_marginRight="5dp"
 	            	android:contentDescription="Share to Weixin"
 	            	android:src="@drawable/ic_weixin_logo"/>
+		        <TextView
+			        android:layout_width="match_parent"
+			        android:layout_height="match_parent"
+			        android:layout_gravity="center"
+			        android:gravity="center"
+			        android:textSize="12sp"
+			        android:text="微信"/>
 		    </LinearLayout>
 		    <LinearLayout
 		         android:layout_width="wrap_content"
@@ -69,6 +83,13 @@
 	            	android:layout_marginRight="5dp"
 	            	android:contentDescription="Share to Facebook"
 	            	android:src="@drawable/ic_facebook_share_logo"/>
+		        <TextView
+			        android:layout_width="match_parent"
+			        android:layout_height="match_parent"
+			        android:layout_gravity="center"
+			        android:gravity="center"
+			        android:textSize="12sp"
+			        android:text="脸谱"/>
 		    </LinearLayout>
 		    <LinearLayout
 		         android:layout_width="wrap_content"
@@ -84,6 +105,13 @@
 	            	android:layout_marginRight="5dp"
 	            	android:contentDescription="more shares"
 	            	android:src="@drawable/ic_plus"/>
+		        <TextView
+			        android:layout_width="match_parent"
+			        android:layout_height="match_parent"
+			        android:layout_gravity="center"
+			        android:gravity="center"
+			        android:textSize="12sp"
+			        android:text="更多"/>
 		    </LinearLayout>
 
       </LinearLayout>
