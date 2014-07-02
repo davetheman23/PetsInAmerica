@@ -70,6 +70,8 @@ public class HomeActivity extends FragmentActivity implements
 	
 	Menu menu;
 	
+	Menu menu;
+	
 	private static final int sTOTAL_PAGES = 4;
 	
 	private static Context mContext;
