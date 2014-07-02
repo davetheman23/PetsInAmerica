@@ -3,6 +3,7 @@ package net.petsinamerica.askavet;
 import java.util.List;
 import java.util.Map;
 
+import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.BaseListFragment;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.UserInfoManager;
@@ -20,8 +21,8 @@ import com.squareup.picasso.Picasso;
 
 public class UserInfoFragment extends Fragment implements UserInfoManager.Listener {
 	
-	private static String sKEY_CONTENT;
-	private static String sKEY_RESULT;
+	private static String sKEY_CONTENT = App.appContext.getString(R.string.JSON_tag_content);
+	private static String sKEY_RESULT = App.appContext.getString(R.string.JSON_tag_result);
 	
 	private static final String sTAG = "Profile Activity";
 
@@ -33,13 +34,12 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 	public static ImageView iv_avatar;
 	
 	private static PetListFragment mPetListFragment = null;
+	private boolean firstAdd = true;	// first time the petlist fragment is added
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		mContext = activity.getApplicationContext();
-		sKEY_CONTENT = mContext.getResources().getString(R.string.JSON_tag_content);
-		sKEY_RESULT = getResources().getString(R.string.JSON_tag_result);
 		
 		UserInfoManager.registerWeiboInfoListener(this);
 		UserInfoManager.registerPiaInfoListener(this);
@@ -65,19 +65,6 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 		super.onViewCreated(view, savedInstanceState);
 		loadProfilePic();
 		loadUserInfo();
-	}
-	
-	
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		if (mPetListFragment != null){
-			getFragmentManager()
-			.beginTransaction()
-			.remove(mPetListFragment)
-			.commit();
-		}
 	}
 
 	@Override
@@ -114,10 +101,19 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 				mPetListFragment.setPage(Integer.parseInt(UserInfoManager.userid));
 				mPetListFragment.setUserDataFlag(true);
 			}
-			getFragmentManager()
-				.beginTransaction()
-				.add(R.id.frag_userinfo_petlist_container, mPetListFragment)
-				.commit();
+			if (firstAdd){
+				getFragmentManager()
+					.beginTransaction()
+					.add(R.id.frag_userinfo_petlist_container, mPetListFragment)
+					.commit();
+				firstAdd = false;
+			}else{
+				getFragmentManager()
+					.beginTransaction()
+					.replace(R.id.frag_userinfo_petlist_container, mPetListFragment)
+					.addToBackStack(null)
+					.commit();
+			}
 		}
 	}
 	

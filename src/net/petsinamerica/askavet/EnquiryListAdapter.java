@@ -126,6 +126,10 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 			sStatus = "已解决";
 			status_color = android.graphics.Color.BLUE;
 			break;
+		case 4:
+			sStatus = "已关闭";
+			status_color = android.graphics.Color.BLACK;
+			break;
 		}
 		
 		viewHolder.enqueryID = Integer.parseInt(queryID);

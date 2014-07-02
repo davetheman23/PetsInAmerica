@@ -10,6 +10,7 @@
         android:id="@+id/action_logout"
         android:orderInCategory="100"
         android:showAsAction="never"
+        android:onClick="logMeOut"
         android:title="@string/action_logout"/>
 
 </menu>

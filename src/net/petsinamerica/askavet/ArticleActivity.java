@@ -86,6 +86,7 @@ public class ArticleActivity extends Activity {
 	private int articleId; 
 	private Uri mShareText = null;
 	private Uri mShareImage = null;
+	private String mShareSnapshotUrl = null;
 	private boolean isClicked = false; 	/* true if article like is clicked */
 	
 	private WebView mWebView;
@@ -98,6 +99,7 @@ public class ArticleActivity extends Activity {
 	private ImageView mWeiboShareIcon;
 	private ImageView mWeixinShareIcon;
 	private ImageView mFacebookShareIcon;
+	private ImageView mShareMoreIcon;
 	private Menu mMenu;
 	
 	private SlidingUpPanelLayout mSlideUpPanelLayout;
@@ -175,6 +177,11 @@ public class ArticleActivity extends Activity {
 		mFacebookShareIcon.setOnClickListener(new ShareIconClickListener("facebook"));
 		mFacebookShareIcon.setTag(SHARE_TO_FACEBOOK);
 		
+		// set up the weixin share icon, share with text and image
+		mShareMoreIcon = (ImageView) findViewById(R.id.article_activity_more_share);
+		mShareMoreIcon.setOnClickListener(new ShareIconClickListener(null));
+		mShareMoreIcon.setTag(999);
+		
 
 		mWebView = (WebView) findViewById(R.id.article_activity_web_view);
 		mWebView.setWebViewClient(new WebViewClient());
@@ -197,6 +204,16 @@ public class ArticleActivity extends Activity {
 		getMenuInflater().inflate(R.menu.article_activity_menu2, menu);
 		mMenu = menu;
 		return true;
+	}
+	
+	public void logMeOut(MenuItem item){
+		if (item.getTitle().equals(getResources().getString(R.string.action_logout))){
+			AccessTokenManager.clear(this);
+			AccessTokenManager.clearWeiboToken(this);
+			Intent intent = new Intent(this, LoginActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
+		}
 	}
 
 
@@ -245,6 +262,7 @@ public class ArticleActivity extends Activity {
 		}
 		@Override
 		public void onClick(View v) {
+			
 			// 
 			switch (Integer.parseInt(v.getTag().toString())){
 			case SHARE_TO_WEIBO:
@@ -415,11 +433,11 @@ public class ArticleActivity extends Activity {
 			mWebView.loadDataWithBaseURL(null, html_string, "text/html", HTTP.UTF_8, null);
 			
 			/* set up a background task to load the snapshot url into the target
-			 	in case user will share it, so it can be ready after user read */
-			String snapShotUrl = results.get(HTML_SNAPSHOT_URL);
+		 	in case user will share it, so it can be ready after user read */			
+			mShareSnapshotUrl = results.get(HTML_SNAPSHOT_URL);
 			Picasso.with(getApplication())
-					.load(Uri.parse(snapShotUrl))
-					.into(target);
+				.load(Uri.parse(mShareSnapshotUrl))
+				.into(target);
 			
 			int like_nums = Integer.parseInt(results.get(KEY_ARTICLE_LIKES));
 			/*if (mMenu != null){
@@ -449,7 +467,7 @@ public class ArticleActivity extends Activity {
 				@Override
 				public void run() {
 					File tmpFile = GeneralHelpers.getOutputMediaFile(
-							GeneralHelpers.MEDIA_TYPE_IMAGE);					
+							GeneralHelpers.MEDIA_TYPE_IMAGE, true);					
 					try 
 					{
 						tmpFile.createNewFile();

@@ -82,6 +82,7 @@ public class LoginActivity extends Activity{
             public void onClick(View v) {
                 mSsoHandler = new SsoHandler(LoginActivity.this, mWeiboAuth);
                 mSsoHandler.authorize(new AuthListener());
+            	Toast.makeText(getApplication(), "微博登陆暂不支持未关联的用户", Toast.LENGTH_LONG).show();
             }
         });
         
@@ -124,12 +125,12 @@ public class LoginActivity extends Activity{
 	protected void onResume() {
 		super.onResume();
 		
-		/*AccessToken token = AccessTokenManager.readAccessToken(getApplicationContext());	    
+		AccessToken token = AccessTokenManager.readAccessToken(getApplicationContext());	    
 		if (token != null && !token.isExpired()){
 			Intent intent = new Intent(this, HomeActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(intent);
-		}*/
+		}
 	}
 
 

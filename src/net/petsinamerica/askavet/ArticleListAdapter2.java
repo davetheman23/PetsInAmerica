@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.JsonHelper;
 
 import org.json.JSONArray;
@@ -29,7 +30,7 @@ import com.squareup.picasso.Picasso;
  *  listAdapter to display article summaries
  *  layout file list_item.xml 
  */
-public class ArticleListAdapter extends ArrayAdapter<Map<String, Object>> {
+public class ArticleListAdapter2 extends ArrayAdapter<Map<String, Object>> {
 	private final Context mContext;
 	//private final List<Map<String, Object>> mArticleSummaries;
 	private final int mResource;
@@ -42,15 +43,16 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String, Object>> {
 	private AttributeSet mAttributes;
 	
 	// these tags are those for reading the JSON objects
-	private static String TAG_TITLE;
-	private static String TAG_IMAGE;
-	private static String TAG_ID;
-	private static String TAG_TAGS;
+	private static String TAG_TITLE  = App.appContext.getString(R.string.JSON_tag_title);
+	private static String TAG_IMAGE = App.appContext.getString(R.string.JSON_tag_image);
+	private static String TAG_ID = App.appContext.getString(R.string.JSON_tag_id);
+	private static String TAG_TAGS  = App.appContext.getString(R.string.JSON_tag_tags);
+	private static final String TAG_CONTENT = App.appContext.getString(R.string.JSON_tag_content);
 	
 	private class ViewHolder{
 		ImageView iv;
 		TextView tv_firstline;
-		//TextView tv_secondline;
+		TextView tv_secondline;
 		TextView[] tv_tags;
 		LinearLayout linearLayout;
 		int articleID;
@@ -59,7 +61,7 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String, Object>> {
 	/*
 	 *  Standard constructer
 	 */
-	public ArticleListAdapter(Context context, int header, int resource,
+	public ArticleListAdapter2(Context context, int header, int resource,
 			List<Map<String, Object>> objects) {
 		super(context,  header, resource, objects);
 		
@@ -68,11 +70,6 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String, Object>> {
 		mHeader = header;
 		mResource = resource;
 		mAttributes = getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
-		
-		TAG_TITLE = mContext.getResources().getString(R.string.JSON_tag_title);
-		TAG_IMAGE = mContext.getResources().getString(R.string.JSON_tag_image);
-		TAG_ID = mContext.getResources().getString(R.string.JSON_tag_id);
-		TAG_TAGS = mContext.getResources().getString(R.string.JSON_tag_tags);
 		
 	}
 
@@ -102,15 +99,7 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String, Object>> {
 				rowview = inflater.inflate(mResource, parent, false);
 				viewHolder.iv = (ImageView) rowview.findViewById(R.id.list_icon);
 				viewHolder.tv_firstline =(TextView) rowview.findViewById(R.id.list_firstLine);	
-				// create several textviews, all inside the linear layout view 
-				// for each textview, can set an onclicklistener too
-				viewHolder.linearLayout = (LinearLayout) rowview.findViewById(R.id.list_secondline);
-				viewHolder.tv_tags = new TextView[MAX_NUM_TAGS_DISPLAY];
-				for (int tagidx = 0; tagidx < MAX_NUM_TAGS_DISPLAY; tagidx++){
-					// create a textview from a template file, which attribute is obtained in the constructor
-					viewHolder.tv_tags[tagidx] = new TextView(mContext, mAttributes);
-					viewHolder.linearLayout.addView(viewHolder.tv_tags[tagidx]);
-				}
+				viewHolder.tv_secondline = (TextView) rowview.findViewById(R.id.list_secondline);
 			}
 			// set tag for future reuse of the view
 			rowview.setTag(viewHolder);
@@ -123,27 +112,17 @@ public class ArticleListAdapter extends ArrayAdapter<Map<String, Object>> {
 		String sTitle,sImgURL, sArticleID;
 		sTitle = (String) articlesummary.get(TAG_TITLE);
 		sTitle = sTitle.trim();
+		sTitle = sTitle.replaceAll("<br />", "");
 		sImgURL = (String) articlesummary.get(TAG_IMAGE);
 		sArticleID = (String) articlesummary.get(TAG_ID);
-		String[] tags_cn = getCnTags(articlesummary.get(TAG_TAGS));
+		String content = (String) articlesummary.get(TAG_CONTENT);
+		
+		content = content.replaceAll("<br />", "");
 		
 		viewHolder.articleID = Integer.parseInt(sArticleID);
 		viewHolder.tv_firstline.setText(sTitle);
-		//if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
-		//	viewHolder.tv_secondline.setText("作者：" + sOwner);
-		//}
-		
-		// adding tags to in the second line of the view
-		int tagstoshow = (tags_cn.length) < MAX_NUM_TAGS_DISPLAY 
-				         ? (tags_cn.length) : MAX_NUM_TAGS_DISPLAY;
 		if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
-			for (int tagidx = 1; tagidx < tagstoshow; tagidx++){
-				viewHolder.tv_tags[tagidx].setVisibility(View.VISIBLE);
-				viewHolder.tv_tags[tagidx].setText("["+tags_cn[tagidx]+"]");
-			}
-			for (int tagidx = tagstoshow; tagidx < MAX_NUM_TAGS_DISPLAY; tagidx++){
-				viewHolder.tv_tags[tagidx].setVisibility(View.INVISIBLE);
-			}
+			viewHolder.tv_secondline.setText(content);
 		}
 		
 		// image loading procedure:
