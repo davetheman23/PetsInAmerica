@@ -51,7 +51,7 @@ public class EnquiryListFragment1 extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		mContext = activity.getApplicationContext();
+		mContext = activity;
 		sTAG_CONTENT = mContext.getResources().getString(R.string.JSON_tag_content);
 		sTAG_RESULT = getResources().getString(R.string.JSON_tag_result);
 		

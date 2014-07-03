@@ -46,6 +46,15 @@
     <string name="label_email">邮箱</string>
     <string name="label_weibo_name">微博名</string>
     
+    <!-- Pet Info page  -->
+    <string name="label_petname">宠物名字</string>
+    <string name="label_petspecies">类别</string>
+    <string name="label_petbreed">品种</string>
+    <string name="label_pet_bday">宠物生日</string>
+    <string name="label_pet_neuterage">绝育年龄</string>
+    <string name="label_petsex">性别</string>
+    <string name="label_petinsurance">保险公司</string>
+    
     <!-- Enquiry form page -->
     <string name="prompt_please_select">请选择</string>
     <string-array name="pet_diet_selection">

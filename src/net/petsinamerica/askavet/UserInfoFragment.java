@@ -9,11 +9,13 @@ import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -122,16 +124,127 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 		@Override
 		protected void onHttpDoneSetAdapter(
 				List<Map<String, Object>> resultArray) {
-			setCustomAdapter(new PetListAdapter(mContext, 
-						R.layout.pet_list_item_with_selection, resultArray));
+			setCustomAdapter(new PetListAdapter2(mContext, 
+						R.layout.pet_list_item, resultArray));
 		}
 
 		@Override
 		protected void onItemClickAction(View v, int position, long id) {
-			return;
-			
+			// obtain the article ID clicked
+			int petId = ((PetListAdapter2)this.getListAdapter()).getPetId(v);
+			Intent intent = new Intent(mContext, MyPetActivity.class);
+			intent.putExtra("id", petId);
+			startActivity(intent);
 		}
 		
 	}
+	
+	private static class PetListAdapter2 extends ArrayAdapter<Map<String, Object>> {
+		private final Context mContext;
+		private final int mResource;
+		private ViewGroup mParent;
+		
+		// these tags are those for reading the JSON objects
+		private String KEY_AVATAR;
+		private String KEY_ID;
+		private String KEY_NAME;
+		
+		private class ViewHolder{
+			ImageView ivPetAvatar;
+			TextView tvPetName;
+			int petId;
+		}
+		
+		/**
+		 *  Standard constructer
+		 */
+		public PetListAdapter2(Context context, int resource,
+				List<Map<String, Object>> objects) {
+			super(context, resource, objects);
+			
+			mContext = context;
+			mResource = resource;
+			
+			KEY_AVATAR = mContext.getResources().getString(R.string.JSON_tag_petavatar);
+			KEY_ID = mContext.getResources().getString(R.string.JSON_tag_id);
+			KEY_NAME = mContext.getResources().getString(R.string.JSON_tag_petname);
+			
+		}
 
+		/*
+		 *  each row in the list will call getView, this implementation deterimes
+		 *  the behavior and layout of each row of the list
+		 */
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			
+			if (mParent == null){
+				mParent = parent;
+			}
+
+			// reuse views - for faster loading, avoid inflation everytime
+			ViewHolder viewHolder = null;
+			View rowview = convertView;
+			if (rowview == null){
+				LayoutInflater inflater = (LayoutInflater) mContext.
+							getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				// if no rowview before, new viewholder is created
+				viewHolder = new ViewHolder();
+				
+				// inflate the layout view, and get individual views
+				rowview = inflater.inflate(mResource, parent, false);
+				viewHolder.ivPetAvatar = (ImageView) rowview.findViewById(R.id.pet_list_item_image);
+				viewHolder.tvPetName = (TextView) rowview.findViewById(
+														R.id.pet_list_item_name);
+				
+				// set tag for future reuse of the view
+				rowview.setTag(viewHolder);
+			}else{
+
+				viewHolder = (ViewHolder) rowview.getTag();
+			}
+			
+			Map<String, Object> listItem = getItem(position); 
+			String sName, sImgURL, sItemId;
+			sName = (String) listItem.get(KEY_NAME);
+			sName = sName.trim();
+			sImgURL = (String) listItem.get(KEY_AVATAR);
+			sItemId = (String) listItem.get(KEY_ID);
+			
+			viewHolder.petId = Integer.parseInt(sItemId);
+			viewHolder.tvPetName.setText(sName);
+			
+			if (sImgURL!= null && !sImgURL.startsWith("http")){
+				sImgURL = Constants.URL_FILE_STORAGE + sImgURL;
+			}
+			
+			// image loading procedure:
+			// 1. check if image available in memory / disk
+			// 2. set image if not in memory then fetch from URL
+			// Note: currently, use picasso instead
+			Picasso.with(mContext)
+				.load(sImgURL)
+				.placeholder(R.drawable.somepet)
+				.into(viewHolder.ivPetAvatar);
+			if (sImgURL== null || sImgURL.endsWith("somepet.png")){
+				Picasso.with(mContext)
+					.cancelRequest(viewHolder.ivPetAvatar);
+			}
+			return rowview;
+			
+		}
+		
+		/**
+		 * return a item ID from view selected, if item id is not 
+		 * available, -1 will be returned
+		 */
+		public int getPetId(View v) {
+			// this assumes the view is the row view so it has a viewholder
+			ViewHolder vh = (ViewHolder) v.getTag();
+			if (vh != null){
+				return vh.petId;
+			}
+			return -1;	
+		}
+	}
 }

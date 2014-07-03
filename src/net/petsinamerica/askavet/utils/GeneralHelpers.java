@@ -1,24 +1,33 @@
 package net.petsinamerica.askavet.utils;
 
 import java.io.File;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import net.petsinamerica.askavet.R;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.LabeledIntent;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Parcelable;
-import android.support.v4.util.LruCache;
 import android.util.Log;
+import android.widget.Toast;
 
 public class GeneralHelpers {
 	
@@ -142,124 +151,77 @@ public class GeneralHelpers {
 	    return null;
 	}
 
-	/*
-	 * load a Bitmap onto the Imageview, which was given as input param
-	 * image is download from the url stored in the imageview tag,
-	 * the downloaded image is resized to a small file size, and is 
-	 * stored in the mMemCache
-	 */	
-	public abstract static class DownLoadImageTask extends AsyncTask<String, Integer, Bitmap>{
+	public static class CallInBackground extends AsyncTask<String, Void, Map<String, Object>>{
 		
-		MemoryCache mMemCache = null;
-		private int mScale = 1;
-
-
-		@Override
-		protected Bitmap doInBackground(String... params) {
-			String url = params[0];
-			return download_image(url);
-		}
-
-		@Override
-		protected void onPostExecute(Bitmap result) {
-			onDownloaded(result);
-		}
-		/**
-		 * Implement action to be performed for the downloaded image
-		 * @param result the bitmap stored in memcache if set 
+		private Context mContext = App.appContext;
+		
+		private String KEY_RESULT = mContext.getString(R.string.JSON_tag_result);
+		
+		private final String KEY_ERROR = mContext.getString(R.string.JSON_tag_error);
+		
+		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
+		
+		/*1st level Json key to retrieve results, 
+		 * default is defined in R.string.JSON_tag_result
 		 */
-		protected abstract void onDownloaded(Bitmap result);
+		protected void setResultKey(String key){
+			KEY_RESULT = key;
+		}
 		
-		private Bitmap download_image(String url){
-			Bitmap bmp = null;
+		@Override
+		protected Map<String, Object> doInBackground(String... params) {
+			HttpPost post = new HttpPost(params[0]);
 			
-			try{
-				// open an internet connection to read data stream from the url
-				URL urln = new URL(url);
-				HttpURLConnection con = (HttpURLConnection) urln.openConnection();
-				InputStream is = con.getInputStream();
-				InputStream is_backup = is;
-				
-				// set options when decoding, this is to reduce the size of the image
-				BitmapFactory.Options opt = new BitmapFactory.Options();
-				opt.inSampleSize = mScale;		// scale it down in file size
-				//opt.inPurgeable = true;
-				
-				// decode inputstream from url as bitmp given above options
-				bmp = BitmapFactory.decodeStream(is_backup, null, opt);
+			AccessTokenManager.addAccessTokenPost(post, mContext);
 
-				if(null != bmp){
-					if (mMemCache != null)	// if Memchace has been set
-						mMemCache.addBitMapToMemoryCache(url, bmp);	// add the bitmap to cache when first downloaded
-					return bmp;
+			try {
+				// execute post
+				HttpResponse response = mClient.execute(post);
+				
+				// handle the json response
+				String responseString = new BasicResponseHandler().handleResponse(response);
+				
+				JSONObject responseObject = (JSONObject) new JSONTokener(responseString).nextValue(); 
+				
+				Map<String, Object> responseMap = JsonHelper.toMap(responseObject);
+				if (responseMap != null){
+					int errorCode = Integer.parseInt(responseMap.get(KEY_ERROR).toString());
+					if (errorCode == 0){
+						@SuppressWarnings("unchecked")
+						Map<String, Object> jObject = (Map<String, Object>)responseMap.get(KEY_RESULT);
+						return jObject;
+					}
 				}
-			}catch(Exception e){
-				
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}finally{
+				if (mClient!=null){
+					mClient.close();
+				}
 			}
-			return bmp;
+			return null;
 		}
-		
-		
-		/**
-		 * set aside some amount of cache for fast image loading
-		 * @param memCache an instance of MemoryCahce
-		 */
-		public void SetMemCache(MemoryCache memCache){
-			mMemCache = memCache;
-		}
-		
-		/**
-		 * set aside some amount of cache for fast image loading
-		 * @param memCache an instance of MemoryCahce
-		 * @param scale > 1, the factor to scale the image down in file size 
-		 */
-		public void SetMemCache(MemoryCache memCache, int scale){
-			mMemCache = memCache;
-			mScale = scale;
-		}
-		
-		public MemoryCache GetMemCache(){
-			return mMemCache;
-		}
-		
-		
 
-	}
-	
-	  /**
-	   * this class to store an bitmap image in the memory cache
-	   * the data only persist until application is killed
-	   */
-	public static class MemoryCache {
-		private LruCache<String, Bitmap> mMemoryCache;
-		
-		private int maxMemory;
-		private int cacheSize;
-		
-		public MemoryCache(){
-			maxMemory = (int) (Runtime.getRuntime().maxMemory()/1024);
-			cacheSize = maxMemory / 8;
+		@Override
+		protected void onPostExecute(Map<String, Object> result) {
+			super.onPostExecute(result);
+			onCallCompleted(result);
+		}
+
+		/* perform action when it is completed*/
+		protected void onCallCompleted(Map<String, Object> result) {
+			if (result != null){
+				Toast.makeText(mContext, "成功", Toast.LENGTH_LONG).show();		
+			}else{
+				Toast.makeText(mContext, "失败", Toast.LENGTH_LONG).show();
+			}
 			
-			mMemoryCache = new LruCache<String, Bitmap>(cacheSize){
-				@Override
-		        protected int sizeOf(String key, Bitmap bitmap) {
-		            // The cache size will be measured in kilobytes rather than
-		            // number of items.
-		            return bitmap.getByteCount() / 1024;
-		        }
-			};
-				
 		}
-		
-		public void addBitMapToMemoryCache(String key, Bitmap bitmap){
-			if (getBitmapFromMemCache(key) == null)
-				mMemoryCache.put(key, bitmap);
-		}
-
-		public Bitmap getBitmapFromMemCache(String key) {
-			return mMemoryCache.get(key);
-		}
-
 	}
+
 
 }

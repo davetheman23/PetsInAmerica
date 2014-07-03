@@ -195,10 +195,11 @@ public abstract class BaseListFragment extends ListFragment{
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		
-		if (position == getListView().getCount() - 1){
-			// if footer is clicked, this assumes footer exists
-			return;
+		if (mfooterview != null){
+			if (position == getListView().getCount() - 1){
+				// if footer is clicked, this assumes footer exists
+				return;
+			}
 		}
 		onItemClickAction(v, position, id);
 		

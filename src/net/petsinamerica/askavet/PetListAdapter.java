@@ -1,30 +1,17 @@
 package net.petsinamerica.askavet;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import net.petsinamerica.askavet.utils.JsonHelper;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
+import net.petsinamerica.askavet.utils.Constants;
 import android.content.Context;
-import android.util.AttributeSet;
-import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -113,7 +100,7 @@ public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 		viewHolder.checkBox.setChecked(selectStates[position]);
 		
 		if (sImgURL!= null && !sImgURL.startsWith("http")){
-			sImgURL = "http://petsinamerica.net/new/../upload/" + sImgURL;
+			sImgURL = Constants.URL_FILE_STORAGE + sImgURL;
 		}
 		
 		// image loading procedure:

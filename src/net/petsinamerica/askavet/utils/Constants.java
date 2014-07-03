@@ -15,6 +15,8 @@ public interface Constants {
 	
 	public static final String URL_BASE = "http://petsinamerica.net/new/";
 	
+	public static final String URL_FILE_STORAGE = "http://petsinamerica.net/new/../upload/";
+	
 	public static final String URL_API = URL_BASE + "api/";
 	
 	public static final String URL_BLOGCN = URL_API + "blogCN/";
@@ -34,6 +36,8 @@ public interface Constants {
 	public static final String URL_PRODUCTLIST = URL_API  + "productlist/";
 	
 	public static final String URL_USERPETS = URL_API  + "userpets/";
+	
+	public static final String URL_PETINFO = URL_API  + "pet/";
 	
 	public static final String URL_ARTICLE_LIKES = URL_API  + "zan/";
 	

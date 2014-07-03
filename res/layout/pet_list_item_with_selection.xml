@@ -20,7 +20,6 @@
         android:layout_alignTop="@id/pet_list_item_with_sel_image"
         android:layout_alignRight="@id/pet_list_item_with_sel_image"
         android:layout_marginRight="3dp"
-        android:clickable="false"
         android:checked="false"
         android:text="" />
 

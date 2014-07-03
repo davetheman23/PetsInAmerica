@@ -64,9 +64,6 @@ public class LoginActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		// initialize push service 
-		PushManager.getInstance().initialize(this.getApplicationContext());
-		
 		setContentView(R.layout.activity_login);
 		
 		KEY_LOGIN = getResources().getString(R.string.JSON_tag_login);
