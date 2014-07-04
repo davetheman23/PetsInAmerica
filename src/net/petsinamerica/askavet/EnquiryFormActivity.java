@@ -332,7 +332,7 @@ public class EnquiryFormActivity extends FragmentActivity {
 		protected void onHttpDoneSetAdapter(
 				List<Map<String, Object>> resultArray) {
 			petAdapter = new PetListAdapter(getActivity(), 
-						R.layout.pet_list_item_with_selection, resultArray);
+						R.layout.list_pet_item_with_selection, resultArray);
 			mHLview.setAdapter(petAdapter);
 		}
 

@@ -45,7 +45,13 @@ public abstract class BaseListFragment extends ListFragment{
 	public static final boolean FLAG_URL_NO_PAGE = false;
 	public static final boolean FLAG_URL_HAS_PAGE = true;
 	//public static final String KEY_ARTICLE_READ = "Article_Read";
-
+	
+	// customize the style of the lists
+	public static enum Style{
+		card,
+		normal //default style
+	};
+	
 	private static final String TAG = "BaseListFragment";
 	private static final String KEY_ERR = "error";
 	
@@ -65,6 +71,8 @@ public abstract class BaseListFragment extends ListFragment{
 	private boolean mflag_addData = false;		// false-don't add data
 	private boolean mIsUserSpecific = false;	// flag for user specific data
 	private boolean mHasFooter = true;			// flag to indicate if footer is needed
+	private boolean mSetScrollListener = true;	// flag whether to setscrollListener for the listview
+	
 	private ArrayAdapter<Map<String, Object>> mBaseAdapter;
 	private Context mContext;
 	private String mUrl;
@@ -107,8 +115,37 @@ public abstract class BaseListFragment extends ListFragment{
 		KEY_LIST = jsonListKey;
 		mHasFooter = hasfooter;
 	}
+	
+	public void setParameters(String url,  String jsonListKey, boolean hasfooter, 
+			boolean isSetScrollListener) {
+		mUrl = url;
+		KEY_LIST = jsonListKey;
+		mHasFooter = hasfooter;
+		mSetScrollListener = isSetScrollListener;
+	
+	}
 	public void setUserDataFlag(boolean isUserSpecific){
 		mIsUserSpecific = isUserSpecific;
+	}
+	
+	/**
+	 * this is useful when certain style need to be achieved, call this function after
+	 * the onViewCreated(). <p>
+	 * If <b>card style</b> is needed, in the item layout xml, need to set both 
+	 * android:layout_margin="10dp", android:background="@drawable/layer_card_background"
+	 * and also passing in Style.card 
+	 */
+	public void setStyle(Style style){
+		switch (style){
+		case card:
+			getListView().setDivider(null);
+			getListView().setDividerHeight(10);
+			getListView().setCacheColorHint(android.R.color.transparent);
+			getListView().setBackgroundColor(mContext.getResources().getColor(R.color.WhiteSmoke));
+			break;
+		default:
+			// do nothing
+		}
 	}
 	
 	@Override
@@ -146,37 +183,39 @@ public abstract class BaseListFragment extends ListFragment{
 		// disable scroll bar
 		getListView().setVerticalScrollBarEnabled(false);		
 		
-		// monitor scroll activity, add more articles when scroll close to bottom
-		getListView().setOnScrollListener(new OnScrollListener() {
-			/*
-			 * this listener is used to continuously load more article when scroll down to bottom
-			 */
-		@Override
-			public void onScrollStateChanged(AbsListView view, int scrollState) {
-			}
-			
+		if (mSetScrollListener){
+			// monitor scroll activity, add more articles when scroll close to bottom
+			getListView().setOnScrollListener(new OnScrollListener() {
+				/*
+				 * this listener is used to continuously load more article when scroll down to bottom
+				 */
 			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem,
-					int visibleItemCount, int totalItemCount) {
-				if(firstVisibleItem + visibleItemCount >= totalItemCount - 1 && totalItemCount != 0)
-				{
-					
-					// when the visible item reaches the last item, 
-					if (mflag_addData == false)
+				public void onScrollStateChanged(AbsListView view, int scrollState) {
+				}
+				
+				@Override
+				public void onScroll(AbsListView view, int firstVisibleItem,
+						int visibleItemCount, int totalItemCount) {
+					if(firstVisibleItem + visibleItemCount >= totalItemCount - 1 && totalItemCount != 0)
 					{
-						mPage += 1;
-						mflag_addData = true;
-						loadListInBackground();
-						if (getListView().getFooterViewsCount() == 0){
-							setUpFooterView();
-						}
-						if (mfooterview != null){
-							mfooterview.setVisibility(View.VISIBLE);
+						
+						// when the visible item reaches the last item, 
+						if (mflag_addData == false)
+						{
+							mPage += 1;
+							mflag_addData = true;
+							loadListInBackground();
+							if (getListView().getFooterViewsCount() == 0){
+								setUpFooterView();
+							}
+							if (mfooterview != null){
+								mfooterview.setVisibility(View.VISIBLE);
+							}
 						}
 					}
 				}
-			}
-		});
+			});
+		}
 		
 	}
 	

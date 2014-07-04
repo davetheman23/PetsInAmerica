@@ -272,15 +272,12 @@ public class HomeActivity extends FragmentActivity implements
 
 		@Override
 		protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
-			getListView().setDivider(null);
-			getListView().setDividerHeight(10);
-			getListView().setCacheColorHint(android.R.color.transparent);
-			getListView().setBackgroundColor(mContext.getResources().getColor(R.color.WhiteSmoke));
+			setStyle(Style.card);
 			getListView().setHeaderDividersEnabled(true);
 			getListView().addHeaderView(new View(getActivity()));
 			setCustomAdapter(new ArticleListAdapter2(
-					this.getActivity(), R.layout.article_list_header,
-					R.layout.article_list_item, resultArray));
+					this.getActivity(), R.layout.list_article_header,
+					R.layout.list_article_item, resultArray));
 		}
 
 		@Override

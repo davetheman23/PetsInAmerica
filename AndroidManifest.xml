@@ -73,6 +73,12 @@
             android:name="net.petsinamerica.askavet.MyPetActivity"
             android:label="我的宠物信息">
         </activity>
+        <activity 
+            android:name="net.petsinamerica.askavet.MyPetDetailsActivity"
+            android:label="我的宠物信息">
+        </activity>
+        
+       
         
         <activity 
             android:name="net.petsinamerica.askavet.PushActivity"

@@ -62,7 +62,7 @@ public class EnquiryListFragment2 extends BaseListFragment {
 	@Override
 	protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
 		EnquiryListAdapter adapter = new EnquiryListAdapter(mContext,
-								R.layout.enquiry_list_item, resultArray);
+								R.layout.list_enquiry_item, resultArray);
 		setCustomAdapter(adapter);
 		
 		// keep two instances of the adapter, so that the showing of enquiry

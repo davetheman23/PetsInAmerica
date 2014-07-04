@@ -1,86 +1,218 @@
 package net.petsinamerica.askavet;
 
+import java.util.List;
 import java.util.Map;
 
 import net.petsinamerica.askavet.utils.App;
+import net.petsinamerica.askavet.utils.BaseListFragment;
 import net.petsinamerica.askavet.utils.Constants;
-import net.petsinamerica.askavet.utils.GeneralHelpers;
+import net.petsinamerica.askavet.utils.UserInfoManager;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-public class MyPetActivity extends Activity {
+public class MyPetActivity extends FragmentActivity{
+
+	private static String KEY_RESULT = App.appContext.getString(R.string.JSON_tag_result);
 	
-	TextView tvPetName;
-	TextView tvPetSex;
-	TextView tvPetBreed;
-	TextView tvPetSpecies;
-	TextView tvPetBDay;
-	TextView tvPetNeuterAge;
-	TextView tvPetInsurance;
-	ImageView ivPetAvatar;
+	public FragmentManager fm = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_petinfo);
 		
-		// reference all views 
-		tvPetName = (TextView) findViewById(R.id.activity_petinfo_petName);
-		tvPetSex = (TextView) findViewById(R.id.activity_petinfo_petsex);
-		tvPetBDay = (TextView) findViewById(R.id.activity_petinfo_pet_bday);
-		tvPetBreed = (TextView) findViewById(R.id.activity_petinfo_petbreed);
-		tvPetNeuterAge = (TextView) findViewById(R.id.activity_petinfo_pet_neuterage);
-		tvPetSpecies = (TextView) findViewById(R.id.activity_petinfo_petspecies);
-		tvPetInsurance = (TextView) findViewById(R.id.activity_petinfo_petinsurance);
-		ivPetAvatar = (ImageView) findViewById(R.id.activity_petinfo_pet_pic);
+		// setup the list fragment that shows a list of all pets of the user		
+		PetListFragment petListFragment = new PetListFragment();
 		
-		
-		int petId = getIntent().getIntExtra("id", -1);
-		if (petId != -1){
-			new GetPetInfo().execute(Constants.URL_PETINFO + petId);
-		}
+		fm = getSupportFragmentManager(); 
+		fm.beginTransaction()
+			.add(R.id.activity_petinfo_container, petListFragment)
+			.commit();
 		
 	}
+
 	
-	private class GetPetInfo extends GeneralHelpers.CallInBackground{
+	
+	
+	public static class PetListFragment extends BaseListFragment{
+		
+		/*OnPetItemSelectedListener mCallback;*/
+		
+		PetListAdapter2 adapter;
+		
+		/*// a map to retain the reference of all the detail fragments
+		// that are ever been created
+		Map<Integer, PetDetailFragment> petDetails = 
+							new HashMap<Integer, MyPetActivity.PetDetailFragment>();*/
+		
+		// Container Activity must implement this interface
+	    /*public interface OnPetItemSelectedListener {
+	        	public void onPetSelected(int position);
+	    }*/
+		
+		@Override
+		public void onAttach(Activity activity) {
+			super.onAttach(activity);
+			
+			/*// This makes sure that the container activity has implemented
+	        // the callback interface. If not, it throws an exception
+	        try {
+	            mCallback = (OnPetItemSelectedListener) activity;
+	        } catch (ClassCastException e) {
+	            throw new ClassCastException(activity.toString()
+	                    + " must implement OnPetItemSelectedListener");
+	        }*/
+			setParameters(Constants.URL_USERPETS, KEY_RESULT, false, false);
+			setPage(Integer.parseInt(UserInfoManager.userid));
+			setUserDataFlag(true);
+			
+		}
 
 		@Override
-		protected void onCallCompleted(Map<String, Object> result) {
-			String petName = result.get("name").toString();
-			String petSex = result.get("sex").toString();
-			String petBDay = result.get("birth").toString();
-			String petBreed = result.get("breed").toString();
-			String petNeuterAge = result.get("desex").toString();
-			String petInsurance = result.get("insurance").toString();
-			String petSpecies = result.get("species").toString();
-			String petImageUrl = result.get("avatar").toString();
-			if (petImageUrl!= null && !petImageUrl.startsWith("http")){
-				petImageUrl = Constants.URL_FILE_STORAGE + petImageUrl;
-			}
-			
-			tvPetName.setText(petName);
-			tvPetSex.setText("(" + petSex + ")");
-			tvPetBDay.setText(petBDay);
-			tvPetBreed.setText(petBreed);
-			tvPetNeuterAge.setText(petNeuterAge + " 个月");
-			tvPetSpecies.setText(petSpecies);
-			tvPetInsurance.setText(petInsurance);
-			
-			
-			Picasso.with(App.appContext)
-				   .load(petImageUrl)
-				   .into(ivPetAvatar);
-			
-			
+		protected void onHttpDoneSetAdapter(
+				List<Map<String, Object>> resultArray) {
+			setStyle(Style.card);
+			adapter = new PetListAdapter2(this.getActivity(), 
+							R.layout.list_pet_item, resultArray);
+			setCustomAdapter(adapter);
+		}
+
+		@Override
+		protected void onItemClickAction(View v, int position, long id) {
+			int petId = adapter.getPetId(v);			
+			Intent intent = new Intent(getActivity(), MyPetDetailsActivity.class);
+			intent.putExtra(Constants.KEY_PET_ID, petId);
+			startActivity(intent);			
+			return;
 		}
 		
 	}
 	
-	
+	private static class PetListAdapter2 extends ArrayAdapter<Map<String, Object>> {
+		private final Context mContext;
+		private final int mResource;
+		
+		private class ViewHolder{
+			ImageView ivPetAvatar;
+			TextView tvPetName;
+			TextView tvPetSpecies;
+			TextView tvPetBreed;
+			TextView tvPetSex;
+			TextView tvPetBday;
+			int petId;
+		}
+		
+		/**
+		 *  Standard constructer
+		 */
+		public PetListAdapter2(Context context, int resource,
+				List<Map<String, Object>> objects) {
+			super(context, resource, objects);
+			
+			mContext = context;
+			mResource = resource;
+
+		}
+
+		/*
+		 *  each row in the list will call getView, this implementation deterimes
+		 *  the behavior and layout of each row of the list
+		 */
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+
+			// reuse views - for faster loading, avoid inflation everytime
+			ViewHolder viewHolder = null;
+			View rowview = convertView;
+			if (rowview == null){
+				LayoutInflater inflater = (LayoutInflater) mContext.
+							getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				// if no rowview before, new viewholder is created
+				viewHolder = new ViewHolder();
+				
+				// inflate the layout view, and get individual views
+				rowview = inflater.inflate(mResource, parent, false);
+				viewHolder.ivPetAvatar = (ImageView) rowview.findViewById(R.id.pet_list_pic);
+				viewHolder.tvPetName = (TextView) rowview.findViewById(
+														R.id.pet_list_pet_name);
+				viewHolder.tvPetSpecies = (TextView) rowview.findViewById(
+														R.id.pet_list_petspecies);
+				viewHolder.tvPetBreed = (TextView) rowview.findViewById(
+														R.id.pet_list_petbreed);
+				viewHolder.tvPetSex = (TextView) rowview.findViewById(
+														R.id.pet_list_petsex);
+				viewHolder.tvPetBday = (TextView) rowview.findViewById(
+														R.id.pet_list_pet_bday);
+				
+				// set tag for future reuse of the view
+				rowview.setTag(viewHolder);
+			}else{
+
+				viewHolder = (ViewHolder) rowview.getTag();
+			}
+			
+			Map<String, Object> listItem = getItem(position); 
+			String sName, sImgURL, sItemId;
+			sName = (String) listItem.get(Constants.KEY_PET_NAME);
+			sName = sName.trim();
+			sImgURL = (String) listItem.get(Constants.KEY_PET_PIC);
+			sItemId = (String) listItem.get(Constants.KEY_PET_ID);
+			String bDay = (String) listItem.get(Constants.KEY_PET_BDAY);
+			String breed = (String) listItem.get(Constants.KEY_PET_BREED);
+			String sex = (String) listItem.get(Constants.KEY_PET_SEX);
+			String species = (String) listItem.get(Constants.KEY_PET_SPECIES);
+			
+			viewHolder.petId = Integer.parseInt(sItemId);
+			viewHolder.tvPetName.setText(sName);
+			viewHolder.tvPetBday.setText(bDay);
+			viewHolder.tvPetBreed.setText(breed);
+			viewHolder.tvPetSpecies.setText(species ); 
+			viewHolder.tvPetSex.setText("(" + sex + ")");
+			
+			if (sImgURL!= null && !sImgURL.startsWith("http")){
+				sImgURL = Constants.URL_FILE_STORAGE + sImgURL;
+			}
+			
+			// image loading procedure:
+			// 1. check if image available in memory / disk
+			// 2. set image if not in memory then fetch from URL
+			// Note: currently, use picasso instead
+			Picasso.with(mContext)
+				.load(sImgURL)
+				.placeholder(R.drawable.somepet)
+				.into(viewHolder.ivPetAvatar);
+			if (sImgURL== null || sImgURL.endsWith("somepet.png")){
+				Picasso.with(mContext)
+					.cancelRequest(viewHolder.ivPetAvatar);
+			}
+			return rowview;
+			
+		}
+		
+		/**
+		 * return a pet ID from view selected, if item id is not 
+		 * available, -1 will be returned
+		 */
+		public int getPetId(View v) {
+			// this assumes the view is the row view so it has a viewholder
+			ViewHolder vh = (ViewHolder) v.getTag();
+			if (vh != null){
+				return vh.petId;
+			}
+			return -1;	
+		}
+	}
 	
 }

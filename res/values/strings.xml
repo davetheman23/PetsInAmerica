@@ -43,8 +43,18 @@
     
     <!-- Profile page  -->
     <string name="label_username">用户名</string>
+    <string name="label_nickname">昵 称</string>
     <string name="label_email">邮箱</string>
+    <string name="label_city">城市</string>
     <string name="label_weibo_name">微博名</string>
+    <string name="label_my_pets">我的宠物</string>
+    <string name="label_my_enquiries">我的提问</string>
+    <string name="label_my_comments">我的评论</string>
+    <string name="label_my_like_articles">我赞过的文章</string>
+    <string name="label_my_favorites">我的收藏</string>
+    <string name="label_my_petfriends">我的宠物好友</string>
+    <string name="label_setting">设置</string>
+    
     
     <!-- Pet Info page  -->
     <string name="label_petname">宠物名字</string>
@@ -104,17 +114,25 @@
     <string name = "JSON_tag_result">result</string>
     <string name = "JSON_tag_status">status</string>
     <string name = "JSON_tag_avatar">useravatar</string>
-    <string name = "JSON_tag_petavatar">avatar</string>
     <string name = "JSON_tag_maintag_cn">maintag_cn</string>
     <string name = "JSON_tag_ownername">ownername</string>
     <string name = "JSON_tag_username">username</string>
-    <string name = "JSON_tag_petname">name</string>
     <string name = "JSON_tag_password">password</string>
     <string name = "JSON_tag_login">login</string>
     <string name = "JSON_tag_error">error</string>
     <string name = "JSON_tag_errorMessage">errorMsg</string>
     <string name = "JSON_tag_admin">admin</string>
-    
-    
-   
+    <string name = "JSON_tag_petavatar">avatar</string>
+    <string name = "JSON_tag_petname">name</string>
+    <string name = "JSON_tag_petsex">sex</string>
+    <string name = "JSON_tag_petspecies">species</string>
+    <string name = "JSON_tag_petbreed">breed</string>
+    <string name = "JSON_tag_petneuterage">desex</string>
+    <string name = "JSON_tag_petbday">birth</string>
+    <string name = "JSON_tag_petinsurance">insurance</string>
+    <string name = "JSON_tag_petid">id</string>
+    <string name = "JSON_tag_petflea">flea</string>
+    <string name = "JSON_tag_petdeworm">deworm</string>
+    <string name = "JSON_tag_petvaccination">vaccination</string>
+
 </resources>

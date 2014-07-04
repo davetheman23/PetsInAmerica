@@ -1,5 +1,7 @@
 package net.petsinamerica.askavet.utils;
 
+import net.petsinamerica.askavet.R;
+
 public interface Constants {
 	
 	public static final String APPTAG = "AskaVet";
@@ -57,5 +59,21 @@ public interface Constants {
   	public static final String PIA_ROOT_DIR = "AskaVet";
   	
   	public static final String TEMP_SUBDIR = "temp";
+  	
+  	/*
+  	 * for JSON parsing
+  	 */
+  	public static final String KEY_PET_NAME = App.appContext.getString(R.string.JSON_tag_petname);
+  	public static final String KEY_PET_PIC = App.appContext.getString(R.string.JSON_tag_petavatar);
+  	public static final String KEY_PET_SEX = App.appContext.getString(R.string.JSON_tag_petsex);
+  	public static final String KEY_PET_SPECIES = App.appContext.getString(R.string.JSON_tag_petspecies);
+  	public static final String KEY_PET_BREED = App.appContext.getString(R.string.JSON_tag_petbreed);
+  	public static final String KEY_PET_NEUTERAGE = App.appContext.getString(R.string.JSON_tag_petneuterage);
+  	public static final String KEY_PET_BDAY = App.appContext.getString(R.string.JSON_tag_petbday);
+  	public static final String KEY_PET_INSURANCE = App.appContext.getString(R.string.JSON_tag_petinsurance);
+  	public static final String KEY_PET_ID = App.appContext.getString(R.string.JSON_tag_petid);
+  	public static final String KEY_PET_FLEA = App.appContext.getString(R.string.JSON_tag_petflea);
+  	public static final String KEY_PET_DEWORM = App.appContext.getString(R.string.JSON_tag_petdeworm);
+  	public static final String KEY_PET_VACCINATION = App.appContext.getString(R.string.JSON_tag_petvaccination);
 
 }

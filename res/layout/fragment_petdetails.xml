@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/WhiteSmoke"
+    android:orientation="vertical" >
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/layer_card_background"
+        android:orientation="vertical">
+	    <RelativeLayout 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        >
+	        <LinearLayout 
+	            android:id="@+id/frag_pet_details_linearlayout1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentLeft="true"
+	            android:layout_centerVertical="true"
+	            android:orientation="vertical">
+	            <ImageView 
+		            android:id="@+id/frag_pet_details_pet_pic"
+		            android:layout_width="100dp"
+		            android:layout_height="100dp"
+		            android:layout_gravity="center_horizontal"
+		            android:src="@drawable/somepet"/>
+		        <TextView
+		            android:id="@+id/frag_pet_details_petName"
+		            android:layout_width="wrap_content"
+		            android:layout_height="wrap_content"
+		            android:layout_gravity="center_horizontal"
+		            android:layout_marginTop="5dp"
+		            android:textSize="14sp"
+		            android:textStyle="bold"
+		            android:text="@string/label_petname" />
+	        </LinearLayout>
+	        
+	        <TableLayout
+	            android:id="@+id/frag_pet_details_pet_info"
+	        	android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentRight="true"
+	            android:layout_marginLeft="10dp"
+	            android:layout_toRightOf="@id/frag_pet_details_linearlayout1"
+	            android:gravity="center_horizontal">
+		        <TableRow >
+		            <TextView
+		                android:layout_width="0dp"
+		                android:layout_weight="1"
+		                android:layout_height="wrap_content"
+		                android:layout_gravity="left"
+		                android:text="@string/label_petspecies" />
+		            <TextView
+		                android:id="@+id/frag_pet_details_petspecies"
+		                android:layout_width="0dp"
+		                android:layout_weight="1"
+		                android:layout_height="wrap_content"
+		                android:gravity="right"
+		                android:text="狗" />
+		            <TextView
+		                android:id="@+id/frag_pet_details_petsex"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:gravity="right"
+		                android:layout_marginLeft="5dp"
+		                android:text="(Male)" />
+		        </TableRow>
+		        <TableRow>
+		            <View
+		                android:layout_span="2"
+		                android:layout_width="wrap_content"
+		                android:layout_height="0.5dp"
+		                android:layout_weight="1"
+		                android:layout_marginTop="5dp"
+		                android:layout_marginBottom="5dp"
+		                android:background="#999" />
+		        </TableRow>
+		        <TableRow>
+		            <TextView
+		                android:layout_width="0dp"
+		                android:layout_weight="1"
+		                android:layout_height="wrap_content"
+		                android:layout_gravity="left"
+		                android:text="@string/label_petbreed" />
+		            <TextView
+		                android:id="@+id/frag_pet_details_petbreed"
+		                android:layout_width="0dp"
+		                android:layout_weight="4"
+		                android:layout_height="wrap_content"
+		                android:gravity="right"
+		                android:layout_marginLeft="10dp"
+		                android:text="mixed-breed" />
+		        </TableRow>
+		        <TableRow>
+		            <View
+		                android:layout_span="2"
+		                android:layout_width="wrap_content"
+		                android:layout_height="0.5dp"
+		                android:layout_weight="1"
+		                android:layout_marginTop="5dp"
+		                android:layout_marginBottom="5dp"
+		                android:background="#999" />
+		        </TableRow>
+		        <RelativeLayout>
+		            <TextView
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_alignParentLeft = "true"
+		                android:text="@string/label_pet_bday" />
+		            <TextView
+		                android:id="@+id/frag_pet_details_pet_bday"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:gravity="right"
+		                android:layout_alignParentRight="true"
+		                android:layout_marginLeft="10dp"
+		                android:text="2013-11-13" />
+		        </RelativeLayout>
+		
+		        <TableRow>
+		            <View
+		                android:layout_span="2"
+		                android:layout_width="wrap_content"
+		                android:layout_height="0.5dp"
+		                android:layout_weight="1"
+		                android:layout_marginTop="5dp"
+		                android:layout_marginBottom="5dp"
+		                android:background="#999" />
+		        </TableRow>
+		        <TableRow>
+		            <TextView
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_gravity="left"
+		                android:text="@string/label_pet_neuterage" />
+		            <TextView
+		                android:id="@+id/frag_pet_details_pet_neuterage"
+		                android:layout_width="0dp"
+		                android:layout_weight="1"
+		                android:layout_height="wrap_content"
+		                android:gravity="right"
+		                android:layout_marginLeft="10dp"
+		                android:text="15 个月" />
+		        </TableRow>
+		        <TableRow>
+		            <View
+		                android:layout_span="2"
+		                android:layout_width="wrap_content"
+		                android:layout_height="0.5dp"
+		                android:layout_weight="1"
+		                android:layout_marginTop="5dp"
+		                android:layout_marginBottom="5dp"
+		                android:background="#999" />
+		        </TableRow>
+		        <TableRow>
+		            <TextView
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_gravity="left"
+		                android:text="@string/label_petinsurance" />
+		            <TextView
+		                android:id="@+id/frag_pet_details_petinsurance"
+		                android:layout_width="0dp"
+		                android:layout_height="wrap_content"
+		                android:layout_weight="1"
+		                android:gravity="right"
+		                android:layout_marginLeft="10dp"
+		                android:text="HealthyPaws" />
+		        </TableRow>
+	    	</TableLayout>
+	    </RelativeLayout>
+	    <View
+              android:layout_span="2"
+              android:layout_width="wrap_content"
+              android:layout_height="0.5dp"
+              android:layout_weight="1"
+              android:layout_marginTop="5dp"
+              android:layout_marginBottom="5dp"
+              android:background="#999" />
+	    <TableLayout
+	            android:id="@+id/frag_pet_details_petinfo2"
+	        	android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:gravity="center_horizontal">
+	        <TableRow >
+	            <TextView
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:layout_gravity="left"
+	                android:text="上次免疫时间 " />
+	            <TextView
+	                android:id="@+id/frag_pet_details_vaccination"
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:gravity="right"
+	                android:text="2014-02-18" />
+	        </TableRow>
+	        <TableRow>
+	            <View
+	                android:layout_span="2"
+	                android:layout_width="wrap_content"
+	                android:layout_height="0.5dp"
+	                android:layout_weight="1"
+	                android:layout_marginTop="5dp"
+	                android:layout_marginBottom="5dp"
+	                android:background="#999" />
+	        </TableRow>
+	        <TableRow >
+	            <TextView
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:layout_gravity="left"
+	                android:text="上次跳蚤预防时间" />
+	            <TextView
+	                android:id="@+id/frag_pet_details_flea"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:gravity="right"
+	                android:layout_marginLeft="5dp"
+	                android:text="2014-04-03" />
+	        </TableRow>
+	        <TableRow>
+	            <View
+	                android:layout_span="2"
+	                android:layout_width="wrap_content"
+	                android:layout_height="0.5dp"
+	                android:layout_weight="1"
+	                android:layout_marginTop="5dp"
+	                android:layout_marginBottom="5dp"
+	                android:background="#999" />
+	        </TableRow>
+	        <TableRow >
+	            <TextView
+	                android:layout_width="0dp"
+	                android:layout_weight="1"
+	                android:layout_height="wrap_content"
+	                android:layout_gravity="left"
+	                android:text="上次体内驱虫时间" />
+	            <TextView
+	                android:id="@+id/frag_pet_details_deworm"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:gravity="right"
+	                android:layout_marginLeft="5dp"
+	                android:text="2014-04-15" />
+	        </TableRow>
+	    </TableLayout>
+	</LinearLayout>
+    <LinearLayout 
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/layer_card_background"
+        >
+        <TextView 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:padding="5dp"
+	        android:background="@color/BlueGreen"
+	        android:text="相关询问单"
+	        android:textColor="@color/White"
+	        android:textAppearance="@android:style/TextAppearance.Medium"/>
+	    <ListView 
+	        android:id="@android:id/list"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_marginTop="10dp"/>
+    </LinearLayout>
+    
+
+</LinearLayout>

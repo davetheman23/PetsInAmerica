@@ -150,7 +150,7 @@ public class EnquiryListFragment1 extends Fragment {
 		@Override
 		protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
 			setCustomAdapter(new EnquiryListAdapter(mContext,
-					R.layout.enquiry_list_item, resultArray));
+					R.layout.list_enquiry_item, resultArray));
 		}
 
 		@Override
@@ -180,7 +180,7 @@ public class EnquiryListFragment1 extends Fragment {
 		@Override
 		protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
 			setCustomAdapter(new EnquiryListAdapter(mContext,
-					R.layout.enquiry_list_item, resultArray));
+					R.layout.list_enquiry_item, resultArray));
 		}
 
 		@Override
