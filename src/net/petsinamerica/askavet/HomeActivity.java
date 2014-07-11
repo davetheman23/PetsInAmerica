@@ -16,6 +16,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.util.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -33,11 +34,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.igexin.sdk.PushManager;
@@ -86,6 +88,8 @@ public class HomeActivity extends FragmentActivity implements
 		// initialize push service 
 		PushManager.getInstance().initialize(this.getApplicationContext());
 		
+		final ActionBar actionBar = setupActionBar();
+		
 		setContentView(R.layout.activity_home);
 		
 		//initialize local variables
@@ -115,7 +119,7 @@ public class HomeActivity extends FragmentActivity implements
 	    //StatusesAPI statusesAPI = new StatusesAPI(weiboToken);
 
 		// Set up the action bar.
-		final ActionBar actionBar = getActionBar();
+		//final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		// Create the adapter that will return a fragment for each of the three
@@ -160,14 +164,14 @@ public class HomeActivity extends FragmentActivity implements
 		
 	}
 
-	@Override
+/*	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.home, menu);
 		this.menu = menu;
 		return true;
 	}
-
+*/
 	@Override
 	public void onTabSelected(ActionBar.Tab tab,
 			FragmentTransaction fragmentTransaction) {
@@ -193,7 +197,42 @@ public class HomeActivity extends FragmentActivity implements
 		super.onDestroy();
 		
 	}
+	
+	/*
+	 * This setup the custom action bar layout
+	 * set home icon as gone essentially achieves this ab.setDisplayShowHomeEnabled(false);
+	 * but due to the use of view-pager, that code will make the tabs above the actionbar
+	 * this is a work-around approach
+	 */
+	private ActionBar setupActionBar() {
+        ActionBar ab = getActionBar();
+        //ab.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        ab.setDisplayShowCustomEnabled(true);
+        
+        ab.setDisplayShowHomeEnabled(true);
+        LayoutInflater inflator = (LayoutInflater) this
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflator.inflate(R.layout.actionbar_home, null);
 
+        ab.setCustomView(v);
+        
+        // set the home-icon as gone, so it still there just cannot be seen
+        /*View homeIcon = findViewById(android.R.id.home);
+		((View)homeIcon.getParent()).setVisibility(View.GONE);*/
+        
+        Button btnNotification = (Button) v.findViewById(R.id.actionbar_home_btn_notification);
+        btnNotification.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Toast.makeText(mContext, "提醒功能还在完善中", Toast.LENGTH_LONG).show();
+			}
+		});
+        
+        
+		
+        return ab;
+    }
+	
 	public void logMeOut(MenuItem item){
 		if (item.getTitle().equals(getResources().getString(R.string.action_logout))){
 			AccessTokenManager.clear(this);

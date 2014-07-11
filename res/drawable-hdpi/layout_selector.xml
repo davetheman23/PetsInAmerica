@@ -4,4 +4,4 @@
   <item android:state_selected="true" android:drawable="@color/WhiteSmoke" /> 
   <item android:state_pressed="true" android:state_selected="false" android:drawable="@color/WhiteSmoke" /> 
   <item android:state_selected="false" android:drawable="@drawable/layer_card_background2"/>
-  </selector>
+</selector>

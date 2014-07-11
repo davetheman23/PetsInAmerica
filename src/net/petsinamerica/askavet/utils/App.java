@@ -21,7 +21,10 @@ public class App extends Application {
 	public static String EXTERNAL_DIRECTORY = null;
 	public static String INTERNAL_DIRECTORY = null;
 	
-	
+	/*
+	 * the context of the app that will persist as long as the app is not killed,
+	 * it can be called from anywhere within the application
+	 */
 	public static Context appContext;
 
 	@Override

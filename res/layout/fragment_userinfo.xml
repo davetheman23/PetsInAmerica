@@ -133,7 +133,7 @@
 	        android:layout_marginBottom="10dp"
 	        android:paddingRight="2dp"
 	       	>
-	        <LinearLayout
+	       <LinearLayout
 	            android:id="@+id/frag_userinfo_ll_likedarticles"
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
@@ -141,31 +141,59 @@
 	            android:orientation="horizontal"
 	            android:paddingLeft="5dp"
 	            android:paddingRight="5dp"
-	            android:paddingTop = "10dp"
-	            android:paddingBottom="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:clickable="true"
 	            android:background="@drawable/layout_selector">
-	        	<TextView
-		             android:layout_width="wrap_content"
-		             android:layout_height="wrap_content"
-		             android:layout_marginLeft="5dp"
-		             android:gravity="center_vertical|left"
-		             android:text="@string/label_my_like_articles"
-		             android:textAppearance="@android:style/TextAppearance.Small" />
+		        <ImageView 
+	                android:layout_width="30dp"
+	                android:layout_height="match_parent"
+	                android:src="@drawable/ic_like"
+	                android:contentDescription=""
+	                />
+		        <RelativeLayout 
+	                android:layout_width="wrap_content"
+		            android:layout_height="wrap_content">
+            	    
+	            	<TextView
+	            	    android:id="@+id/frag_userinfo_tv_mylikearticles"
+			             android:layout_width="wrap_content"
+			             android:layout_height="wrap_content"
+			             android:layout_marginTop="10dp"
+		             	 android:layout_marginBottom="10dp"
+			             android:layout_marginLeft="5dp"
+			             android:paddingRight="8dp"
+			             android:gravity="center_vertical|left"
+			             android:text="@string/label_my_like_articles"
+			             android:textAppearance="@android:style/TextAppearance.Small" />
+            	    <ImageView 
+		                android:layout_width="12dp"
+		                android:layout_height="12dp"
+		                android:layout_marginLeft="5dp"
+		                android:layout_alignParentTop="true"
+		                android:layout_alignRight="@id/frag_userinfo_tv_mylikearticles"
+		                android:src="@drawable/ic_paw_like"
+		                android:contentDescription="@string/label_my_like_articles"
+		                android:visibility="invisible"
+		                />
+	            </RelativeLayout>
+	
 	            <TextView
 	                 android:id="@+id/frag_userinfo_mylikes_num"
-		             android:layout_width="0dp"
-		             android:layout_weight="1"
+		             android:layout_width="wrap_content"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:gravity="center_vertical|left"
 		             android:layout_marginLeft="5dp"
 		             android:text="(2)"
-		             android:textAppearance="@android:style/TextAppearance.Small" />
+		             android:textColor="@color/Grey"
+		             android:textSize="12sp" />
 	            <TextView
 		             android:layout_width="0dp"
 		             android:layout_weight="1"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:layout_marginRight="5dp"
 		             android:gravity="center_vertical|right"
 		             android:text=">"
@@ -179,30 +207,57 @@
 	            android:orientation="horizontal"
 	            android:paddingLeft="5dp"
 	            android:paddingRight="5dp"
-	            android:paddingTop = "10dp"
-	            android:paddingBottom="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:background="@drawable/layout_selector" >
-	        	<TextView
-		             android:layout_width="wrap_content"
-		             android:layout_height="wrap_content"
-		             android:layout_marginLeft="5dp"
-		             android:gravity="center_vertical|left"
-		             android:text="@string/label_my_comments"
-		             android:textAppearance="@android:style/TextAppearance.Small" />
+	            <ImageView 
+	                android:layout_width="30dp"
+	                android:layout_height="match_parent"
+	                android:src="@drawable/ic_comment"
+	                android:contentDescription=""
+	                />
+	            <RelativeLayout 
+	                android:layout_width="wrap_content"
+		            android:layout_height="wrap_content">
+            	    
+	            	<TextView
+	            	    android:id="@+id/frag_userinfo_tv_mycomments"
+			             android:layout_width="wrap_content"
+			             android:layout_height="wrap_content"
+			             android:layout_marginTop="10dp"
+		             	 android:layout_marginBottom="10dp"
+			             android:layout_marginLeft="5dp"
+			             android:paddingRight="8dp"
+			             android:gravity="center_vertical|left"
+			             android:text="@string/label_my_comments"
+			             android:textAppearance="@android:style/TextAppearance.Small" />
+            	    <ImageView 
+		                android:layout_width="12dp"
+		                android:layout_height="12dp"
+		                android:layout_marginLeft="5dp"
+		                android:layout_alignParentTop="true"
+		                android:layout_alignRight="@id/frag_userinfo_tv_mycomments"
+		                android:src="@drawable/ic_paw_like"
+		                android:contentDescription="@string/label_my_comments"
+		                android:visibility="invisible"
+		                />
+	            </RelativeLayout>
 	            <TextView
 	                 android:id="@+id/frag_userinfo_mycomments_num"
-		             android:layout_width="0dp"
-		             android:layout_weight="1"
+		             android:layout_width="wrap_content"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:gravity="center_vertical|left"
 		             android:layout_marginLeft="5dp"
 		             android:text="(2)"
-		             android:textAppearance="@android:style/TextAppearance.Small" />
+		             android:textColor="@color/Grey"
+		             android:textSize="12sp" />
 	            <TextView
 		             android:layout_width="0dp"
 		             android:layout_weight="1"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:layout_marginRight="5dp"
 		             android:gravity="center_vertical|right"
 		             android:text=">"
@@ -216,30 +271,57 @@
 	            android:orientation="horizontal"
 	            android:paddingLeft="5dp"
 	            android:paddingRight="5dp"
-	            android:paddingTop = "10dp"
-	            android:paddingBottom="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:background="@drawable/layout_selector" >
-	        	<TextView
-		             android:layout_width="wrap_content"
-		             android:layout_height="wrap_content"
-		             android:layout_marginLeft="5dp"
-		             android:gravity="center_vertical|left"
-		             android:text="@string/label_my_favorites" 
-		             android:textAppearance="@android:style/TextAppearance.Small"/>
+	            <ImageView 
+	                android:layout_width="30dp"
+	                android:layout_height="match_parent"
+	                android:src="@drawable/ic_favorite"
+	                android:contentDescription=""
+	                />
+	            <RelativeLayout 
+	                android:layout_width="wrap_content"
+		            android:layout_height="wrap_content">
+            	    
+	            	<TextView
+	            	    android:id="@+id/frag_userinfo_tv_myfavorites"
+			             android:layout_width="wrap_content"
+			             android:layout_height="wrap_content"
+			             android:layout_marginTop="10dp"
+		             	 android:layout_marginBottom="10dp"
+			             android:layout_marginLeft="5dp"
+			             android:paddingRight="8dp"
+			             android:gravity="center_vertical|left"
+			             android:text="@string/label_my_favorites"
+			             android:textAppearance="@android:style/TextAppearance.Small" />
+            	    <ImageView 
+		                android:layout_width="12dp"
+		                android:layout_height="12dp"
+		                android:layout_marginLeft="5dp"
+		                android:layout_alignParentTop="true"
+		                android:layout_alignRight="@id/frag_userinfo_tv_myfavorites"
+		                android:src="@drawable/ic_paw_like"
+		                android:contentDescription="@string/label_my_favorites"
+		                android:visibility="invisible"
+		                />
+	            </RelativeLayout>
 	            <TextView
 	                 android:id="@+id/frag_userinfo_myfavorites_num"
-		             android:layout_width="0dp"
-		             android:layout_weight="1"
+		             android:layout_width="wrap_content"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:gravity="center_vertical|left"
 		             android:layout_marginLeft="5dp"
 		             android:text="(3)"
-		             android:textAppearance="@android:style/TextAppearance.Small" />
+		             android:textColor="@color/Grey"
+		             android:textSize="12sp" />
 	            <TextView
 		             android:layout_width="0dp"
 		             android:layout_weight="1"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:layout_marginRight="5dp"
 		             android:gravity="center_vertical|right"
 		             android:text=">" 
@@ -267,36 +349,64 @@
 	            android:orientation="horizontal"
 	            android:paddingLeft="5dp"
 	            android:paddingRight="5dp"
-	            android:paddingTop = "10dp"
-	            android:paddingBottom="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:background="@drawable/layout_selector" >
-	        	<TextView
-		             android:layout_width="wrap_content"
-		             android:layout_height="wrap_content"
-		             android:layout_marginLeft="5dp"
-		             android:gravity="center_vertical|left"
-		             android:text="@string/label_my_enquiries"
-		              android:textAppearance="@android:style/TextAppearance.Small" />
+	            <ImageView 
+	                android:layout_width="30dp"
+	                android:layout_height="match_parent"
+	                android:src="@drawable/ic_question"
+	                android:contentDescription=""
+	                />
+	            <RelativeLayout 
+	                android:layout_width="wrap_content"
+		            android:layout_height="wrap_content">
+	            	<TextView
+	            	    android:id="@+id/frag_userinfo_tv_myenquiries"
+			             android:layout_width="wrap_content"
+			             android:layout_height="wrap_content"
+			             android:layout_marginTop="10dp"
+		             	 android:layout_marginBottom="10dp"
+			             android:layout_marginLeft="5dp"
+			             android:paddingRight="8dp"
+			             android:gravity="center_vertical|left"
+			             android:text="@string/label_my_enquiries"
+			             android:textAppearance="@android:style/TextAppearance.Small" />
+            	    <ImageView 
+		                android:layout_width="12dp"
+		                android:layout_height="12dp"
+		                android:layout_marginLeft="5dp"
+		                android:layout_alignParentTop="true"
+		                android:layout_alignRight="@id/frag_userinfo_tv_myenquiries"
+		                android:src="@drawable/ic_paw_like"
+		                android:contentDescription="@string/label_my_enquiries"
+		                android:visibility="invisible"
+		                />
+	            </RelativeLayout>
+	        	
 	            <TextView
 	                 android:id="@+id/frag_userinfo_myenquiry_nums"
-		             android:layout_width="0dp"
-		             android:layout_weight="1"
+		             android:layout_width="wrap_content"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:gravity="center_vertical|left"
 		             android:layout_marginLeft="5dp"
 		             android:text="(3)"
-		              android:textAppearance="@android:style/TextAppearance.Small" />
+		             android:textColor="@color/Grey"
+		             android:textSize="12sp"/>
+	            
 	            <TextView
 		             android:layout_width="0dp"
 		             android:layout_weight="1"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:layout_marginRight="5dp"
 		             android:gravity="center_vertical|right"
 		             android:text=">" 
 		              android:textAppearance="@android:style/TextAppearance.Small"/>
 	      	</LinearLayout>
-	     	<LinearLayout
+	     <LinearLayout
 	     	    android:id="@+id/frag_userinfo_ll_mypets"
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
@@ -304,33 +414,61 @@
 	            android:orientation="horizontal"
 	            android:paddingLeft="5dp"
 	            android:paddingRight="5dp"
-	            android:paddingTop = "10dp"
-	            android:paddingBottom="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:background="@drawable/layout_selector" >
-	        	<TextView
-		             android:layout_width="wrap_content"
-		             android:layout_height="wrap_content"
-		             android:layout_marginLeft="5dp"
-		             android:gravity="center_vertical|left"
-		             android:text="@string/label_my_pets"
-		              android:textAppearance="@android:style/TextAppearance.Small" />
+	            
+	     	    <ImageView 
+	     	        android:layout_width="30dp" 
+	     	        android:layout_height="match_parent" 
+	     	        android:src="@drawable/ic_mypet" 
+	     	        android:contentDescription="" />
+	     	    <RelativeLayout 
+	                android:layout_width="wrap_content"
+		            android:layout_height="wrap_content">
+            	    
+	            	<TextView
+	            	    android:id="@+id/frag_userinfo_tv_mypets"
+			             android:layout_width="wrap_content"
+			             android:layout_height="wrap_content"
+			             android:layout_marginTop="10dp"
+		             	 android:layout_marginBottom="10dp"
+			             android:layout_marginLeft="5dp"
+			             android:paddingRight="8dp"
+			             android:gravity="center_vertical|left"
+			             android:text="@string/label_my_pets"
+			             android:textAppearance="@android:style/TextAppearance.Small" />
+            	    <ImageView 
+		                android:layout_width="12dp"
+		                android:layout_height="12dp"
+		                android:layout_marginLeft="5dp"
+		                android:layout_alignParentTop="true"
+		                android:layout_alignRight="@id/frag_userinfo_tv_mypets"
+		                android:src="@drawable/ic_paw_like"
+		                android:contentDescription="@string/label_my_pets"
+		                />
+	            </RelativeLayout>
 	            <TextView
 	                 android:id="@+id/frag_userinfo_mypets_num"
-		             android:layout_width="0dp"
-		             android:layout_weight="1"
+		             android:layout_width="wrap_content"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:gravity="center_vertical|left"
 		             android:layout_marginLeft="5dp"
 		             android:text="(4)"
-		              android:textAppearance="@android:style/TextAppearance.Small" />
+		             android:textColor="@color/Grey"
+		             android:textSize="12sp" />
+
 	            <TextView
 		             android:layout_width="0dp"
 		             android:layout_weight="1"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:layout_marginRight="5dp"
 		             android:gravity="center_vertical|right"
 		             android:text=">" />
+	            
 	      	</LinearLayout>
 	      	
 	        <!--<com.meetme.android.horizontallistview.HorizontalListView
@@ -368,13 +506,19 @@
 	            android:orientation="horizontal"
 	            android:paddingLeft="5dp"
 	            android:paddingRight="5dp"
-	            android:paddingTop = "10dp"
-	            android:paddingBottom="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:background="@drawable/layout_selector"  >
+	            <ImageView 
+	                android:layout_width="30dp"
+	                android:layout_height="match_parent"
+	                android:src="@drawable/ic_setting"
+	                android:contentDescription=""
+	                />
 	        	<TextView
 		             android:layout_width="wrap_content"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:layout_marginLeft="5dp"
 		             android:gravity="center_vertical|left"
 		             android:text="@string/label_setting"
@@ -383,6 +527,8 @@
 		             android:layout_width="0dp"
 		             android:layout_weight="1"
 		             android:layout_height="wrap_content"
+		             android:layout_marginTop="10dp"
+		             android:layout_marginBottom="10dp"
 		             android:layout_marginRight="5dp"
 		             android:gravity="center_vertical|right"
 		             android:text=">" />

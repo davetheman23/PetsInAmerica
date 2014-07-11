@@ -162,6 +162,7 @@ public class EnquiryFormActivity extends FragmentActivity {
 			}
 		});
 		
+		//TODO after an image is taken, this will sometimes fail, I suspect it is loading the images too frequently? 
 		// set up a fragment, just to load the pet data into an adapter in a background thread 
 		PetListFragment petListFragment = new PetListFragment();
 		petListFragment.setParameters(Constants.URL_USERPETS, KEY_RESULT,false);

@@ -102,7 +102,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 		String title = enquiry.get(TAG_TITLE).toString();
 		String userAvatarURL = enquiry.get(TAG_AVATAR).toString();
 		String ownerName = enquiry.get(TAG_OWNERNAME).toString();
-		String queryID = enquiry.get(TAG_ID).toString();
+		//String queryID = enquiry.get(TAG_ID).toString();
 		String date = enquiry.get(TAG_DATE).toString();
 		String content = enquiry.get(TAG_CONTENT).toString();
 		int status = Integer.parseInt(enquiry.get(TAG_STATUS).toString());
@@ -132,7 +132,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 			break;
 		}
 		
-		viewHolder.enqueryID = Integer.parseInt(queryID);
+		//viewHolder.enqueryID = Integer.parseInt(queryID);
 		viewHolder.enQueryContent = content;
 		viewHolder.tv_firstline.setText(title);
 		viewHolder.tv_secondline.setText(ownerName + " 提问于 " + date);

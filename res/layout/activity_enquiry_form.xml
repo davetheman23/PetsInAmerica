@@ -21,7 +21,6 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:hint="请您填写一个标题"
-            android:text = "测试"
             android:ems="10" >
             <requestFocus />
         </EditText>
@@ -214,7 +213,6 @@
             android:gravity="top|left"
             android:ems="10"
             android:inputType="textMultiLine"
-            android:text="看来一切正常，还有更多的测试，都不需要回复！"
             android:background="@drawable/textbox_outline" />
        
         <LinearLayout 

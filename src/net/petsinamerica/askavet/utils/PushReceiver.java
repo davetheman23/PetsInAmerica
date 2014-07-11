@@ -23,12 +23,7 @@ public class PushReceiver extends BroadcastReceiver {
 				if (payload != null)
 				{
 					String data = new String(payload);
-					//Log.d("GetuiSdkDemo", "Got Payload:" + data);
-					// TODO:接收处理透传（payload）数据 
-					Intent newIntent = new Intent(context, PushActivity.class);
-					newIntent.putExtra("payload", data);
-					newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					context.startActivity(newIntent);
+					handlePayloadMessage(data, context);
 				}
 				break;
 			case PushConsts.GET_CLIENTID:
@@ -52,6 +47,14 @@ public class PushReceiver extends BroadcastReceiver {
 		}
 
 
+	}
+	
+	public void handlePayloadMessage(String message, Context context){
+		
+		Intent newIntent = new Intent(context, PushActivity.class);
+		newIntent.putExtra("payload", message);
+		newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		context.startActivity(newIntent);
 	}
 
 }

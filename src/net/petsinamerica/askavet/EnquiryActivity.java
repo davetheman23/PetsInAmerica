@@ -25,6 +25,7 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class EnquiryActivity extends Activity {
 
@@ -69,6 +70,8 @@ public class EnquiryActivity extends Activity {
 		String html_string = "<body>" + enqueryContent + "</body>";
 		
 		mWebView.loadDataWithBaseURL(null, html_string, "text/html", HTTP.UTF_8, null);
+		
+		Toast.makeText(this, "页面设计还未完成", Toast.LENGTH_LONG).show();
 		
 	}
 	
