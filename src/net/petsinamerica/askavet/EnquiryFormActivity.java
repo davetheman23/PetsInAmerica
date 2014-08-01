@@ -57,14 +57,11 @@ import com.meetme.android.horizontallistview.HorizontalListView;
 
 public class EnquiryFormActivity extends FragmentActivity {
 	
-	
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	
-	private static final Resources res = App.appContext.getResources();
+	private static final String KEY_RESULT = Constants.KEY_RESULT;
 	
-	private static final String KEY_RESULT = res.getString(R.string.JSON_tag_result);
-	
-	private static final String KEY_ERROR = res.getString(R.string.JSON_tag_error);
+	private static final String KEY_ERROR = Constants.KEY_ERROR;
 	
 	
 	
@@ -348,7 +345,7 @@ public class EnquiryFormActivity extends FragmentActivity {
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 
 		@Override
-		protected Map<String, Object> doInBackground(String... params) {
+		protected Map<String, Object> doInBackground(String... params){
 			String url = params[0];
 			HttpPost post = new HttpPost(url);
 			
@@ -361,8 +358,8 @@ public class EnquiryFormActivity extends FragmentActivity {
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(11);
 			
 			// add user login information
-			nameValuePairs.add(new BasicNameValuePair(Constants.TAG_USERID, token.getUserId()));
-			nameValuePairs.add(new BasicNameValuePair(Constants.TAG_USERTOKEN, token.getToken()));
+			nameValuePairs.add(new BasicNameValuePair(Constants.KEY_USERID, token.getUserId()));
+			nameValuePairs.add(new BasicNameValuePair(Constants.KEY_USERTOKEN, token.getToken()));
 			
 			// add user enquiries
 			nameValuePairs.add(new BasicNameValuePair(TITLE, getCode(TITLE)));
@@ -387,7 +384,7 @@ public class EnquiryFormActivity extends FragmentActivity {
 				// execute post
 				HttpResponse response = mClient.execute(post);
 				
-				return handlePiaResponse(response);
+				return GeneralHelpers.handlePiaResponse(response);
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -404,9 +401,17 @@ public class EnquiryFormActivity extends FragmentActivity {
 
 		@Override
 		protected void onPostExecute(Map<String, Object> result) {
-			super.onPostExecute(result);
-			
-			
+			if (result != null){
+				if (!result.containsKey(Constants.KEY_ERROR_MESSAGE)){
+					// results are valid
+					// do something
+				}else{
+					// results are not valid
+					GeneralHelpers.showAlertDialog(EnquiryFormActivity.this, 
+							"您进行的操作似乎有误",
+							result.get(Constants.KEY_ERROR_MESSAGE).toString());
+				}
+			}
 		}
 		
 	}
@@ -455,8 +460,8 @@ public class EnquiryFormActivity extends FragmentActivity {
 				
 				// add the parts of file and user Id
 				builder.addPart("userfile", fileBody);
-				builder.addTextBody(Constants.TAG_USERID, token.getUserId());
-				builder.addTextBody(Constants.TAG_USERTOKEN, token.getToken());
+				builder.addTextBody(Constants.KEY_USERID, token.getUserId());
+				builder.addTextBody(Constants.KEY_USERTOKEN, token.getToken());
 				
 				
 				post.setEntity(builder.build());
@@ -464,7 +469,7 @@ public class EnquiryFormActivity extends FragmentActivity {
 				// execute post
 				HttpResponse response = mClient.execute(post);
 				
-				return handlePiaResponse(response);
+				return GeneralHelpers.handlePiaResponse(response);
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -499,29 +504,7 @@ public class EnquiryFormActivity extends FragmentActivity {
 		}
 	}
 
-	/**
-	 * parse the PIA server response, return results in a map if no error
-	 * @param response raw response from PIA server
-	 * @return a data map contains responses from PIA server
-	 */
-	private Map<String, Object> handlePiaResponse(HttpResponse response) throws 
-									JSONException, HttpResponseException, IOException{
-		String responseString = new BasicResponseHandler().handleResponse(response);
-		
-		JSONObject responseObject = (JSONObject) new JSONTokener(responseString).nextValue(); 
-		
-		Map<String, Object> responseMap = JsonHelper.toMap(responseObject);
-		
-		if (responseMap != null){
-			int errorCode = Integer.parseInt(responseMap.get(KEY_ERROR).toString());
-			if (errorCode == 0){
-				@SuppressWarnings("unchecked")
-				Map<String, Object> jObject = (Map<String, Object>)responseMap.get(KEY_RESULT);
-				return jObject;
-			}
-		}
-		return null;
-	}
+	
 	
 	/**
 	 * the server have specific codes for the options of each form element 

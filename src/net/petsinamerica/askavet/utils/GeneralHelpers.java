@@ -1,14 +1,29 @@
 package net.petsinamerica.askavet.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import net.petsinamerica.askavet.SignUpActivity;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.LabeledIntent;
 import android.content.pm.ResolveInfo;
@@ -140,6 +155,79 @@ public class GeneralHelpers {
 	    	 */
 	    }
 	    return null;
+	}
+	
+	/**
+	 * parse the PIA server response, return results in a map if no error
+	 * @param response raw response from PIA server
+	 * @return a data map contains responses from PIA server
+	 */
+	public static Map<String, Object> handlePiaResponse(HttpResponse response) throws 
+									JSONException, HttpResponseException, IOException {
+		String responseString = new BasicResponseHandler().handleResponse(response);
+		
+		JSONObject responseObject = (JSONObject) new JSONTokener(responseString).nextValue(); 
+		
+		Map<String, Object> responseMap = JsonHelper.toMap(responseObject);
+		
+		if (responseMap != null){
+			int errorCode = Integer.parseInt(responseMap.get(Constants.KEY_ERROR).toString());
+			switch (errorCode) {
+			case 0:
+				@SuppressWarnings("unchecked")
+				Map<String, Object> jObject = (Map<String, Object>)responseMap.get(Constants.KEY_RESULT);
+				return jObject;
+			default:
+				Map<String, Object> jErrObject = new HashMap<String, Object>();
+				jErrObject.put(Constants.KEY_ERROR_MESSAGE, responseMap.get(Constants.KEY_ERROR_MESSAGE).toString());
+				return jErrObject;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * parse the PIA server response String, return results in a map if no error
+	 * this is a temporary method to handle different return formats from PIA server
+	 * @param response raw response from PIA server
+	 * @return a data map contains responses from PIA server
+	 */
+	public static Map<String, Object> handlePiaResponseString(String responseString) throws 
+									JSONException, IOException {
+		
+		JSONObject responseObject = (JSONObject) new JSONTokener(responseString).nextValue(); 
+		
+		Map<String, Object> responseMap = JsonHelper.toMap(responseObject);
+		
+		if (responseMap != null){
+			int errorCode = Integer.parseInt(responseMap.get(Constants.KEY_ERROR).toString());
+			switch (errorCode) {
+			case 0:
+				@SuppressWarnings("unchecked")
+				Map<String, Object> jObject = (Map<String, Object>)responseMap.get(Constants.KEY_RESULT);
+				return jObject;
+			default:
+				Map<String, Object> jErrObject = new HashMap<String, Object>();
+				jErrObject.put(Constants.KEY_ERROR_MESSAGE, responseMap.get(Constants.KEY_ERROR_MESSAGE).toString());
+				return jErrObject;
+			}
+		}
+		return null;
+	}
+	
+	public static void showAlertDialog(Context context, String title, String message){
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setTitle(title)
+		.setMessage(message)
+		.setCancelable(false)
+		.setPositiveButton("好的", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+			}
+		});
+		AlertDialog dialog = builder.create();
+		dialog.show();
 	}
 
 	/*
