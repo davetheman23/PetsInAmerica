@@ -29,6 +29,10 @@ public interface Constants {
 	
 	public static final String URL_LOGIN = URL_API  + "login/";
 	
+	public static final String URL_WEIBO_LOGIN = URL_API  + "weiboLogin/";
+	
+	public static final String URL_SIGN_UP = URL_API  + "signUp/";
+	
 	public static final String URL_ENQUIRY = URL_API  + "publicQueryList/";
 	
 	public static final String URL_MYENQUIRY = URL_API  + "userQueryList/";
@@ -45,13 +49,23 @@ public interface Constants {
 	
 	public static final String URL_UPLOAD_IMAGE = URL_API  + "uploadImg/";
 	
-    public static final String TAG_USERNAME = "username";
+    public static final String KEY_USERNAME = "username";
     
-  	public static final String TAG_PASSWORD = "password";
+  	public static final String KEY_PASSWORD = "password";
   	
-  	public static final String TAG_USERID = "userid";
+  	public static final String KEY_WEIBO_USERNAME = "weibo_id";
+    
+  	public static final String KEY_WEIBO_PASSWORD = "secretKey";
   	
-  	public static final String TAG_USERTOKEN = "token";
+  	public static final String KEY_USERID = "userid";
+  	
+  	public static final String KEY_USERTOKEN = "token";
+  	
+  	public static final String KEY_RESULT = App.appContext.getString(R.string.JSON_tag_result);
+	
+  	public static final String KEY_ERROR = App.appContext.getString(R.string.JSON_tag_error);
+  	
+  	public static final String KEY_ERROR_MESSAGE = App.appContext.getString(R.string.JSON_tag_errorMessage);
   	
   	/*
   	 * for storage 

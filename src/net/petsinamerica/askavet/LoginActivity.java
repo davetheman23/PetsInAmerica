@@ -1,18 +1,25 @@
 package net.petsinamerica.askavet;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.Constants;
+import net.petsinamerica.askavet.utils.GeneralHelpers;
 import net.petsinamerica.askavet.utils.JsonHelper;
 import net.petsinamerica.askavet.utils.WeiboConstants;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -28,6 +35,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
@@ -49,11 +57,11 @@ import com.sina.weibo.sdk.exception.WeiboException;
 
 public class LoginActivity extends Activity{
 	
-	private static final int sLOGIN_FAIL = 0;
-	private static final int sLOGIN_SUCCEED = 1;
-	private static String KEY_LOGIN;
+	private static String KEY_LOGIN = App.appContext.getString(R.string.JSON_tag_login);
 	private String mUsername;
 	private String mPassword;
+
+	private ProgressDialog progressDialog;
 
     private WeiboAuth mWeiboAuth;
     
@@ -64,9 +72,12 @@ public class LoginActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		// initialize push service 
+		PushManager.getInstance().initialize(this.getApplicationContext());
+		
 		setContentView(R.layout.activity_login);
 		
-		KEY_LOGIN = getResources().getString(R.string.JSON_tag_login);
+		progressDialog = new ProgressDialog(this);
 
 		// 创建微博实例
 		mWeiboAuth = new WeiboAuth(this, WeiboConstants.APP_KEY, 
@@ -79,7 +90,7 @@ public class LoginActivity extends Activity{
             public void onClick(View v) {
                 mSsoHandler = new SsoHandler(LoginActivity.this, mWeiboAuth);
                 mSsoHandler.authorize(new AuthListener());
-            	Toast.makeText(getApplication(), "微博登陆暂不支持未关联的用户", Toast.LENGTH_LONG).show();
+            	//Toast.makeText(getApplication(), "微博登陆暂不支持未关联的用户", Toast.LENGTH_LONG).show();
             }
         });
         
@@ -110,7 +121,12 @@ public class LoginActivity extends Activity{
 				// - collect password
 				EditText et_password = (EditText) findViewById(R.id.login_password);
 				mPassword = et_password.getText().toString();
-				new LoginTask().execute(Constants.URL_LOGIN);
+				
+				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+				nameValuePairs.add(new BasicNameValuePair(Constants.KEY_USERNAME, mUsername));
+				nameValuePairs.add(new BasicNameValuePair(Constants.KEY_PASSWORD, mPassword));
+				
+				new LoginTask().execute(Constants.URL_LOGIN, nameValuePairs);
 			}
 		});
 		
@@ -132,12 +148,6 @@ public class LoginActivity extends Activity{
 
 
 	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-	
-	
-	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    super.onActivityResult(requestCode, resultCode, data);
 	    
@@ -152,26 +162,27 @@ public class LoginActivity extends Activity{
 	/**
 	 * A subclass of AsyncTask to login via username and passwords
 	 */
-	private class LoginTask extends AsyncTask<String, Void, Integer> {
+	private class LoginTask extends AsyncTask<Object, Void, Map<String, Object>> {
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 		
 		@Override
 		protected void onPreExecute() {
-			// TODO show a dialog box with a loading icon
-			super.onPreExecute();
+			if (progressDialog != null){
+				progressDialog.setMessage("请稍等，正在登录 ...");
+				progressDialog.show();
+			}
 		}
 
 		@Override
-		protected Integer doInBackground(String... params) {
-			String url = params[0];			
-			
-			HttpPost post = new HttpPost(url);
+		protected Map<String, Object> doInBackground(Object... params) {
+			String url = params[0].toString();	
+			@SuppressWarnings("unchecked")
+			List<NameValuePair> nameValuePairs = (ArrayList<NameValuePair>)params[1];
 			
 			try {
-				List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-				nameValuePairs.add(new BasicNameValuePair(Constants.TAG_USERNAME, mUsername));
-				nameValuePairs.add(new BasicNameValuePair(Constants.TAG_PASSWORD, mPassword));
+			
+			HttpPost post = new HttpPost(url);
 				post.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 				
 				HttpResponse response = mClient.execute(post);
@@ -184,14 +195,43 @@ public class LoginActivity extends Activity{
 
 				Map<String, Object> responseMap = JsonHelper.toMap(responseObject);
 				
+				if (responseMap.containsKey(KEY_LOGIN)){
+					// this is the case that use PIA login directly
 				String loginToken = responseMap.get(KEY_LOGIN).toString();
-				if (Integer.parseInt(loginToken) == 1){
-					Log.i("Http_Post", "Login successfully");
 					 
+					if (Integer.parseInt(loginToken) == 0){
+						// if login failed
+						responseMap.put(Constants.KEY_ERROR_MESSAGE, "请检查登录信息");
+					}
+					return responseMap;
+				}else{
+					// this is the case that uses weibo login
+					return GeneralHelpers.handlePiaResponseString(loginResponse);
+				}
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}catch (JSONException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Map<String, Object> result) {
+			if (null != mClient)
+				mClient.close();
+			if (progressDialog!= null){
+				if (progressDialog.isShowing()){
+					progressDialog.dismiss();
+				}
+			}
+			if (result != null){
+				if (!result.containsKey(Constants.KEY_ERROR_MESSAGE)){
 					// obtain the userid & access token returned from the server
-					String userid = responseMap.get("userid").toString();
-					String token = responseMap.get("password").toString();
-					
+					String userid = result.get(Constants.KEY_USERID).toString();
+					String token = result.get(Constants.KEY_USERTOKEN).toString();
 					
 					//TODO: if expiration date is available from server, should
 					//      use the standard constructor for AccessToken
@@ -199,40 +239,13 @@ public class LoginActivity extends Activity{
 					AccessTokenManager.SaveAccessToken(
 							getApplicationContext(), 
 							new AccessToken(userid, token));
-
-					return sLOGIN_SUCCEED;
-				}else{
-					Log.i("Http_Post", "Login failed");
-					return sLOGIN_FAIL;
-				}
-			} catch (ClientProtocolException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return sLOGIN_FAIL;
-		}
-
-		@Override
-		protected void onPostExecute(Integer loginresult) {
-			if (null != mClient)
-				mClient.close();
-			switch (loginresult){
-			case sLOGIN_SUCCEED:
-				Intent intent = new Intent(getApplicationContext(),
-						HomeActivity.class);
+					Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 				startActivity(intent);
-				break;
-			case sLOGIN_FAIL:
-				DialogFragment df = AlertDialogFragment.newInstance();
-				df.show(getFragmentManager(), "Login Failed");
-				break;
-			default:
-				// == do something 
+				}else{
+					GeneralHelpers.showAlertDialog(LoginActivity.this, 
+							"登录失败", result.get(Constants.KEY_ERROR_MESSAGE).toString());
+				}
 			}
 			
 		}
@@ -245,23 +258,6 @@ public class LoginActivity extends Activity{
 		
 	}
 	
-	public static class AlertDialogFragment extends DialogFragment{
-		
-		public static AlertDialogFragment newInstance(){
-			return new AlertDialogFragment();
-		}
-
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			
-			return new AlertDialog.Builder(getActivity())
-					  .setMessage("Invalid login Credentials!")
-					  .create();
-		}
-		
-	}
-	
-	
 	/**
      * 登入按钮的监听器，接收授权结果。
      */
@@ -271,16 +267,20 @@ public class LoginActivity extends Activity{
         public void onComplete(Bundle values) {
             Oauth2AccessToken weiboToken = Oauth2AccessToken.parseAccessToken(values);
             if (weiboToken != null && weiboToken.isSessionValid()) {
-                //String date = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(
-                //        new java.util.Date(weiboToken.getExpiresTime()));
-                //String format = getString(R.string.weibosdk_demo_token_to_string_format_1);
-                //mTokenView.setText(String.format(format, accessToken.getToken(), date));
                 
                 AccessTokenManager.SaveWeiboAccessToken(getApplicationContext(), weiboToken);
-                Intent intent = new Intent(getApplicationContext(),
-											HomeActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
+
+                Date now = Calendar.getInstance().getTime();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String dateString = sdf.format(now);
+                String dateEncodedStr = new String(Hex.encodeHex(DigestUtils.md5(dateString)));
+
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+				nameValuePairs.add(new BasicNameValuePair(Constants.KEY_WEIBO_USERNAME, weiboToken.getUid()));
+				nameValuePairs.add(new BasicNameValuePair(Constants.KEY_WEIBO_PASSWORD, dateEncodedStr));
+				
+				new LoginTask().execute(Constants.URL_WEIBO_LOGIN, nameValuePairs);
+
             }
         }
 

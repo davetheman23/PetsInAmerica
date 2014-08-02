@@ -15,7 +15,7 @@ public class SignUpActivity extends Activity {
 		setContentView(R.layout.activity_signup);
 		
 		// set click listener for login link
-		TextView tv_login = (TextView) findViewById(R.id.link_to_login);
+		TextView tv_login = (TextView) findViewById(R.id.signup_activity_link_to_login);
 		tv_login.setOnClickListener(new View.OnClickListener() {
 			
 			@Override

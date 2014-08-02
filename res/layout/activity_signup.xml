@@ -9,7 +9,7 @@
         android:layout_height="wrap_content" android:background="#ffffff">
  
         <!--  Header  Starts-->
-        <LinearLayout android:id="@+id/header"
+        <LinearLayout android:id="@+id/signup_activity_header"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 
@@ -24,7 +24,7 @@
         <!--  Header Ends -->
         <!-- Footer Start -->
         <LinearLayout 
-            android:id="@+id/footer"
+            android:id="@+id/signup_activity_footer"
                 android:layout_width="fill_parent"
                 android:layout_height="60dip"
                 
@@ -35,36 +35,48 @@
  
         <!-- Registration Form -->
         <LinearLayout
+          android:id="@+id/signup_activity_body"
           android:orientation="vertical"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:padding="20dip"
           android:layout_below="@id/header">
           <!-- Full Name Label -->
-          <TextView android:layout_width="fill_parent"
+          <TextView 
+              	android:id="@+id/signup_activity_reg_username_label" 
+              	android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#372c24"
                 android:text="@string/label_reg_username"
                 android:padding="3dp"
                 android:textSize="18sp"/>
           <EditText 
-                android:id="@+id/reg_username"
+                android:id="@+id/signup_activity_reg_username"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dip"
                 android:singleLine="true"
                 android:padding="3dp"
+                android:textColor="@color/Black"
                 android:textSize="18sp"
                 android:background="@drawable/textlines"/>
-          <!--  Email Label -->
           <TextView android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#372c24"
+                android:text="@string/label_username_format"
+                android:padding="3dp"
+                android:textSize="12sp"/>
+          <!--  Email Label -->
+          <TextView
+              	android:id="@+id/signup_activity_reg_email_label" 
+              	android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textColor="#372c24"
                 android:text="@string/label_reg_email"
                 android:padding="3dp"
                 android:textSize="18sp"/>
           
-          <EditText android:id="@+id/reg_email"
+          <EditText android:id="@+id/signup_activity_reg_email"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dip"
@@ -72,6 +84,7 @@
                 android:inputType="textEmailAddress"
                 android:padding="3dp"
                 android:textSize="18sp"
+                android:textColor="@color/Black"
                 android:background="@drawable/textlines"/>
           <!-- Password Label -->
           <TextView android:layout_width="fill_parent"
@@ -81,7 +94,7 @@
                 android:padding="3dp"
                 android:textSize="18sp"/>
           <EditText 
-                android:id="@+id/reg_password"
+                android:id="@+id/signup_activity_reg_password"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
@@ -89,6 +102,7 @@
                 android:layout_marginTop="5dip"
                 android:padding="3dp"
                 android:textSize="18sp"
+                android:textColor="@color/Black"
                 android:background="@drawable/textlines"/>
           <!-- Password Confirmation Label -->
           <TextView android:layout_width="fill_parent"
@@ -98,7 +112,7 @@
                 android:padding="3dp"
                 android:textSize="18sp"/>
           <EditText 
-                android:id="@+id/reg_password_confirm"
+                android:id="@+id/signup_activity_reg_password_confirm"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
@@ -106,6 +120,7 @@
                 android:layout_marginTop="5dip"
                 android:padding="3dp"
                 android:textSize="18sp"
+                android:textColor="@color/Black"
                 android:background="@drawable/textlines"/>
         </LinearLayout>
         <LinearLayout 
@@ -113,9 +128,10 @@
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"
               android:padding="20dip"
-              android:layout_above="@id/footer">
+              android:layout_above="@id/signup_activity_footer"
+              android:layout_below="@id/signup_activity_body">
           <!-- Register Button -->
-	          <Button android:id="@+id/button_register"
+	          <Button android:id="@+id/signup_activity_button_register"
 	                android:layout_width="fill_parent"
 	                android:layout_height="wrap_content"
 	                android:layout_marginTop="10dip"
@@ -123,11 +139,10 @@
 	                android:text="@string/button_reg_signup"
 	                android:textColor="@color/Red"/>
 	          <!-- Link to Login Screen -->
-	          <TextView android:id="@+id/link_to_login"
+	          <TextView android:id="@+id/signup_activity_link_to_login"
 	                android:layout_width="fill_parent"
 	                android:layout_height="wrap_content"
 	                android:layout_marginTop="20dip"
-	                android:layout_marginBottom="20dip"
 	                android:text="@string/link_reg_login"
 	                android:gravity="center"
 	                android:textSize="15dip"

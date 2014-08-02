@@ -55,7 +55,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 		
 		TAG_TITLE = mContext.getResources().getString(R.string.JSON_tag_title);
 		TAG_IMAGE = mContext.getResources().getString(R.string.JSON_tag_image);
-		TAG_ID = mContext.getResources().getString(R.string.JSON_tag_id);
+		TAG_ID = mContext.getResources().getString(R.string.JSON_tag_queryid);
 		TAG_OWNERNAME = mContext.getResources().getString(R.string.JSON_tag_ownername);
 		TAG_AVATAR = mContext.getResources().getString(R.string.JSON_tag_avatar);
 		TAG_DATE = mContext.getResources().getString(R.string.JSON_tag_date);
@@ -95,8 +95,6 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 			//viewHolder.iv.setImageDrawable(mContext.getResources().getDrawable(R.drawable.someone));
 		}
 		
-		
-		//Map<String,String> enquiry = mEnquiries.get(position);
 		Map<String,Object> enquiry = getItem(position);
 		
 		String title = enquiry.get(TAG_TITLE).toString();

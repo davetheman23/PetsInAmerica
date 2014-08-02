@@ -29,8 +29,8 @@ public class AccessTokenManager {
     private static final String sPREFERENCES_NAME = Constants.PREFERENCES_NAME;
     private static final String sPREFERENCES_NAME_WEIBO = sPREFERENCES_NAME +"_weibo";
 
-    private static final String sKEY_USERID           = Constants.TAG_USERID;
-    private static final String sKEY_ACCESS_TOKEN  	=  Constants.TAG_USERTOKEN;
+    private static final String sKEY_USERID           = Constants.KEY_USERID;
+    private static final String sKEY_ACCESS_TOKEN  	=  Constants.KEY_USERTOKEN;
     private static final String sKEY_EXPIRATION  	=  "expires_in";
     
     private static final String sTAG = "AccessTokenManager";

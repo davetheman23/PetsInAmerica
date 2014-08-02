@@ -64,16 +64,34 @@ public class UserInfoManager {
 	}
 	
 	public static void cacheUserInfo(Map<String, Object> resultMap){
-		weiboToken = resultMap.get("weibo_token").toString();
-		userid = resultMap.get("uid").toString();
-		userName = resultMap.get("name").toString();
-		userDisplayName = resultMap.get("displayname").toString();
-		email = resultMap.get("email").toString();
-		city = resultMap.get("city").toString();
-		weiboUsername = resultMap.get("weibo").toString();
-		avatarURL = resultMap.get("avatar").toString();
-		language = resultMap.get("language").toString();
-		
+		if (resultMap.get("weibo_token") != null){
+			weiboToken = resultMap.get("weibo_token").toString();
+		}
+		if (resultMap.get("uid") != null){
+			userid = resultMap.get("uid").toString();
+		}
+		if (resultMap.get("name") != null){
+			userName = resultMap.get("name").toString();
+		}
+		if (resultMap.get("displayname") != null){
+			userDisplayName = resultMap.get("displayname").toString();
+		}
+		if (resultMap.get("email") != null){
+			email = resultMap.get("email").toString();
+		}
+		if (resultMap.get("city") != null){
+			city = resultMap.get("city").toString();
+		}
+		if (resultMap.get("weibo") != null){
+			weiboUsername = resultMap.get("weibo").toString();
+		}
+		if (resultMap.get("avatar") != null){
+			avatarURL = resultMap.get("avatar").toString();
+		}
+		if (resultMap.get("language") != null){
+			language = resultMap.get("language").toString();
+		}
+
 		infoAvailable = true;
 		if (mPiaInfoListener!= null){
 			mPiaInfoListener.onPiaInfoStateChange();
