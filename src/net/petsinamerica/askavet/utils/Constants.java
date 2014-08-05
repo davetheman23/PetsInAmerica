@@ -89,5 +89,14 @@ public interface Constants {
   	public static final String KEY_PET_FLEA = App.appContext.getString(R.string.JSON_tag_petflea);
   	public static final String KEY_PET_DEWORM = App.appContext.getString(R.string.JSON_tag_petdeworm);
   	public static final String KEY_PET_VACCINATION = App.appContext.getString(R.string.JSON_tag_petvaccination);
+  	public static final String KEY_TITLE = App.appContext.getString(R.string.JSON_tag_title);
+  	public static final String KEY_IMAGE = App.appContext.getString(R.string.JSON_tag_image);
+  	public static final String KEY_IMAGE_ALTERNATE = "summary_img";
+  	public static final String KEY_SNAPSHOT = App.appContext.getString(R.string.JSON_tag_snapshot);
+  	public static final String KEY_CONTENT = App.appContext.getString(R.string.JSON_tag_content);
+  	public static final String KEY_AUTHOR = App.appContext.getString(R.string.JSON_tag_owner);
+  	public static final String KEY_TIME = App.appContext.getString(R.string.JSON_tag_time);
+  	public static final String KEY_ARTICLE_LIKES = "like_num";
+  	
 
 }

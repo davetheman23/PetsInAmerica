@@ -6,13 +6,13 @@
         android:showAsAction="always"
         android:icon="@android:drawable/ic_menu_search"
         android:title="@string/action_search"/>
-         -->
+        
     <item
         android:id="@+id/action_notification"
         android:orderInCategory="100"
         android:showAsAction="always"
         android:title="@string/action_notification"/>
-    
+     -->
     <item
         android:id="@+id/logout"
         android:orderInCategory="100"

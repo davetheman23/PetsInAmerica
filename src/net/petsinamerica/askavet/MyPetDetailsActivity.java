@@ -103,7 +103,7 @@ public class MyPetDetailsActivity extends FragmentActivity {
 			return rootview;
 		}
 
-		private class GetPetInfo extends GeneralHelpers.CallInBackground{
+		private class GetPetInfo extends GeneralHelpers.CallPiaApiInBackground{
 
 			@Override
 			protected void onCallCompleted(Map<String, Object> result) {

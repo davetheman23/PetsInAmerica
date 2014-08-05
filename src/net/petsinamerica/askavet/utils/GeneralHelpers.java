@@ -280,13 +280,13 @@ public class GeneralHelpers {
 		catch (IllegalArgumentException e) {}
 	}
 
-	public static class CallInBackground extends AsyncTask<String, Void, Map<String, Object>>{
+	public static abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Map<String, Object>>{
 		
 		private Context mContext = App.appContext;
 		
-		private String KEY_RESULT = mContext.getString(R.string.JSON_tag_result);
+		private String KEY_RESULT = Constants.KEY_RESULT;
 		
-		private final String KEY_ERROR = mContext.getString(R.string.JSON_tag_error);
+		private final String KEY_ERROR = Constants.KEY_ERROR;
 		
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 		
@@ -338,18 +338,16 @@ public class GeneralHelpers {
 		@Override
 		protected void onPostExecute(Map<String, Object> result) {
 			super.onPostExecute(result);
-			onCallCompleted(result);
-		}
-
-		/* perform action when it is completed*/
-		protected void onCallCompleted(Map<String, Object> result) {
 			if (result != null){
 				Toast.makeText(mContext, "成功", Toast.LENGTH_LONG).show();		
 			}else{
 				Toast.makeText(mContext, "失败", Toast.LENGTH_LONG).show();
 			}
-			
+			onCallCompleted(result);
 		}
+
+		/* perform action when it is completed*/
+		protected abstract void onCallCompleted(Map<String, Object> result);
 	}
 
 

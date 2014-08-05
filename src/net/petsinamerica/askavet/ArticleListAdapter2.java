@@ -14,6 +14,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.util.Xml;
 import android.view.LayoutInflater;
@@ -111,18 +112,20 @@ public class ArticleListAdapter2 extends ArrayAdapter<Map<String, Object>> {
 		Map<String, Object> articlesummary = getItem(position); 
 		String sTitle,sImgURL, sArticleID;
 		sTitle = (String) articlesummary.get(TAG_TITLE);
-		sTitle = sTitle.trim();
-		sTitle = sTitle.replaceAll("<br />", "");
 		sImgURL = (String) articlesummary.get(TAG_IMAGE);
 		sArticleID = (String) articlesummary.get(TAG_ID);
 		String content = (String) articlesummary.get(TAG_CONTENT);
 		
-		content = content.replaceAll("<br />", "");
+		//content = content.replaceAll("<br />", "");
+		sTitle = sTitle.trim().replaceAll("<.*?>", "");
+		//sTitle = sTitle.replaceAll("<br />", "");
+		content = content.trim().replaceAll("<.*?>", "");
+		
 		
 		viewHolder.articleID = Integer.parseInt(sArticleID);
-		viewHolder.tv_firstline.setText(sTitle);
+		viewHolder.tv_firstline.setText(Html.fromHtml(sTitle));
 		if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
-			viewHolder.tv_secondline.setText(content);
+			viewHolder.tv_secondline.setText(Html.fromHtml(content));
 		}
 		
 		// image loading procedure:

@@ -75,8 +75,7 @@ public class HomeActivity extends FragmentActivity implements
 	private static final int sTOTAL_PAGES = 4;
 	
 	private static Context mContext;
-	private static String sTAG_RESULT;
-	private static String sTAG_LIST;
+	private static String sTAG_RESULT = Constants.KEY_RESULT;
 	private static AccessToken mToken;
 	
 	private UsersAPI mUsersAPI;
@@ -94,8 +93,7 @@ public class HomeActivity extends FragmentActivity implements
 		
 		//initialize local variables
 		mContext = getApplicationContext();
-		sTAG_RESULT = getResources().getString(R.string.JSON_tag_result);
-		sTAG_LIST = getResources().getString(R.string.JSON_tag_list);
+		
 		mToken =  AccessTokenManager.readAccessToken(mContext);
 		// get userinfo
 		if (!UserInfoManager.isInfoAvailable() && mToken != null 
@@ -164,14 +162,14 @@ public class HomeActivity extends FragmentActivity implements
 		
 	}
 
-/*	@Override
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.home, menu);
 		this.menu = menu;
 		return true;
 	}
-*/
+
 	@Override
 	public void onTabSelected(ActionBar.Tab tab,
 			FragmentTransaction fragmentTransaction) {
@@ -306,7 +304,7 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_BLOGCN, sTAG_LIST,true);
+			setParameters(Constants.URL_BLOGCN, sTAG_RESULT,true);
 		}
 
 		@Override
@@ -341,7 +339,7 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_PRODUCTLIST, sTAG_LIST,true);
+			setParameters(Constants.URL_PRODUCTLIST, sTAG_RESULT,true);
 		}
 
 		@Override

@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,24 +64,14 @@ public class ArticleActivity extends Activity {
 	private static final int SHARE_TO_TWITTER = 3;
 	private static final int SHARE_TO_FACEBOOK = 4;
 	
-	private static final String HTML_CONTENT = "Html_Content";
+	/*private static final String HTML_CONTENT = "Html_Content";
 	private static final String HTML_TITLE = "Html_Title";
 	private static final String HTML_SNAPSHOT_URL = "Html_SnapShot_Url";
-	private static final String HTML_SUB_TITLE = "Html_SubTitle";
+	private static final String HTML_SUB_TITLE = "Html_SubTitle";*/
 
 	
 	// these tags are those for reading the JSON objects
 	private static Resources res = App.appContext.getResources();
-	private static final String KEY_TITLE = res.getString(R.string.JSON_tag_title);
-	private static final String KEY_IMAGE = res.getString(R.string.JSON_tag_image);
-	private static final String KEY_SNAPSHOT = res.getString(R.string.JSON_tag_snapshot);
-	private static final String KEY_CONTENT = res.getString(R.string.JSON_tag_content);
-	private static final String KEY_AUTHOR = res.getString(R.string.JSON_tag_owner);
-	private static final String KEY_TIME = res.getString(R.string.JSON_tag_time);
-	private static final String KEY_ARTICLE_LIKES = "like_num";
-	private static final String KEY_ERROR = res.getString(R.string.JSON_tag_error);
-	private static final String KEY_RESULT = res.getString(R.string.JSON_tag_result);
-	
 	private static final String likeString = res.getString(R.string.action_like);
 	
 	private int articleId; 
@@ -190,9 +181,10 @@ public class ArticleActivity extends Activity {
 
 		// get article id from the extra that was set when the activity was started
 		articleId = getIntent().getIntExtra("ArticleId", 0);
+		//articleId = 397;
 		if (articleId != 0){
 			String articleURL_API = Constants.URL_ARTICLE_API + Integer.toString(articleId);
-			new GetArticleInBackground().execute(articleURL_API);
+			new GetArticleInBackground2().execute(articleURL_API);
 		}else{
 			//TODO notify the user
 		}
@@ -302,10 +294,10 @@ public class ArticleActivity extends Activity {
 				// -- Parse Json object, 
 				responseObject = (JSONObject) new JSONTokener(
 						JSONResponse).nextValue();
-				int error = responseObject.getInt(KEY_ERROR);
+				int error = responseObject.getInt(Constants.KEY_ERROR);
 				switch (error){
 					case 0:
-						return responseObject.getInt(KEY_RESULT);
+						return responseObject.getInt(Constants.KEY_RESULT);
 					default:
 						return -error;
 				}
@@ -347,109 +339,74 @@ public class ArticleActivity extends Activity {
 				   Toast.LENGTH_LONG)
 				   .show();
 	}
-
-	private class GetArticleInBackground extends AsyncTask<String, Void, Map<String, String>> {
-
-		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
+	
+	private class GetArticleInBackground2 extends GeneralHelpers.CallPiaApiInBackground{
 
 		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			mProgBarView.setVisibility(View.VISIBLE);
-		}
-
-		@Override
-		protected Map<String, String> doInBackground(String... params) {
-			String url = params[0];
-			HttpPost post = new HttpPost(url);
-			
-			HttpResponse response = null;		
-			String JSONResponse = null;
-			try {
-				response = mClient.execute(post);
-				JSONResponse = new BasicResponseHandler().handleResponse(response);
-				
-				// -- Parse Json object, 
-				JSONObject responseObject = (JSONObject) new JSONTokener(
-						JSONResponse).nextValue();
-				String sTitle = responseObject.get(KEY_TITLE).toString();
-				String imageURL = responseObject.get(KEY_IMAGE).toString();
-				String snapshotURL = responseObject.get(KEY_SNAPSHOT).toString();
-				String sContent = responseObject.get(KEY_CONTENT).toString();
-				String author = responseObject.get(KEY_AUTHOR).toString();
-				String time = responseObject.get(KEY_TIME).toString();
-				String like_nums = responseObject.get(KEY_ARTICLE_LIKES).toString();
+		protected void onCallCompleted(Map<String, Object> result) {
+			if (result != null){
+				String imageURL = result.get(Constants.KEY_IMAGE).toString();
+				if (imageURL.isEmpty()){
+					imageURL = result.get("summary_img").toString();
+				}
+				String snapshotURL = "";
+				if (result.get(Constants.KEY_SNAPSHOT) != null){
+					snapshotURL = result.get(Constants.KEY_SNAPSHOT).toString();
+				}
+				String sContent = result.get(Constants.KEY_CONTENT).toString();
+				String author = result.get(Constants.KEY_AUTHOR).toString();
+				String time = result.get(Constants.KEY_TIME).toString();
+				String like_nums = result.get(Constants.KEY_ARTICLE_LIKES).toString();
 				
 				String format = "MMM-dd, yyyy";
 				SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
 				String subTitle = "作者：" + author + " 发表于  " + 
 								sdf.format(new Date(Long.parseLong(time))); 
 				
+				// display title and subtitle (author, date)
+				String noContent = getResources().getString(R.string.no_content_available);
+				String sTitle = result.get(Constants.KEY_TITLE).toString();
+				if (sTitle != null){
+					mTitleTextView.setText(Html.fromHtml(sTitle.trim()));
+				}else{
+					mTitleTextView.setText(noContent);
+				}
+				mSubTitleTextView.setText(Html.fromHtml(subTitle));
+				// display html content in a webview
 				String html_string = null;
 				if (imageURL != null && sContent != null){
-					html_string = "<body>" + "<img src=\"" + imageURL + "\">" + sContent + "</body>";
-					String pattern = "(<img.*?[jp][pn]g.*?\")(.?)(>)";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
-					html_string = html_string.replaceAll(pattern, "$1 width=\"100%\" alt=\"\"$3");
+					//sContent = "<img src=\"" + imageURL + "\">" + sContent;
+					// adding a parameters to allow the pictures to fit in the screen. 
+					String pattern1 = "(<img src=\".*?\")(.*?)(>)";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
+					sContent = sContent.replaceAll(pattern1, "$1 width=\"100%\" alt=\"\"$3");
+					// delete the reference section, which is too long and cannot be wrapped, if not deleted, the webview will try to fit it. 
+					String pattern2 = "<p>Reference.+</p>"; 
+					sContent = sContent.replaceAll(pattern2, "");
+					html_string = "<body>" + sContent + "</body>";
+				}else{
+					html_string = "<body>" + noContent + "</body>";
 				}
+				mWebView.loadDataWithBaseURL(null, html_string, "text/html", HTTP.UTF_8, null);
 				
-				// -- put the data together and display on the UI 
-				Map<String, String> results = new HashMap<String, String>();
-				results.put(HTML_TITLE, sTitle);
-				results.put(HTML_CONTENT, html_string);
-				results.put(HTML_SNAPSHOT_URL, snapshotURL);
-				results.put(HTML_SUB_TITLE, subTitle);
-				results.put(KEY_ARTICLE_LIKES, like_nums);
-				return results;
-			} catch (HttpResponseException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}			
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Map<String, String> results) {
-			if (null != mClient)
-				mClient.close();
-			// display title and subtitle (author, date)
-			String noContent = getResources().getString(R.string.no_content_available);
-			String sTitle = results.get(HTML_TITLE); 
-			if (sTitle != null){
-				mTitleTextView.setText(sTitle);
-			}else{
-				mTitleTextView.setText(noContent);
+				/* set up a background task to load the snapshot url into the target
+			 	in case user will share it, so it can be ready after user read */			
+				mShareSnapshotUrl = snapshotURL;
+				Picasso.with(getApplication())
+					.load(Uri.parse(mShareSnapshotUrl))
+					.into(target);
+				
+				/*if (mMenu != null){
+					MenuItem item = mMenu.findItem(R.id.action_like);
+					String likeString = getResources().getString(R.string.action_like);
+					item.setTitle(likeString + " " + like_nums);
+				}*/
+				
+				mLikeButton.setText(likeString + " " + like_nums);
+				
+				mProgBarView.setVisibility(View.GONE);
 			}
-			String subTitle = results.get(HTML_SUB_TITLE);
-			mSubTitleTextView.setText(subTitle);
-			
-			// display html content in a webview
-			String html_string = results.get(HTML_CONTENT);
-			if (html_string == null){
-				html_string = "<body>" + noContent + "</body>";
-			}
-			mWebView.loadDataWithBaseURL(null, html_string, "text/html", HTTP.UTF_8, null);
-			
-			/* set up a background task to load the snapshot url into the target
-		 	in case user will share it, so it can be ready after user read */			
-			mShareSnapshotUrl = results.get(HTML_SNAPSHOT_URL);
-			Picasso.with(getApplication())
-				.load(Uri.parse(mShareSnapshotUrl))
-				.into(target);
-			
-			int like_nums = Integer.parseInt(results.get(KEY_ARTICLE_LIKES));
-			/*if (mMenu != null){
-				MenuItem item = mMenu.findItem(R.id.action_like);
-				String likeString = getResources().getString(R.string.action_like);
-				item.setTitle(likeString + " " + like_nums);
-			}*/
-			
-			mLikeButton.setText(likeString + " " + like_nums);
-			
-			mProgBarView.setVisibility(View.GONE);
 		}
+		
 	}
 	
 	/*
