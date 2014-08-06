@@ -1,6 +1,7 @@
 package net.petsinamerica.askavet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -305,17 +306,22 @@ public class HomeActivity extends FragmentActivity implements
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
 			setParameters(Constants.URL_BLOGCN, sTAG_RESULT,true);
+			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
+			setCustomAdapter(new ArticleListAdapter2(
+					this.getActivity(), R.layout.list_article_header,
+					R.layout.list_article_item, emptyList));
 		}
+		
 
 		@Override
-		protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
+		public void onViewCreated(View view, Bundle savedInstanceState) {
+			super.onViewCreated(view, savedInstanceState);
 			setStyle(Style.card);
 			getListView().setHeaderDividersEnabled(true);
 			getListView().addHeaderView(new View(getActivity()));
-			setCustomAdapter(new ArticleListAdapter2(
-					this.getActivity(), R.layout.list_article_header,
-					R.layout.list_article_item, resultArray));
+			
 		}
+
 
 		@Override
 		protected void onItemClickAction(View v, int position, long id) {
@@ -331,6 +337,7 @@ public class HomeActivity extends FragmentActivity implements
 			startActivity(newIntent);
 			
 		}
+
 	
 	}
 	
@@ -340,13 +347,11 @@ public class HomeActivity extends FragmentActivity implements
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
 			setParameters(Constants.URL_PRODUCTLIST, sTAG_RESULT,true);
+			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
+			setCustomAdapter(new ProductListAdapter(mContext,
+					R.layout.list_large_item2, emptyList));
 		}
 
-		@Override
-		protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
-			setCustomAdapter(new ProductListAdapter(mContext,
-					R.layout.list_large_item2, resultArray));
-		}
 
 		@Override
 		protected void onItemClickAction(View v, int position, long id) {

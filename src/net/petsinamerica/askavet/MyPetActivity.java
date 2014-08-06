@@ -1,5 +1,6 @@
 package net.petsinamerica.askavet;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -74,20 +75,25 @@ public class MyPetActivity extends FragmentActivity{
 	            throw new ClassCastException(activity.toString()
 	                    + " must implement OnPetItemSelectedListener");
 	        }*/
-			setParameters(Constants.URL_USERPETS, KEY_RESULT, false, false);
+			
+			setParameters(Constants.URL_USERPETS, KEY_RESULT,true, false);
 			setPage(Integer.parseInt(UserInfoManager.userid));
 			setUserDataFlag(true);
 			
-		}
-
-		@Override
-		protected void onHttpDoneSetAdapter(
-				List<Map<String, Object>> resultArray) {
-			setStyle(Style.card);
+			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
 			adapter = new PetListAdapter2(this.getActivity(), 
-							R.layout.list_pet_item, resultArray);
+						R.layout.list_pet_item, emptyList);
 			setCustomAdapter(adapter);
 		}
+		
+
+
+		@Override
+		public void onViewCreated(View view, Bundle savedInstanceState) {
+			super.onViewCreated(view, savedInstanceState);
+			setStyle(Style.card);
+		}
+
 
 		@Override
 		protected void onItemClickAction(View v, int position, long id) {
@@ -97,6 +103,41 @@ public class MyPetActivity extends FragmentActivity{
 			startActivity(intent);			
 			return;
 		}
+
+		@Override
+		protected void handleEmptyList() {
+			/*if (mfooterview!=null){
+				TextView tvFooter = (TextView) mfooterview
+						.findViewById(R.id.list_footer_tv_loading);
+				tvFooter.setText("您还没有添加宠物，请先到北宠网上添加宠物信息！");
+				
+				ProgressBar pbFooter = (ProgressBar) mfooterview
+								.findViewById(R.id.list_footer_pb_loading);
+				pbFooter.setVisibility(View.INVISIBLE);
+			}*/
+			
+		}
+
+		@Override
+		protected void setUpFooterView() {
+			if (mfooterview != null){
+				getListView().removeFooterView(mfooterview);
+				mfooterview = null;
+			}
+			
+			LayoutInflater inflater = (LayoutInflater) getActivity()
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View footer = (View) inflater.inflate(R.layout.list_item_additem, null);
+			getListView().addFooterView(footer);
+			getListView().setFooterDividersEnabled(true);
+			// set the footer as invisible only make it visible when needed
+			footer.setVisibility(View.VISIBLE);
+			
+			//TextView tvFooter = (TextView) mfooterview
+				//	.findViewById(R.id.list_footer_tv_loading);
+		}
+		
+		
 		
 	}
 	

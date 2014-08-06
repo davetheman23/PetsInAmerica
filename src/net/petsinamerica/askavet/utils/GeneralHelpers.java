@@ -19,6 +19,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -158,7 +159,8 @@ public class GeneralHelpers {
 	    return null;
 	}
 	/**
-	 * parse the PIA server response, return results in a map if no error
+	 * parse a PIA server response, return results in a map if no error, 
+	 * This applies to the responses that will return a ErrorMessage field, 
 	 * @param response raw response from PIA server
 	 * @return a data map contains responses from PIA server
 	 */
@@ -187,13 +189,14 @@ public class GeneralHelpers {
 	}
 	
 	/**
-	 * parse the PIA server response String, return results in a map if no error
-	 * this is a temporary method to handle different return formats from PIA server
+	 * parse a PIA server response, return results in a list of maps if no error, 
+	 * This applies to the responses that returns a list of objects 
 	 * @param response raw response from PIA server
-	 * @return a data map contains responses from PIA server
+	 * @return a data map contains responses from PIA server, null if error
 	 */
-	public static Map<String, Object> handlePiaResponseString(String responseString) throws 
-									JSONException, IOException {
+	public static List<Map<String, Object>> handlePiaResponseArray(HttpResponse response) throws 
+	JSONException, HttpResponseException, IOException {
+		String responseString = new BasicResponseHandler().handleResponse(response);
 		
 		JSONObject responseObject = (JSONObject) new JSONTokener(responseString).nextValue(); 
 		
@@ -203,13 +206,8 @@ public class GeneralHelpers {
 			int errorCode = Integer.parseInt(responseMap.get(Constants.KEY_ERROR).toString());
 			switch (errorCode) {
 			case 0:
-				@SuppressWarnings("unchecked")
-				Map<String, Object> jObject = (Map<String, Object>)responseMap.get(Constants.KEY_RESULT);
-				return jObject;
-			default:
-				Map<String, Object> jErrObject = new HashMap<String, Object>();
-				jErrObject.put(Constants.KEY_ERROR_MESSAGE, responseMap.get(Constants.KEY_ERROR_MESSAGE).toString());
-				return jErrObject;
+				JSONArray responseArray = responseObject.getJSONArray(Constants.KEY_RESULT);
+				return JsonHelper.toList(responseArray);
 			}
 		}
 		return null;

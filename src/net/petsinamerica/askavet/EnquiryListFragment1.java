@@ -1,5 +1,6 @@
 package net.petsinamerica.askavet;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * This fragment class uses the FragmentManager to swap the two child fragments
@@ -145,12 +145,10 @@ public class EnquiryListFragment1 extends Fragment {
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
 			setParameters(Constants.URL_ENQUIRY, sTAG_RESULT,true);
-		}
-
-		@Override
-		protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
-			setCustomAdapter(new EnquiryListAdapter(mContext,
-					R.layout.list_enquiry_item, resultArray));
+			
+			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
+			setCustomAdapter(new EnquiryListAdapter(mContext, 
+					R.layout.list_enquiry_item, emptyList));
 		}
 
 		@Override
@@ -175,13 +173,12 @@ public class EnquiryListFragment1 extends Fragment {
 			super.onAttach(activity);
 			setParameters(Constants.URL_MYENQUIRY, sTAG_RESULT,true);
 			setUserDataFlag(true);
+			
+			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
+			setCustomAdapter(new EnquiryListAdapter(mContext, 
+					R.layout.list_enquiry_item, emptyList));
 		}
 
-		@Override
-		protected void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray) {
-			setCustomAdapter(new EnquiryListAdapter(mContext,
-					R.layout.list_enquiry_item, resultArray));
-		}
 
 		@Override
 		protected void onItemClickAction(View v, int position, long id) {

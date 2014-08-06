@@ -205,7 +205,7 @@ public class EnquiryFormActivity extends FragmentActivity {
 		if (mUserInputs.getInt(PET_WEIGHT, -999) < 0){
 			Toast.makeText(getApplication(), "请确认宠物重量是否输入正确", Toast.LENGTH_LONG).show();
 		}
-		if (mUserInputs.getString(TITLE,"").equals("")){
+		if (mUserInputs.get(TITLE).toString().equals("")){
 			Toast.makeText(getApplication(), "请输入一个标题", Toast.LENGTH_LONG).show();
 		}
 		return true;
@@ -327,11 +327,12 @@ public class EnquiryFormActivity extends FragmentActivity {
 	public static class PetListFragment extends BaseListFragment{
 
 		@Override
-		protected void onHttpDoneSetAdapter(
-				List<Map<String, Object>> resultArray) {
-			petAdapter = new PetListAdapter(getActivity(), 
-						R.layout.list_pet_item_with_selection, resultArray);
-			mHLview.setAdapter(petAdapter);
+		protected void onHttpDone(List<Map<String, Object>> resultArray) {
+			if (resultArray != null){
+				petAdapter = new PetListAdapter(getActivity(), 
+							R.layout.list_pet_item_with_selection, resultArray);
+				mHLview.setAdapter(petAdapter);
+			}
 		}
 
 		@Override

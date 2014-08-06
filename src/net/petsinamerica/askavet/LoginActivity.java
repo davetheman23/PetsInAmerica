@@ -57,7 +57,6 @@ import com.sina.weibo.sdk.exception.WeiboException;
 
 public class LoginActivity extends Activity{
 	
-	private static String KEY_LOGIN = App.appContext.getString(R.string.JSON_tag_login);
 	private String mUsername;
 	private String mPassword;
 
@@ -187,27 +186,7 @@ public class LoginActivity extends Activity{
 				
 				HttpResponse response = mClient.execute(post);
 				
-				// obtain response from login
-				String loginResponse = new BasicResponseHandler().handleResponse(response);
-				
-				// parse response as JSON object
-				JSONObject responseObject = (JSONObject) new JSONTokener(loginResponse).nextValue();
-
-				Map<String, Object> responseMap = JsonHelper.toMap(responseObject);
-				
-				if (responseMap.containsKey(KEY_LOGIN)){
-					// this is the case that use PIA login directly
-				String loginToken = responseMap.get(KEY_LOGIN).toString();
-					 
-					if (Integer.parseInt(loginToken) == 0){
-						// if login failed
-						responseMap.put(Constants.KEY_ERROR_MESSAGE, "请检查登录信息");
-					}
-					return responseMap;
-				}else{
-					// this is the case that uses weibo login
-					return GeneralHelpers.handlePiaResponseString(loginResponse);
-				}
+				return GeneralHelpers.handlePiaResponse(response);
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

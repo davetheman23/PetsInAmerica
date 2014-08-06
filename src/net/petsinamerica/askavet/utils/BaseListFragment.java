@@ -1,8 +1,6 @@
 package net.petsinamerica.askavet.utils;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +29,6 @@ import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ArrayAdapter;
@@ -51,45 +48,36 @@ public abstract class BaseListFragment extends ListFragment{
 		card,
 		normal //default style
 	};
+	// variables that can be used by subclasses
+	protected View mfooterview = null; 
 	
 	private static final String TAG = "BaseListFragment";
-	private static final String KEY_ERR = "error";
 	
 	/*
-	 * the key at the first level of the JSON response object
+	 * the key at the first level of the JSON response object, now it is not used 
+	 * since the PIA api all have the same response formats, this is not needed
 	 * Note: don't make it static, because each instance of this fragment class
 	 *       may have different key_list value. 
 	 */
-	private String KEY_LIST;
+	private String KEY_LIST;	
 	
 	/*
 	 * mPage will be appended to the URL, for some API calls, it indicates 
 	 * the page of the list, for other API calls, it could mean userid.  
 	 */
-	private int mPage = 1;
+	private int mPage = 0;
 	private boolean mflag_page = true;		// flag whether a page should be added to url
 	private boolean mflag_addData = false;		// false-don't add data
 	private boolean mIsUserSpecific = false;	// flag for user specific data
 	private boolean mHasFooter = true;			// flag to indicate if footer is needed
 	private boolean mSetScrollListener = true;	// flag whether to setscrollListener for the listview
 	
-	private ArrayAdapter<Map<String, Object>> mBaseAdapter;
+	private ArrayAdapter<Map<String, Object>> mCustomAdapter;
 	private Context mContext;
 	private String mUrl;
-	private View mfooterview = null; 
-	
 	
 	/**
-	 * Set the custom list adapter to use when the Http request is completed,
-	 * simply call function setCustomAdapter() passing in an instance of the 
-	 * custom listadapter
-	 * 
-	 * @param resultArray  - the resulting data 
-	 */
-	protected abstract void onHttpDoneSetAdapter(List<Map<String, Object>> resultArray);
-	
-	/**
-	 *	 
+	 * This method handles the actions to be taken when one item within the list is clicked
 	 * @param v
 	 * @param position
 	 * @param id
@@ -148,14 +136,6 @@ public abstract class BaseListFragment extends ListFragment{
 		}
 	}
 	
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
-		mContext = activity;
-		getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
-		
-	}
-	
 	public void loadListInBackground(){
 		if (!mflag_page){
 			new HttpPostTask().execute(mUrl);
@@ -164,19 +144,30 @@ public abstract class BaseListFragment extends ListFragment{
 			new HttpPostTask().execute(mUrl + Integer.toString(mPage));
 		}
 	}
+	
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		mContext = activity;
+		getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
+		
+		
+	}
+	
+	
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		if (getListAdapter() == null){
 			// first time the view is created
-			loadListInBackground();
+			setListAdapter(mCustomAdapter);
 			// set up footer 
 			if (mHasFooter){
 				setUpFooterView();
 			}
 		}
-		
 		
 		//mReadArticleList = new HashSet<String>();
 		
@@ -202,7 +193,9 @@ public abstract class BaseListFragment extends ListFragment{
 						// when the visible item reaches the last item, 
 						if (mflag_addData == false)
 						{
-							mPage += 1;
+							if (mflag_page){
+								mPage += 1;
+							}
 							mflag_addData = true;
 							loadListInBackground();
 							if (getListView().getFooterViewsCount() == 0){
@@ -219,17 +212,7 @@ public abstract class BaseListFragment extends ListFragment{
 		
 	}
 	
-	
-	private void setUpFooterView(){		
-		LayoutInflater inflater = (LayoutInflater) mContext
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		mfooterview = (View) inflater.inflate(R.layout.list_footer, null);
-		getListView().addFooterView(mfooterview);
-		getListView().setFooterDividersEnabled(true);
-		// set the footer as invisible only make it visible when needed
-		mfooterview.setVisibility(View.GONE);
-		mfooterview.setClickable(false);
-	}
+
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
@@ -244,10 +227,26 @@ public abstract class BaseListFragment extends ListFragment{
 		
 	}
 	
+	/**
+	 * if the list has a footer view, then a default footer view is setup, but 
+	 * this can be overwritten using a new layout file. By doing so, {@link #handleEmptyList()} 
+	 * and {@link #handleEndofList()} needs to be overwritten to use the new elements in the 
+	 * new layout file
+	 */
+	protected void setUpFooterView(){		
+		LayoutInflater inflater = (LayoutInflater) mContext
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mfooterview = (View) inflater.inflate(R.layout.list_footer, null);
+		getListView().addFooterView(mfooterview);
+		getListView().setFooterDividersEnabled(true);
+		// set the footer as invisible only make it visible when needed
+		mfooterview.setVisibility(View.GONE);
+		mfooterview.setClickable(false);
+	}
+	
 
 	/**
-	 * This function displays no content available when the 
-	 * list is empty
+	 * This function displays no content available when the list is empty,
 	 * Overwriting this function to customize actions to be taken 
 	 * when the list is empty 
 	 */
@@ -255,7 +254,7 @@ public abstract class BaseListFragment extends ListFragment{
 		if (mfooterview!=null){
 			TextView tvFooter = (TextView) mfooterview
 					.findViewById(R.id.list_footer_tv_loading);
-			tvFooter.setText("没有可显示的文章");
+			tvFooter.setText("没有可显示的内容");
 			
 			ProgressBar pbFooter = (ProgressBar) mfooterview
 							.findViewById(R.id.list_footer_pb_loading);
@@ -274,7 +273,7 @@ public abstract class BaseListFragment extends ListFragment{
 		if (mfooterview!=null){
 			TextView tvFooter = (TextView) mfooterview
 					.findViewById(R.id.list_footer_tv_loading);
-			tvFooter.setText("已获取全部文章");
+			tvFooter.setText("已获取全部内容");
 			
 			ProgressBar pbFooter = (ProgressBar) mfooterview
 							.findViewById(R.id.list_footer_pb_loading);
@@ -283,25 +282,25 @@ public abstract class BaseListFragment extends ListFragment{
 	}
 	
 	
+	/**
+	 * This method simply provide a reference of a custom adapter instance to a private variable,
+	 * so later on the adapter can be modified by using the reference
+	 */
 	protected void setCustomAdapter(ArrayAdapter<Map<String, Object>> customAdapter){
-		
-		mBaseAdapter = customAdapter;
-		setListAdapter(mBaseAdapter);
+		mCustomAdapter = customAdapter;
 	}
+	
+	/**
+	 *  this is a method with out implementation, it is called directly after the http
+	 *  onPostExecute() method, should overwrite if data is needed 
+	 */
+	protected void onHttpDone(List<Map<String, Object>> resultArray){}
 	
 
 	private class HttpPostTask extends AsyncTask<String, Void, List<Map<String, Object>>> {
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
-		
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			
-		}
-
-		@SuppressWarnings("unchecked")
 		@Override
 		protected List<Map<String, Object>> doInBackground(String... params) {
 			String url = params[0];
@@ -310,36 +309,9 @@ public abstract class BaseListFragment extends ListFragment{
 				AccessTokenManager.addAccessTokenPost(post, mContext);
 			}
 			
-			HttpResponse response = null;		
-			String JSONResponse = null;
 			try {
-				response = mClient.execute(post);
-				JSONResponse = new BasicResponseHandler()
-				.handleResponse(response);
-				
-				// -- Parse Json object, 
-				JSONObject responseObject = null;
-				JSONArray responseArray = null;
-				List<Map<String, Object>> arrayList = new ArrayList<Map<String, Object>>();
-				
-				responseObject = (JSONObject) new JSONTokener(
-						JSONResponse).nextValue();
-				if (responseObject !=null){
-					/*int errorCode = responseObject.getInt(KEY_ERR);
-					if (errorCode != Constants.NO_ERROR){
-						return arrayList;
-					}*/
-					String listObject = responseObject.getString(KEY_LIST);
-					if (listObject.equalsIgnoreCase("null")){
-						return arrayList;
-					}
-					responseArray = responseObject.getJSONArray(KEY_LIST);
-					if (responseArray != null){
-						arrayList = JsonHelper.toList(responseArray);
-						return arrayList;
-					}
-				}
-				return arrayList;
+				HttpResponse response = mClient.execute(post);
+				return GeneralHelpers.handlePiaResponseArray(response);
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -348,7 +320,6 @@ public abstract class BaseListFragment extends ListFragment{
 				e.printStackTrace();
 				Log.e(TAG, "JSONException");
 				Log.e(TAG, "Currently Loading URL:" + url);
-				// TODO Log.d(TAG, "Please handle exception here");
 			}finally{
 				if (null != mClient){
 					mClient.close();
@@ -359,28 +330,24 @@ public abstract class BaseListFragment extends ListFragment{
 
 		@Override
 		protected void onPostExecute(List<Map<String, Object>> resultArray) {
+			onHttpDone(resultArray);
 			if (isAdded() && resultArray != null){		
 			// always test isAdded for a fragment, this help make sure
 			// the getActivity doesn't return null pointer
 				if (resultArray.size() > 0 ){
-					if (mflag_addData == false){
-						// set adapter only for the first time.
-						onHttpDoneSetAdapter(resultArray);
+					if (getListAdapter() != null){
+						mCustomAdapter.addAll(resultArray);
+						mflag_addData = false;
 					}else{
-						if (getListAdapter() != null){
-							mBaseAdapter.addAll(resultArray);
-							mflag_addData = false;
-						}else{
-							// it is not normal resultArray.size() >0 but mflag_addData is true
-							Log.e(TAG, "ListAdapter is not set properly, plese check!");
-						}
-						if (mfooterview!=null){
-							mfooterview.setVisibility(View.GONE);
-						}
+						// it is not normal resultArray.size() >0 but mflag_addData is true
+						Log.e(TAG, "ListAdapter is not set properly, plese check!");
 					}
+					if (mfooterview!=null){
+						mfooterview.setVisibility(View.GONE);
+					}
+					
 				}else{
-					// no more list items to be displayed
-					// handle it
+					// no more list items to be displayed and handle it
 					if (getListView().getCount() < 1){
 						handleEmptyList();;
 					}else{
