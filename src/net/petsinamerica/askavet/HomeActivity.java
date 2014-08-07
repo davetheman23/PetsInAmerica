@@ -11,6 +11,9 @@ import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.BaseListFragment;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
+import net.petsinamerica.askavet.utils.NotificationsDataSource;
+import net.petsinamerica.askavet.utils.PiaNotification;
+import net.petsinamerica.askavet.utils.PushReceiver;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 
 import org.apache.http.HttpResponse;
@@ -50,7 +53,7 @@ import com.sina.weibo.sdk.openapi.models.User;
 import com.sina.weibo.sdk.utils.LogUtil;
 
 public class HomeActivity extends FragmentActivity implements
-		ActionBar.TabListener {
+		ActionBar.TabListener, PushReceiver.onReceiveNotificationListener {
 
 	private static final String sTAG = "HomeActivity"; 
 	/**
@@ -70,6 +73,9 @@ public class HomeActivity extends FragmentActivity implements
 	
 	Menu menu;
 	
+	/** the button that shows the number of notifications */
+	private Button btnNotification;
+	
 	private static final int sTOTAL_PAGES = 3;
 	
 	private static Context mContext;
@@ -77,6 +83,9 @@ public class HomeActivity extends FragmentActivity implements
 	private static AccessToken mToken;
 	
 	private UsersAPI mUsersAPI;
+	
+	
+	private NotificationsDataSource dataSource;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -216,7 +225,7 @@ public class HomeActivity extends FragmentActivity implements
         /*View homeIcon = findViewById(android.R.id.home);
 		((View)homeIcon.getParent()).setVisibility(View.GONE);*/
         
-        Button btnNotification = (Button) v.findViewById(R.id.actionbar_home_btn_notification);
+        btnNotification = (Button) v.findViewById(R.id.actionbar_home_btn_notification);
         btnNotification.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -225,6 +234,14 @@ public class HomeActivity extends FragmentActivity implements
 				startActivity(intent);
 			}
 		});
+        
+        // get from the SQL database on the number of notifications
+ 		dataSource = new NotificationsDataSource(this);
+ 		dataSource.open();
+ 		PushReceiver.registerPiaNotificationListener(this);
+ 		
+ 		btnNotification.setText(dataSource.getCount().toString());
+ 		dataSource.close();
         
         
 		
@@ -457,5 +474,18 @@ public class HomeActivity extends FragmentActivity implements
             Toast.makeText(HomeActivity.this, info.toString(), Toast.LENGTH_LONG).show();
         }
     };
+
+	@Override
+	public void onReceivedNotification(PiaNotification notification) {
+		if (dataSource == null){
+			dataSource = new NotificationsDataSource(this);
+		}
+ 		if (btnNotification!= null){
+ 			dataSource.open();
+ 			btnNotification.setText(dataSource.getCount().toString());
+ 			dataSource.close();
+ 		}
+		
+	}
 
 }

@@ -119,7 +119,7 @@ public class MyPetActivity extends FragmentActivity{
 			}
 			LayoutInflater inflater = (LayoutInflater) getActivity()
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View footer = (View) inflater.inflate(R.layout.list_item_additem, null);
+			View footer = (View) inflater.inflate(R.layout.list_pet_item_addpet, null);
 			getListView().addFooterView(footer);
 			getListView().setFooterDividersEnabled(true);
 			// set the footer as invisible only make it visible when needed

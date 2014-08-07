@@ -1,6 +1,13 @@
 package net.petsinamerica.askavet.utils;
 
-import net.petsinamerica.askavet.PushActivity;
+import java.util.Map;
+
+import net.petsinamerica.askavet.utils.UserInfoManager.Listener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +17,15 @@ import android.util.Log;
 import com.igexin.sdk.PushConsts;
 
 public class PushReceiver extends BroadcastReceiver {
+	
+	
+	private static onReceiveNotificationListener mPiaNotificationListener = null;
+	public static interface onReceiveNotificationListener {
+		public void onReceivedNotification(PiaNotification notification);
+	}
+	public static void registerPiaNotificationListener (onReceiveNotificationListener listener){
+		mPiaNotificationListener = listener;
+	}
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -51,10 +67,39 @@ public class PushReceiver extends BroadcastReceiver {
 	
 	public void handlePayloadMessage(String message, Context context){
 		
-		Intent newIntent = new Intent(context, PushActivity.class);
+		/*Intent newIntent = new Intent(context, PushActivity.class);
 		newIntent.putExtra("payload", message);
 		newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		context.startActivity(newIntent);
+		context.startActivity(newIntent);*/
+		
+		NotificationsDataSource dataSource = new NotificationsDataSource(context);
+		dataSource.open();
+		
+		long type = 1;
+		String subject = "", content = "";
+		Map<String, Object> pushContent = null;
+		try {
+			JSONObject pushObject = (JSONObject) new JSONTokener(message).nextValue();
+			pushContent = JsonHelper.toMap(pushObject);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		} 
+		if (pushContent != null && pushContent.containsKey(PiaSQLiteHelper.COLUMN_TYPE)){
+			type = (Integer) pushContent.get(PiaSQLiteHelper.COLUMN_TYPE);
+		}
+		if (pushContent != null && pushContent.containsKey(PiaSQLiteHelper.COLUMN_SUBJECT)){
+			subject = pushContent.get(PiaSQLiteHelper.COLUMN_SUBJECT).toString();
+		}
+		if (pushContent != null && pushContent.containsKey(PiaSQLiteHelper.COLUMN_CONTENT)){
+			content = pushContent.get(PiaSQLiteHelper.COLUMN_CONTENT).toString();
+		}
+		
+		PiaNotification notification = dataSource.createNotification(type, subject, content);
+		
+		if (mPiaNotificationListener != null){
+			mPiaNotificationListener.onReceivedNotification(notification);
+		}
 	}
-
+	
+	
 }
