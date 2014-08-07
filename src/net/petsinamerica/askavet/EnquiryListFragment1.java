@@ -32,8 +32,7 @@ import android.widget.TextView;
 
 public class EnquiryListFragment1 extends Fragment {
 	
-	private static String sTAG_CONTENT;
-	private static String sTAG_RESULT;
+	private static String KEY_CONTENT;
 	private static final String sTAG = "EnquiryListFragment";
 
 	private static Context mContext;
@@ -52,8 +51,7 @@ public class EnquiryListFragment1 extends Fragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		mContext = activity;
-		sTAG_CONTENT = mContext.getResources().getString(R.string.JSON_tag_content);
-		sTAG_RESULT = getResources().getString(R.string.JSON_tag_result);
+		KEY_CONTENT = mContext.getResources().getString(R.string.JSON_tag_content);
 		
 		
 		// creating the two fragments and keep them in memory for fast swapping
@@ -144,8 +142,8 @@ public class EnquiryListFragment1 extends Fragment {
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_ENQUIRY, sTAG_RESULT,true);
-			
+			setParameters(Constants.URL_ENQUIRY, true, false,true);
+			setPage(1);
 			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
 			setCustomAdapter(new EnquiryListAdapter(mContext, 
 					R.layout.list_enquiry_item, emptyList));
@@ -161,7 +159,7 @@ public class EnquiryListFragment1 extends Fragment {
 			
 			String enqueryContent = ((EnquiryListAdapter)getListAdapter()).getEnqueryContent(v);
 			Intent newIntent = new Intent(mContext, EnquiryActivity.class);
-			newIntent.putExtra(sTAG_CONTENT, enqueryContent);
+			newIntent.putExtra(KEY_CONTENT, enqueryContent);
 			startActivity(newIntent);
 		}
 	}
@@ -171,7 +169,7 @@ public class EnquiryListFragment1 extends Fragment {
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_MYENQUIRY, sTAG_RESULT,true);
+			setParameters(Constants.URL_MYENQUIRY,false,false,true);
 			setUserDataFlag(true);
 			
 			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
@@ -190,7 +188,7 @@ public class EnquiryListFragment1 extends Fragment {
 			
 			String enqueryContent = ((EnquiryListAdapter)getListAdapter()).getEnqueryContent(v);
 			Intent newIntent = new Intent(mContext, EnquiryActivity.class);
-			newIntent.putExtra(sTAG_CONTENT, enqueryContent);
+			newIntent.putExtra(KEY_CONTENT, enqueryContent);
 			startActivity(newIntent);
 			
 		}

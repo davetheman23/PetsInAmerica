@@ -15,29 +15,23 @@ import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.BaseListFragment;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
-import net.petsinamerica.askavet.utils.JsonHelper;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
@@ -58,11 +52,6 @@ import com.meetme.android.horizontallistview.HorizontalListView;
 public class EnquiryFormActivity extends FragmentActivity {
 	
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-	
-	private static final String KEY_RESULT = Constants.KEY_RESULT;
-	
-	private static final String KEY_ERROR = Constants.KEY_ERROR;
-	
 	
 	
 	private static HorizontalListView mHLview = null;
@@ -162,7 +151,7 @@ public class EnquiryFormActivity extends FragmentActivity {
 		//TODO after an image is taken, this will sometimes fail, I suspect it is loading the images too frequently? 
 		// set up a fragment, just to load the pet data into an adapter in a background thread 
 		PetListFragment petListFragment = new PetListFragment();
-		petListFragment.setParameters(Constants.URL_USERPETS, KEY_RESULT,false);
+		petListFragment.setParameters(Constants.URL_USERPETS, false, true, false);
 		petListFragment.setPage(Integer.parseInt(UserInfoManager.userid));
 		petListFragment.setUserDataFlag(true);
 		getSupportFragmentManager()
@@ -332,6 +321,9 @@ public class EnquiryFormActivity extends FragmentActivity {
 				petAdapter = new PetListAdapter(getActivity(), 
 							R.layout.list_pet_item_with_selection, resultArray);
 				mHLview.setAdapter(petAdapter);
+				if (resultArray.size() == 0){
+					Toast.makeText(getActivity(), "您还没有任何宠物，请先添加宠物信息！", Toast.LENGTH_LONG).show();
+				}
 			}
 		}
 

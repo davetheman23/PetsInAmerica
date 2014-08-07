@@ -9,115 +9,20 @@
 
         <ImageView 
             android:id="@+id/pet_list_pic"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/somepet"/>
-       <TableLayout
-        	android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@id/pet_list_pic"
-            android:gravity="center_horizontal">
-	    <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
+        <TextView
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:text="@string/label_petname" />
-            <TextView
-                android:id="@+id/pet_list_pet_name"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:layout_marginLeft="10dp"
-                android:text="名字" />
-        </TableRow>
-        <TableRow>
-            <View
-                android:layout_span="2"
-                android:layout_width="wrap_content"
-                android:layout_height="0.5dp"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="#999" />
-        </TableRow>
-        <TableRow >
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:text="@string/label_petspecies" />
-            <TextView
-                android:id="@+id/pet_list_petspecies"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="狗" />
-            <TextView
-                android:id="@+id/pet_list_petsex"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:layout_marginLeft="5dp"
-                android:text="(Male)" />
-        </TableRow>
-        <TableRow>
-            <View
-                android:layout_span="2"
-                android:layout_width="wrap_content"
-                android:layout_height="0.5dp"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="#999" />
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:text="@string/label_petbreed" />
-            <TextView
-                android:id="@+id/pet_list_petbreed"
-                android:layout_width="0dp"
-                android:layout_weight="4"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:layout_marginLeft="10dp"
-                android:text="mixed-breed" />
-        </TableRow>
-        <TableRow>
-            <View
-                android:layout_span="2"
-                android:layout_width="wrap_content"
-                android:layout_height="0.5dp"
-                android:layout_weight="1"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:background="#999" />
-        </TableRow>
-        <RelativeLayout>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft = "true"
-                android:text="@string/label_pet_bday" />
-            <TextView
-                android:id="@+id/pet_list_pet_bday"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
                 android:layout_alignParentRight="true"
-                android:layout_marginLeft="10dp"
-                android:text="2013-11-13" />
-        </RelativeLayout>
-
-    </TableLayout>
+	            android:layout_marginLeft="10dp"
+	            android:layout_toRightOf="@id/pet_list_pic"
+	            android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="我要添加新的宠物！"
+                android:textAppearance="@android:style/TextAppearance.Medium" />
+      
 </RelativeLayout>

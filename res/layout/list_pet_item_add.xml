@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:gravity="center_horizontal">
+    <ImageView
+        android:id="@+id/pet_list_item_add"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:padding="10dp"
+        android:contentDescription="product_pic"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_gray_plus_md" />
+
+</RelativeLayout>

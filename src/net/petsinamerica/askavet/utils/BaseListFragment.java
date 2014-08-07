@@ -2,6 +2,7 @@ package net.petsinamerica.askavet.utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 
@@ -52,25 +53,18 @@ public abstract class BaseListFragment extends ListFragment{
 	protected View mfooterview = null; 
 	
 	private static final String TAG = "BaseListFragment";
+
 	
-	/*
-	 * the key at the first level of the JSON response object, now it is not used 
-	 * since the PIA api all have the same response formats, this is not needed
-	 * Note: don't make it static, because each instance of this fragment class
-	 *       may have different key_list value. 
-	 */
-	private String KEY_LIST;	
-	
-	/*
+	/**
 	 * mPage will be appended to the URL, for some API calls, it indicates 
-	 * the page of the list, for other API calls, it could mean userid.  
+	 * the page of the list, for other API calls, it could mean userid or other object id.
+	 * Page id can be incremented, while object id can not.   
 	 */
 	private int mPage = 0;
-	private boolean mflag_page = true;		// flag whether a page should be added to url
-	private boolean mflag_addData = false;		// false-don't add data
+	private boolean mflag_page = false;		// flag whether a page should be added to url
+	private boolean mflag_objectId = false;		// flag whether an object id should be added to url
 	private boolean mIsUserSpecific = false;	// flag for user specific data
 	private boolean mHasFooter = true;			// flag to indicate if footer is needed
-	private boolean mSetScrollListener = true;	// flag whether to setscrollListener for the listview
 	
 	private ArrayAdapter<Map<String, Object>> mCustomAdapter;
 	private Context mContext;
@@ -91,27 +85,17 @@ public abstract class BaseListFragment extends ListFragment{
 	public int getPage(){
 		return mPage;
 	}
-	public void setPageFlag(boolean flag){
-		mflag_page = flag;
-	}
-	
+
 	//Set<String> mReadArticleList = null;		// the article list that has been read by the user
 	//SharedPreferences mUsageData;
 		
-	public void setParameters(String url,  String jsonListKey, boolean hasfooter) {
+	public void setParameters(String url,  boolean hasPageId, boolean hasObjectId, boolean hasfooter) {
 		mUrl = url;
-		KEY_LIST = jsonListKey;
+		mflag_page = hasPageId;
+		mflag_objectId = hasObjectId;
 		mHasFooter = hasfooter;
 	}
 	
-	public void setParameters(String url,  String jsonListKey, boolean hasfooter, 
-			boolean isSetScrollListener) {
-		mUrl = url;
-		KEY_LIST = jsonListKey;
-		mHasFooter = hasfooter;
-		mSetScrollListener = isSetScrollListener;
-	
-	}
 	public void setUserDataFlag(boolean isUserSpecific){
 		mIsUserSpecific = isUserSpecific;
 	}
@@ -137,10 +121,13 @@ public abstract class BaseListFragment extends ListFragment{
 	}
 	
 	public void loadListInBackground(){
-		if (!mflag_page){
+		if (!mflag_page && !mflag_objectId){
 			new HttpPostTask().execute(mUrl);
-		}else{
+		}else if (mflag_page){
 			// fetch list data from the network
+			new HttpPostTask().execute(mUrl + Integer.toString(mPage));
+		}else if (mflag_objectId){
+			// fetch object data from the network
 			new HttpPostTask().execute(mUrl + Integer.toString(mPage));
 		}
 	}
@@ -152,7 +139,6 @@ public abstract class BaseListFragment extends ListFragment{
 		mContext = activity;
 		getAttributeSet(mContext, R.layout.list_tag_template, "TextView");
 		
-		
 	}
 	
 	
@@ -163,6 +149,7 @@ public abstract class BaseListFragment extends ListFragment{
 		if (getListAdapter() == null){
 			// first time the view is created
 			setListAdapter(mCustomAdapter);
+			loadListInBackground();
 			// set up footer 
 			if (mHasFooter){
 				setUpFooterView();
@@ -171,41 +158,39 @@ public abstract class BaseListFragment extends ListFragment{
 		
 		//mReadArticleList = new HashSet<String>();
 		
-		// disable scroll bar
-		getListView().setVerticalScrollBarEnabled(false);		
-		
-		if (mSetScrollListener){
+		if (mflag_page){
+			// disable scroll bar
+			getListView().setVerticalScrollBarEnabled(false);		
+			
 			// monitor scroll activity, add more articles when scroll close to bottom
 			getListView().setOnScrollListener(new OnScrollListener() {
+				int currentFirstVisibleItem, currentVisibleItemCount, currentTotalItemCount;
 				/*
 				 * this listener is used to continuously load more article when scroll down to bottom
 				 */
-			@Override
+				@Override
 				public void onScrollStateChanged(AbsListView view, int scrollState) {
+					if (currentFirstVisibleItem + currentVisibleItemCount > currentTotalItemCount - 1
+						&& currentTotalItemCount != 0
+						&& scrollState == SCROLL_STATE_IDLE){
+						mPage += 1;
+						loadListInBackground();
+						if (getListView().getFooterViewsCount() == 0){
+							setUpFooterView();
+						}
+						if (mfooterview != null){
+							mfooterview.setVisibility(View.VISIBLE);
+						}
+					}
 				}
 				
 				@Override
 				public void onScroll(AbsListView view, int firstVisibleItem,
 						int visibleItemCount, int totalItemCount) {
-					if(firstVisibleItem + visibleItemCount >= totalItemCount - 1 && totalItemCount != 0)
-					{
-						
-						// when the visible item reaches the last item, 
-						if (mflag_addData == false)
-						{
-							if (mflag_page){
-								mPage += 1;
-							}
-							mflag_addData = true;
-							loadListInBackground();
-							if (getListView().getFooterViewsCount() == 0){
-								setUpFooterView();
-							}
-							if (mfooterview != null){
-								mfooterview.setVisibility(View.VISIBLE);
-							}
-						}
-					}
+					this.currentFirstVisibleItem = firstVisibleItem;
+					this.currentVisibleItemCount = visibleItemCount;
+					this.currentTotalItemCount = totalItemCount;
+					
 				}
 			});
 		}
@@ -337,7 +322,6 @@ public abstract class BaseListFragment extends ListFragment{
 				if (resultArray.size() > 0 ){
 					if (getListAdapter() != null){
 						mCustomAdapter.addAll(resultArray);
-						mflag_addData = false;
 					}else{
 						// it is not normal resultArray.size() >0 but mflag_addData is true
 						Log.e(TAG, "ListAdapter is not set properly, plese check!");
@@ -362,9 +346,10 @@ public abstract class BaseListFragment extends ListFragment{
 		}
 	}
 	
-	
+	/**
+	 *  function to fetch the attribute set defined in layoutResource element ViewName
+	 */
 	private AttributeSet getAttributeSet(Context context, int layoutResource, String ViewName){
-		// function to fetch the attribute set defined in layoutResource element ViewName
 		AttributeSet Attributes = null;
 		XmlPullParser parser = context.getResources().getLayout(layoutResource);
 		int state = 0;

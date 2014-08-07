@@ -10,17 +10,14 @@ import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.BaseListFragment;
 import net.petsinamerica.askavet.utils.Constants;
-import net.petsinamerica.askavet.utils.JsonHelper;
+import net.petsinamerica.askavet.utils.GeneralHelpers;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.util.TextUtils;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -73,10 +70,10 @@ public class HomeActivity extends FragmentActivity implements
 	
 	Menu menu;
 	
-	private static final int sTOTAL_PAGES = 4;
+	private static final int sTOTAL_PAGES = 3;
 	
 	private static Context mContext;
-	private static String sTAG_RESULT = Constants.KEY_RESULT;
+	//private static String sTAG_RESULT = Constants.KEY_RESULT;
 	private static AccessToken mToken;
 	
 	private UsersAPI mUsersAPI;
@@ -112,7 +109,7 @@ public class HomeActivity extends FragmentActivity implements
 			mUsersAPI = new UsersAPI(weiboToken);
 			mUsersAPI.show(Long.parseLong(weiboToken.getUid()), mListener);
 		}else{
-			Toast.makeText(this, "微博信息获取失败,请重新登录微博", Toast.LENGTH_LONG);
+			Toast.makeText(this, "微博信息获取失败,请重新登录微博", Toast.LENGTH_LONG).show();;
 		}
 	    // 对statusAPI实例化
 	    //StatusesAPI statusesAPI = new StatusesAPI(weiboToken);
@@ -224,6 +221,8 @@ public class HomeActivity extends FragmentActivity implements
 			@Override
 			public void onClick(View v) {
 				Toast.makeText(mContext, "提醒功能还在完善中", Toast.LENGTH_LONG).show();
+				Intent intent = new Intent(HomeActivity.this, NotificationCenterActivity.class);
+				startActivity(intent);
 			}
 		});
         
@@ -263,10 +262,10 @@ public class HomeActivity extends FragmentActivity implements
 			case 1:
 				fragment = new ArticleListFragment();
 				break;
-			case 2:
+			/*case 2:
 				fragment = new ProductListFragment();
-				break;
-			case 3:
+				break;*/
+			case 2:
 				fragment = new UserInfoFragment();
 				break;	
 			}
@@ -288,9 +287,9 @@ public class HomeActivity extends FragmentActivity implements
 				return getString(R.string.viewpager_title_section1).toUpperCase(l);
 			case 1:
 				return getString(R.string.viewpager_title_section2).toUpperCase(l);
+			/*case 2:
+				return getString(R.string.viewpager_title_section3).toUpperCase(l);*/
 			case 2:
-				return getString(R.string.viewpager_title_section3).toUpperCase(l);
-			case 3:
 				return getString(R.string.viewpager_title_section4).toUpperCase(l);
 			}
 			return null;
@@ -305,7 +304,8 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_BLOGCN, sTAG_RESULT,true);
+			setParameters(Constants.URL_BLOGCN, true, false, true);
+			setPage(1);
 			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
 			setCustomAdapter(new ArticleListAdapter2(
 					this.getActivity(), R.layout.list_article_header,
@@ -346,7 +346,7 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_PRODUCTLIST, sTAG_RESULT,true);
+			setParameters(Constants.URL_PRODUCTLIST, true,false,true);
 			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
 			setCustomAdapter(new ProductListAdapter(mContext,
 					R.layout.list_large_item2, emptyList));
@@ -391,14 +391,15 @@ public class HomeActivity extends FragmentActivity implements
 			try {				
 				HttpResponse response = mClient.execute(post);
 				
-				// obtain response from login
+				/*// obtain response from login
 				String loginResponse = new BasicResponseHandler().handleResponse(response);
 				
 				// parse response as JSON object
 				JSONObject responseObject = (JSONObject) new JSONTokener(loginResponse).nextValue();
 				Map<String, Object> resultMap = JsonHelper
 											.toMap(responseObject.getJSONObject(sTAG_RESULT));
-				return resultMap;
+				return resultMap;*/
+				return GeneralHelpers.handlePiaResponse(response);
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

@@ -20,12 +20,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 public class MyPetActivity extends FragmentActivity{
-
-	private static String KEY_RESULT = App.appContext.getString(R.string.JSON_tag_result);
 	
 	public FragmentManager fm = null;
 
@@ -76,7 +75,7 @@ public class MyPetActivity extends FragmentActivity{
 	                    + " must implement OnPetItemSelectedListener");
 	        }*/
 			
-			setParameters(Constants.URL_USERPETS, KEY_RESULT,true, false);
+			setParameters(Constants.URL_USERPETS,false,true,true);
 			setPage(Integer.parseInt(UserInfoManager.userid));
 			setUserDataFlag(true);
 			
@@ -97,25 +96,19 @@ public class MyPetActivity extends FragmentActivity{
 
 		@Override
 		protected void onItemClickAction(View v, int position, long id) {
-			int petId = adapter.getPetId(v);			
-			Intent intent = new Intent(getActivity(), MyPetDetailsActivity.class);
-			intent.putExtra(Constants.KEY_PET_ID, petId);
-			startActivity(intent);			
+			if (position != getListView().getCount()-1){
+				// if not the footer clicked
+				int petId = adapter.getPetId(v);			
+				Intent intent = new Intent(getActivity(), MyPetDetailsActivity.class);
+				intent.putExtra(Constants.KEY_PET_ID, petId);
+				startActivity(intent);			
+			}else{
+				// if footer is clicked
+				/*Intent intent = new Intent(getActivity(), MyPetDetailsActivity.class);
+				startActivity(intent);*/
+				Toast.makeText(getActivity(), "功能还在完善中，暂时仅支持网上添加宠物", Toast.LENGTH_LONG).show();;
+			}
 			return;
-		}
-
-		@Override
-		protected void handleEmptyList() {
-			/*if (mfooterview!=null){
-				TextView tvFooter = (TextView) mfooterview
-						.findViewById(R.id.list_footer_tv_loading);
-				tvFooter.setText("您还没有添加宠物，请先到北宠网上添加宠物信息！");
-				
-				ProgressBar pbFooter = (ProgressBar) mfooterview
-								.findViewById(R.id.list_footer_pb_loading);
-				pbFooter.setVisibility(View.INVISIBLE);
-			}*/
-			
 		}
 
 		@Override
@@ -124,7 +117,6 @@ public class MyPetActivity extends FragmentActivity{
 				getListView().removeFooterView(mfooterview);
 				mfooterview = null;
 			}
-			
 			LayoutInflater inflater = (LayoutInflater) getActivity()
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View footer = (View) inflater.inflate(R.layout.list_item_additem, null);
@@ -133,9 +125,18 @@ public class MyPetActivity extends FragmentActivity{
 			// set the footer as invisible only make it visible when needed
 			footer.setVisibility(View.VISIBLE);
 			
-			//TextView tvFooter = (TextView) mfooterview
-				//	.findViewById(R.id.list_footer_tv_loading);
 		}
+		
+		@Override
+		protected void handleEmptyList() {
+		}
+
+
+
+		@Override
+		protected void handleEndofList() {
+		}
+		
 		
 		
 		
