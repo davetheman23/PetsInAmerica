@@ -5,6 +5,10 @@ import java.util.Map;
 import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
+
+import org.apache.http.client.methods.HttpPost;
+
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
@@ -138,8 +142,13 @@ public class MyPetDetailsActivity extends FragmentActivity {
 				Picasso.with(App.appContext)
 					   .load(petImageUrl)
 					   .into(ivPetAvatar);
-
 			}
+
+			@Override
+			protected void addParamstoPost(HttpPost post, Context context) {
+				
+			}
+
 			
 		}
 	}

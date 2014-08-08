@@ -278,6 +278,13 @@ public class GeneralHelpers {
 		catch (IllegalArgumentException e) {}
 	}
 
+	/**
+	 * This is a helper class for PIA api calls, it creates a new thread and subclass can simply
+	 * implement the action to be taken on completion of the API call, a map object will be returned. 
+	 * The map object is the result 
+	 * @author David
+	 *
+	 */
 	public static abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Map<String, Object>>{
 		
 		private Context mContext = App.appContext;
@@ -295,6 +302,8 @@ public class GeneralHelpers {
 			KEY_RESULT = key;
 		}
 		
+		
+		
 		@Override
 		protected Map<String, Object> doInBackground(String... params) {
 			HttpPost post = new HttpPost(params[0]);
@@ -302,6 +311,8 @@ public class GeneralHelpers {
 			AccessTokenManager.addAccessTokenPost(post, mContext);
 
 			try {
+				addParamstoPost(post, mContext);
+				
 				// execute post
 				HttpResponse response = mClient.execute(post);
 				
@@ -335,7 +346,7 @@ public class GeneralHelpers {
 
 		@Override
 		protected void onPostExecute(Map<String, Object> result) {
-			super.onPostExecute(result);
+			//super.onPostExecute(result);
 			if (result != null){
 				Toast.makeText(mContext, "成功", Toast.LENGTH_LONG).show();		
 			}else{
@@ -344,8 +355,12 @@ public class GeneralHelpers {
 			onCallCompleted(result);
 		}
 
-		/* perform action when it is completed*/
+		/** perform action when it is completed*/
 		protected abstract void onCallCompleted(Map<String, Object> result);
+		
+		/** add additional parameters to the post object */
+		protected abstract void addParamstoPost(HttpPost post, Context context) 
+				 						throws UnsupportedEncodingException;
 	}
 
 

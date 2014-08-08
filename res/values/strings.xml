@@ -94,6 +94,9 @@
         <item>拉稀 Diarrhea</item>
     </string-array>
     
+    <!-- Notification Page -->
+    <string name="no_new_notifications">暂时没有新的消息</string>
+    
     <!-- Share panel -->
     <string name="label_weibo">微博</string>
     <string name="label_weixin">微信</string>

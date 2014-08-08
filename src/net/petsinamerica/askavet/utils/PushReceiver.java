@@ -1,9 +1,19 @@
 package net.petsinamerica.askavet.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import net.petsinamerica.askavet.utils.UserInfoManager.Listener;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -18,6 +28,8 @@ import com.igexin.sdk.PushConsts;
 
 public class PushReceiver extends BroadcastReceiver {
 	
+	private String cid;
+	private boolean userCidBindCompleted = false;
 	
 	private static onReceiveNotificationListener mPiaNotificationListener = null;
 	public static interface onReceiveNotificationListener {
@@ -44,12 +56,12 @@ public class PushReceiver extends BroadcastReceiver {
 				break;
 			case PushConsts.GET_CLIENTID:
 				// 获取ClientID(CID)
-				String cid = bundle.getString("clientid");
+				cid = bundle.getString("clientid");
 				Log.d("GetuiSdkDemo", "Got ClientID:" + cid);
-				// TODO: 
-				/* 第三方应用需要将ClientID上传到第三方服务器，并且将当前用户帐号和ClientID进行关联，以便以后通过用户帐号查找ClientID进行消息推送
-				有些情况下ClientID可能会发生变化，为保证获取最新的ClientID，请应用程序在每次获取ClientID广播后，都能进行一次关联绑定 */
-
+				
+				BindUserCidInBackground bindUser = new BindUserCidInBackground();
+				bindUser.execute(Constants.URL_BIND_USER_CID);
+				
 				break;
 			/*case PushConsts.BIND_CELL_STATUS:
 				String cell = bundle.getString("cell");
@@ -66,11 +78,6 @@ public class PushReceiver extends BroadcastReceiver {
 	}
 	
 	public void handlePayloadMessage(String message, Context context){
-		
-		/*Intent newIntent = new Intent(context, PushActivity.class);
-		newIntent.putExtra("payload", message);
-		newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		context.startActivity(newIntent);*/
 		
 		NotificationsDataSource dataSource = new NotificationsDataSource(context);
 		dataSource.open();
@@ -94,11 +101,47 @@ public class PushReceiver extends BroadcastReceiver {
 			content = pushContent.get(PiaSQLiteHelper.COLUMN_CONTENT).toString();
 		}
 		
-		PiaNotification notification = dataSource.createNotification(type, subject, content);
+		AccessToken token = AccessTokenManager.readAccessToken(context);
+		
+		PiaNotification notification = dataSource.createNotification(
+				type, token.getUserId(), subject, content);
 		
 		if (mPiaNotificationListener != null){
 			mPiaNotificationListener.onReceivedNotification(notification);
 		}
+		
+		dataSource.close();
+	}
+	
+	class BindUserCidInBackground extends GeneralHelpers.CallPiaApiInBackground{
+
+		@Override
+		protected void onCallCompleted(Map<String, Object> result) {
+			if (result != null){
+				userCidBindCompleted = true;
+			}
+		}
+
+		@Override
+		protected void addParamstoPost(HttpPost post, Context context) 
+												throws UnsupportedEncodingException {
+			
+			AccessToken token = AccessTokenManager.readAccessToken(context);
+			
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+			
+			// add user login information
+			nameValuePairs.add(new BasicNameValuePair(Constants.KEY_USERID, token.getUserId()));
+			nameValuePairs.add(new BasicNameValuePair(Constants.KEY_USERTOKEN, token.getToken()));
+			nameValuePairs.add(new BasicNameValuePair("cid", cid));
+			
+			HttpParams httpParams = mClient.getParams();
+			HttpConnectionParams.setConnectionTimeout(httpParams, 10*1000); // time in 10 second
+			
+			// add the params into the post, make sure to include encoding UTF_8 as follows
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
+		}
+		
 	}
 	
 	

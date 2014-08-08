@@ -15,7 +15,7 @@ public interface Constants {
 	 */
 	public static final String PREFERENCES_NAME = "net_pets_in_america_askavet";
 	
-	public static final String URL_BASE = "http://petsinamerica.net/new/";
+	public static final String URL_BASE = "http://petsinamerica.net/";
 	
 	public static final String URL_FILE_STORAGE = "http://petsinamerica.net/new/../upload/";
 	
@@ -48,6 +48,8 @@ public interface Constants {
 	public static final String URL_ARTICLE_LIKES = URL_API  + "zan/";
 	
 	public static final String URL_UPLOAD_IMAGE = URL_API  + "uploadImg/";
+	
+	public static final String URL_BIND_USER_CID = URL_API  + "bindUserCid/";
 	
     public static final String KEY_USERNAME = "username";
     

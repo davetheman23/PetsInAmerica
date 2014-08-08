@@ -71,9 +71,6 @@ public class LoginActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		// initialize push service 
-		PushManager.getInstance().initialize(this.getApplicationContext());
-		
 		setContentView(R.layout.activity_login);
 		
 		progressDialog = new ProgressDialog(this);

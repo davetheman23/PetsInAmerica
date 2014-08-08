@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -405,6 +406,10 @@ public class ArticleActivity extends Activity {
 				
 				mProgBarView.setVisibility(View.GONE);
 			}
+		}
+
+		@Override
+		protected void addParamstoPost(HttpPost post, Context context) {
 		}
 		
 	}

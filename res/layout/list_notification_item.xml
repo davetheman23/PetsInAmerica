@@ -2,10 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="3dp"
-    android:paddingBottom="3dp"
-    android:paddingLeft="2dp"
-    android:paddingRight="2dp">
+    android:padding="10dp"
+    android:layout_margin="10dp"
+    android:background="@drawable/layer_card_background">
  <!-- This layout has image on the Right side -->
 
 	<ImageView
@@ -32,7 +31,7 @@
         android:text="Title"
         android:textColor="@color/Black"
         android:textSize="18sp" />
-    
+    <!--
     <TextView
         android:id="@+id/list_notification_status"
         android:layout_width="50dp"
@@ -45,19 +44,18 @@
         android:textSize="13sp" 
         android:textColor="@color/Grey"
         android:visibility="gone"/>
-    
-    <TextView
+      -->
+     <TextView
         android:id="@+id/list_notification_content"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/list_notification_subject"
         android:layout_toRightOf="@id/list_notification_icon"
-        android:layout_toLeftOf="@id/list_notification_status"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         android:ellipsize="marquee"
         android:text="tag1"
-        android:textSize="10sp" 
-        android:textColor="@color/Grey"/>    
+        android:textSize="12sp" 
+        android:textColor="@color/Grey"/>   
     
 </RelativeLayout>

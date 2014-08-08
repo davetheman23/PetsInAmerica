@@ -84,6 +84,8 @@ public class HomeActivity extends FragmentActivity implements
 	
 	private UsersAPI mUsersAPI;
 	
+	private boolean mResumed = false;
+	
 	
 	private NotificationsDataSource dataSource;
 
@@ -198,6 +200,28 @@ public class HomeActivity extends FragmentActivity implements
 	
 	
 	@Override
+	protected void onResume() {
+		super.onResume();
+		mResumed = true;
+		// get from the SQL database on the number of notifications
+		if (dataSource == null){
+			dataSource = new NotificationsDataSource(this);
+			PushReceiver.registerPiaNotificationListener(this);
+		}
+		if (btnNotification!= null && mResumed){
+ 			updateNotificationIcon();
+ 		}
+	}
+	
+	
+
+	@Override
+	protected void onPause() {
+		mResumed = false;
+		super.onPause();
+	}
+
+	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		
@@ -229,19 +253,13 @@ public class HomeActivity extends FragmentActivity implements
         btnNotification.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(mContext, "提醒功能还在完善中", Toast.LENGTH_LONG).show();
+				//Toast.makeText(mContext, "提醒功能还在完善中", Toast.LENGTH_LONG).show();
 				Intent intent = new Intent(HomeActivity.this, NotificationCenterActivity.class);
 				startActivity(intent);
 			}
 		});
         
-        // get from the SQL database on the number of notifications
- 		dataSource = new NotificationsDataSource(this);
- 		dataSource.open();
- 		PushReceiver.registerPiaNotificationListener(this);
- 		
- 		btnNotification.setText(dataSource.getCount().toString());
- 		dataSource.close();
+        
         
         
 		
@@ -480,12 +498,23 @@ public class HomeActivity extends FragmentActivity implements
 		if (dataSource == null){
 			dataSource = new NotificationsDataSource(this);
 		}
- 		if (btnNotification!= null){
- 			dataSource.open();
- 			btnNotification.setText(dataSource.getCount().toString());
- 			dataSource.close();
+ 		if (btnNotification!= null && mResumed){
+ 			updateNotificationIcon();
  		}
 		
+	}
+	
+	/** change the number and color of the notification icon*/
+	private void updateNotificationIcon(){
+		Integer cnt = dataSource.getUnreadCount();
+		btnNotification.setText(cnt.toString());
+		if (cnt > 0){
+			btnNotification.setBackgroundColor(getResources().getColor(R.color.Red));
+			btnNotification.setTextColor(getResources().getColor(R.color.White));
+		}else{
+			btnNotification.setBackgroundColor(getResources().getColor(R.color.White));
+			btnNotification.setTextColor(getResources().getColor(R.color.Black));
+		}
 	}
 
 }

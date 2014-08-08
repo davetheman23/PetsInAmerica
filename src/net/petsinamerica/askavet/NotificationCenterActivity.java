@@ -1,6 +1,9 @@
 package net.petsinamerica.askavet;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import net.petsinamerica.askavet.utils.NotificationsDataSource;
 import net.petsinamerica.askavet.utils.PiaNotification;
@@ -15,10 +18,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class NotificationCenterActivity extends FragmentActivity {
 	public FragmentManager fm = null;
+	
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +44,14 @@ public class NotificationCenterActivity extends FragmentActivity {
 	
 	public static class NotificationListFragment extends ListFragment implements 
 		PushReceiver.onReceiveNotificationListener{
+		
 		private NotificationsDataSource dataSource;
+		
 		private ArrayAdapter<PiaNotification> adapter;
+		
+		private boolean mResumed = false;
+		
+		private ProgressBar pb;
 		
 		@Override
 		public void onAttach(Activity activity) {
@@ -48,8 +61,19 @@ public class NotificationCenterActivity extends FragmentActivity {
 			// register to the notification listener so as to make changes to the 
 			// list of notifications as soon as the notification arrives
 			PushReceiver.registerPiaNotificationListener(this);
-		}
+		}		
 
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragment_notificationlist, container, false);
+			
+			pb = (ProgressBar) rootView.findViewById(android.R.id.progress);
+			pb.setVisibility(View.VISIBLE);
+			
+			return rootView;
+		}
+		
 		@Override
 		public void onViewCreated(View view, Bundle savedInstanceState) {
 			super.onViewCreated(view, savedInstanceState);
@@ -60,25 +84,59 @@ public class NotificationCenterActivity extends FragmentActivity {
 												  R.layout.list_notification_item,
 												  notifications);
 				setListAdapter(adapter);
+				pb.setVisibility(View.GONE);
+				
 			}
 		}
 		
 		@Override
 		public void onResume() {
-			dataSource.open();
 			super.onResume();
+			if (dataSource == null){
+				dataSource.open();
+			}
+			mResumed = true;
 		}
 		
 		@Override
 		public void onPause() {
 			dataSource.close();
+			mResumed = false;
 			super.onPause();
+		}
+		
+		
+
+		@Override
+		public void onListItemClick(ListView l, View v, int position, long id) {
+			super.onListItemClick(l, v, position, id);
+			
+			int status = ((NotificationAdapter)getListAdapter()).getNotificationStatus(v);
+			// if the status being clicked is the new notification
+			if (status == PiaNotification.STATUS_RECEIVED){
+				
+				//TODO popup a dialog box to get further information
+				
+				// update the database on the status of the notification record being clicked
+				long nId = ((NotificationAdapter)getListAdapter()).getNotificationId(v);
+				dataSource.updateStatus(nId, PiaNotification.STATUS_VIEWED);
+				
+				// change the text color for the list item that has been clicked
+				TextView tv_subject = (TextView) v.findViewById(R.id.list_notification_subject);
+				TextView tv_content = (TextView) v.findViewById(R.id.list_notification_content);
+				tv_subject.setTextColor(getResources().getColor(R.color.LightGrey));
+				tv_content.setTextColor(getResources().getColor(R.color.LightGrey));
+			}
 		}
 
 		@Override
 		public void onReceivedNotification(PiaNotification notification) {
-			adapter.add(notification);
-			adapter.notifyDataSetChanged();
+			// only add to the adapter if the activity is currently in resumed state
+			if (mResumed){
+				//adapter.add(notification);
+				adapter.insert(notification, 0);
+				adapter.notifyDataSetChanged();
+			}
 		}
 		
 		/**
@@ -89,9 +147,10 @@ public class NotificationCenterActivity extends FragmentActivity {
 			private int mResource;
 			
 			class ViewHolder{
+				long id;
 				TextView tv_subject;
 				TextView tv_content;
-				boolean isNew;
+				int status;
 			}
 
 			public NotificationAdapter(Context context, int layoutResourceId,
@@ -124,17 +183,41 @@ public class NotificationCenterActivity extends FragmentActivity {
 					viewHolder = (ViewHolder) rowview.getTag();
 				}
 				
+				// get the data for the current record
 				PiaNotification notification = getItem(position);
-				
+				long id = notification.getId();
 				String str1 = notification.getSubject();
-				String str2 = notification.getMessage();
+				String str2 = notification.getContent();
+				int status = notification.getStatus();
 				
+				String createTime = notification.getCreated_at();
+				//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+				
+				// set values to the viewholder
 				viewHolder.tv_subject.setText(str1);
+				//viewHolder.tv_content.setText(str2);
+				//viewHolder.tv_content.setText(sdf.format(createTime));
+				viewHolder.tv_content.setText(createTime);
+				viewHolder.id = id;
+				viewHolder.status = status;
 				
-				viewHolder.tv_content.setText(str2);
-				
+				// dim the notification records that have been read already 
+				if (status == PiaNotification.STATUS_VIEWED){
+					viewHolder.tv_subject.setTextColor(getResources().getColor(R.color.LightGrey));
+					viewHolder.tv_content.setTextColor(getResources().getColor(R.color.LightGrey));
+				}
 				
 				return rowview;
+			}
+			
+			public long getNotificationId(View v){
+				ViewHolder vh = (ViewHolder) v.getTag();
+				return vh.id;
+			}
+			
+			public int getNotificationStatus(View v){
+				ViewHolder vh = (ViewHolder) v.getTag();
+				return vh.status;
 			}
 			
 			
