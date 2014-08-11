@@ -35,6 +35,8 @@ public interface Constants {
 	
 	public static final String URL_ENQUIRY = URL_API  + "publicQueryList/";
 	
+	public static final String URL_ENQUIRY_DETAILS = URL_API  + "query/";
+	
 	public static final String URL_MYENQUIRY = URL_API  + "userQueryList/";
 	
 	public static final String URL_NEWENQUIRY = URL_API  + "newQuery/";

@@ -280,32 +280,35 @@ public class GeneralHelpers {
 
 	/**
 	 * This is a helper class for PIA api calls, it creates a new thread and subclass can simply
-	 * implement the action to be taken on completion of the API call, a map object will be returned. 
+	 * implement the action to be taken on completion of the API call, by default a map object will be returned 
+	 * if no error, using {@link #setResultType(Type)} to set the result type if a non-map object will be 
+	 * returned. Additionally, {@link #addParamstoPost(HttpPost, Context)} can be overwritten to add more 
+	 * parameters to an API call
 	 * The map object is the result 
 	 * @author David
 	 *
 	 */
-	public static abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Map<String, Object>>{
+	public static abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Object>{
+		
+		public static enum Type{
+			list, map,
+		}
+		
+		private Type mType = Type.map;
 		
 		private Context mContext = App.appContext;
 		
-		private String KEY_RESULT = Constants.KEY_RESULT;
-		
-		private final String KEY_ERROR = Constants.KEY_ERROR;
-		
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 		
-		/*1st level Json key to retrieve results, 
+		/**1st level Json key to retrieve results, 
 		 * default is defined in R.string.JSON_tag_result
 		 */
-		protected void setResultKey(String key){
-			KEY_RESULT = key;
+		public void setResultType(Type type){
+			mType = type;
 		}
 		
-		
-		
 		@Override
-		protected Map<String, Object> doInBackground(String... params) {
+		protected Object doInBackground(String... params) {
 			HttpPost post = new HttpPost(params[0]);
 			
 			AccessTokenManager.addAccessTokenPost(post, mContext);
@@ -316,19 +319,10 @@ public class GeneralHelpers {
 				// execute post
 				HttpResponse response = mClient.execute(post);
 				
-				// handle the json response
-				String responseString = new BasicResponseHandler().handleResponse(response);
-				
-				JSONObject responseObject = (JSONObject) new JSONTokener(responseString).nextValue(); 
-				
-				Map<String, Object> responseMap = JsonHelper.toMap(responseObject);
-				if (responseMap != null){
-					int errorCode = Integer.parseInt(responseMap.get(KEY_ERROR).toString());
-					if (errorCode == 0){
-						@SuppressWarnings("unchecked")
-						Map<String, Object> jObject = (Map<String, Object>)responseMap.get(KEY_RESULT);
-						return jObject;
-					}
+				if (mType == Type.list){
+					return handlePiaResponseArray(response);
+				}else if (mType == Type.map){
+					return handlePiaResponse(response);
 				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
@@ -344,24 +338,44 @@ public class GeneralHelpers {
 			return null;
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
-		protected void onPostExecute(Map<String, Object> result) {
-			//super.onPostExecute(result);
+		protected void onPostExecute(Object result) {
 			if (result != null){
 				Toast.makeText(mContext, "成功", Toast.LENGTH_LONG).show();		
 			}else{
 				Toast.makeText(mContext, "失败", Toast.LENGTH_LONG).show();
 			}
-			onCallCompleted(result);
+			
+			List<Map<String, Object>> result_list = null;
+			Map<String, Object> result_map = null;
+			if (mType == Type.list){
+				result_list = (List<Map<String, Object>>)result;
+				onCallCompleted(result_list);
+				
+			}else if(mType == Type.map){
+				result_map = (Map<String, Object>)result;
+				onCallCompleted(result_map);
+			}
+			
+			
 		}
 
-		/** perform action when it is completed*/
+		/** perform action when it is completed, if result is of map type, 
+		 * then no implementation is needed for this method */
 		protected abstract void onCallCompleted(Map<String, Object> result);
 		
+		/** perform action when it is completed, if result is of list type, 
+		 * then no implementation is needed for this method */
+		protected abstract void onCallCompleted(List<Map<String, Object>> result);
+		
 		/** add additional parameters to the post object */
-		protected abstract void addParamstoPost(HttpPost post, Context context) 
-				 						throws UnsupportedEncodingException;
+		protected void addParamstoPost(HttpPost post, Context context) 
+				 						throws UnsupportedEncodingException{
+			
+		}
 	}
+	
 
 
 }

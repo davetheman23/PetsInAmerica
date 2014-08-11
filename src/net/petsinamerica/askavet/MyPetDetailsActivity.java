@@ -1,5 +1,6 @@
 package net.petsinamerica.askavet;
 
+import java.util.List;
 import java.util.Map;
 
 import net.petsinamerica.askavet.utils.App;
@@ -110,6 +111,9 @@ public class MyPetDetailsActivity extends FragmentActivity {
 		private class GetPetInfo extends GeneralHelpers.CallPiaApiInBackground{
 
 			@Override
+			protected void onCallCompleted(List<Map<String, Object>> result) {}
+			
+			@Override
 			protected void onCallCompleted(Map<String, Object> result) {
 				
 				String petName = result.get(Constants.KEY_PET_NAME).toString();
@@ -142,14 +146,7 @@ public class MyPetDetailsActivity extends FragmentActivity {
 				Picasso.with(App.appContext)
 					   .load(petImageUrl)
 					   .into(ivPetAvatar);
-			}
-
-			@Override
-			protected void addParamstoPost(HttpPost post, Context context) {
-				
-			}
-
-			
+			}			
 		}
 	}
 }

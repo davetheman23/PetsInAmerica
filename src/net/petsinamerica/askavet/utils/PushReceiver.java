@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import net.petsinamerica.askavet.utils.UserInfoManager.Listener;
+import net.petsinamerica.askavet.NotificationCenterActivity;
+import net.petsinamerica.askavet.R;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -18,11 +19,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.igexin.sdk.PushConsts;
 
@@ -73,8 +78,6 @@ public class PushReceiver extends BroadcastReceiver {
 			default:
 				break;
 		}
-
-
 	}
 	
 	public void handlePayloadMessage(String message, Context context){
@@ -106,15 +109,38 @@ public class PushReceiver extends BroadcastReceiver {
 		PiaNotification notification = dataSource.createNotification(
 				type, token.getUserId(), subject, content);
 		
+		dataSource.close();
+		
+		
+		// Make a notification 
+		RemoteViews rm = new RemoteViews("net.petsinamerica.askavet",R.layout.list_notification_item);
+		rm.setTextViewText(R.id.list_notification_subject, subject);
+		rm.setTextViewText(R.id.list_notification_content, content);
+		Intent intent = new Intent(context, NotificationCenterActivity.class);
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, 
+								intent, Intent.FLAG_ACTIVITY_NEW_TASK);
+		
+		Notification.Builder builder = new Notification.Builder(context)
+			.setTicker(subject)
+			.setAutoCancel(true)
+			.setSmallIcon(R.drawable.ic_launcher_new80x80)
+			.setContentIntent(pendingIntent)
+			.setContent(rm);
+		
+		NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		manager.notify(1, builder.getNotification());
+		
+		// notify all those registered to this channel
 		if (mPiaNotificationListener != null){
 			mPiaNotificationListener.onReceivedNotification(notification);
 		}
-		
-		dataSource.close();
 	}
 	
 	class BindUserCidInBackground extends GeneralHelpers.CallPiaApiInBackground{
-
+		
+		@Override
+		protected void onCallCompleted(List<Map<String, Object>> result) {}
+		
 		@Override
 		protected void onCallCompleted(Map<String, Object> result) {
 			if (result != null){
@@ -141,8 +167,5 @@ public class PushReceiver extends BroadcastReceiver {
 			// add the params into the post, make sure to include encoding UTF_8 as follows
 			post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
 		}
-		
 	}
-	
-	
 }

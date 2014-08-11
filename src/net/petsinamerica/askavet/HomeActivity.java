@@ -1,6 +1,7 @@
 package net.petsinamerica.askavet;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -25,6 +26,7 @@ import org.json.JSONException;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.http.AndroidHttpClient;
@@ -41,6 +43,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RemoteViews;
+import android.widget.RemoteViews.RemoteView;
 import android.widget.Toast;
 
 import com.igexin.sdk.PushManager;
@@ -515,6 +519,9 @@ public class HomeActivity extends FragmentActivity implements
 			btnNotification.setBackgroundColor(getResources().getColor(R.color.White));
 			btnNotification.setTextColor(getResources().getColor(R.color.Black));
 		}
+		
+		
+		
 	}
 
 }

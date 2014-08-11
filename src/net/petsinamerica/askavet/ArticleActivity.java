@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -342,7 +343,10 @@ public class ArticleActivity extends Activity {
 	}
 	
 	private class GetArticleInBackground2 extends GeneralHelpers.CallPiaApiInBackground{
-
+		
+		@Override
+		protected void onCallCompleted(List<Map<String, Object>> result) {}
+		
 		@Override
 		protected void onCallCompleted(Map<String, Object> result) {
 			if (result != null){
@@ -407,11 +411,6 @@ public class ArticleActivity extends Activity {
 				mProgBarView.setVisibility(View.GONE);
 			}
 		}
-
-		@Override
-		protected void addParamstoPost(HttpPost post, Context context) {
-		}
-		
 	}
 	
 	/*

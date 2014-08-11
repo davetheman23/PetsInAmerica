@@ -1,164 +1,116 @@
 package net.petsinamerica.askavet;
 
-import java.io.IOException;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import net.petsinamerica.askavet.R;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.protocol.HTTP;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-
+import net.petsinamerica.askavet.utils.Constants;
+import net.petsinamerica.askavet.utils.GeneralHelpers;
+import net.petsinamerica.askavet.utils.GeneralHelpers.CallPiaApiInBackground;
 import android.app.Activity;
-import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.ListFragment;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class EnquiryActivity extends Activity {
+public class EnquiryActivity extends FragmentActivity {
 
-	private WebView mWebView;
-	private TextView mTitleTextView;
-	private ProgressBar mProgBarView;
-	private ImageView mWeiboShare;
-	//private ImageView mImageView = null;
-	private static final String HTML_CONTENT = "Html_Content";
-	private static final String HTML_TITLE = "Html_Title";
-	
-	// these tags are those for reading the JSON objects
-	private static String TAG_TITLE;
-	private static String TAG_IMAGE;
-	private static String TAG_CONTENT;
+	private static TextView tv_petName;
+	private static TextView tv_petDiet;
+	private static TextView tv_petDietType;
+	private static TextView tv_petWeight;
+	private static TextView tv_petBreed;
+	private static TextView tv_petAge;
+	private static TextView tv_petNeuterAge;
+	private static TextView tv_petResponsiveness;
+	private static TextView tv_petStool;
+	private static TextView tv_petDesire;
 	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_article);
+		setContentView(R.layout.activity_enquiry_detail);
 		
-		mTitleTextView = (TextView) findViewById(R.id.article_activity_title);
-		//mImageView = (ImageView) findViewById(R.id.article_image);
-		mProgBarView = (ProgressBar) findViewById(R.id.article_activity_load_progressbar);
-		mProgBarView.setVisibility(View.VISIBLE);
+		EnquiryDetailFragment enquiryfrag = new EnquiryDetailFragment();
 		
-		mWebView = (WebView) findViewById(R.id.article_activity_web_view);
-		mWebView.setWebViewClient(new WebViewClient());
-		mWebView.getSettings().setBuiltInZoomControls(true);
-		mWebView.getSettings().setSupportZoom(true);
+		getSupportFragmentManager().beginTransaction()
+			.add(R.id.activity_enquiry_details_content_container, enquiryfrag)
+			.commit();
 		
-		TAG_TITLE = getResources().getString(R.string.JSON_tag_title);
-		//TAG_IMAGE = getResources().getString(R.string.JSON_tag_image);
-		TAG_CONTENT = getResources().getString(R.string.JSON_tag_content);		
-		
-		//String articleURL_API = getIntent().getStringExtra("URL_API");
-		//new HttpGetTask().execute(articleURL_API);
-		
-		String enqueryContent = getIntent().getStringExtra(TAG_CONTENT);
-		String html_string = "<body>" + enqueryContent + "</body>";
-		
-		mWebView.loadDataWithBaseURL(null, html_string, "text/html", HTTP.UTF_8, null);
-		
-		Toast.makeText(this, "页面设计还未完成", Toast.LENGTH_LONG).show();
+		// get query id from the extra that was set when the activity was started
+		int queryId = getIntent().getIntExtra("QueryId", 0);
+		//queryId = 1439;
+		if (queryId != 0){
+			String queryURL_API = Constants.URL_ENQUIRY_DETAILS + Integer.toString(queryId);
+			GetEnquiryInBackground getEuquiry = new GetEnquiryInBackground();
+			getEuquiry.setResultType(CallPiaApiInBackground.Type.list);
+			getEuquiry.execute(queryURL_API);
+			
+			Toast.makeText(this, "页面设计还未完成", Toast.LENGTH_LONG).show();
+		}else{
+			//TODO notify the user
+		}
 		
 	}
 	
-	/*
-	private class HttpGetTask extends AsyncTask<String, Void, Map<String, String>> {
+	public static class EnquiryDetailFragment extends ListFragment{
 
-		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
+		@Override
+		public void onAttach(Activity activity) {
+			super.onAttach(activity);
+			
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragment_enquirydetails, null, false);
+			
+			tv_petName = (TextView) rootView.findViewById(R.id.frag_enquiry_details_petName);
+			tv_petDiet = (TextView) rootView.findViewById(R.id.frag_enquiry_details_diet);
+			tv_petDietType = (TextView) rootView.findViewById(R.id.frag_enquiry_details_diet_type);
+			tv_petWeight = (TextView) rootView.findViewById(R.id.frag_enquiry_details_weight);
+			tv_petBreed = (TextView) rootView.findViewById(R.id.frag_enquiry_details_petbreed);
+			tv_petAge = (TextView) rootView.findViewById(R.id.frag_enquiry_details_pet_age);
+			tv_petNeuterAge = (TextView) rootView.findViewById(R.id.frag_enquiry_details_pet_neuterage);
+			tv_petResponsiveness = (TextView) rootView.findViewById(R.id.frag_enquiry_details_responsiveness);
+			tv_petStool = (TextView) rootView.findViewById(R.id.frag_enquiry_details_stool);
+			tv_petDesire = (TextView) rootView.findViewById(R.id.frag_enquiry_details_desire);
+			
+			return rootView;
+		}
 		
-
+		
+		
+	}
+	
+	class GetEnquiryInBackground extends GeneralHelpers.CallPiaApiInBackground{
+		
 		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			
-			mProgBarView.setVisibility(View.VISIBLE);
-		}
-
-		@Override
-		protected Map<String, String> doInBackground(String... params) {
-			String url = params[0];
-			HttpGet request = new HttpGet(url);
-			
-			HttpResponse response = null;		
-			String JSONResponse = null;
-			try {
-				response = mClient.execute(request);
-				JSONResponse = new BasicResponseHandler().handleResponse(response);
-				
-				// -- Parse Json object, 
-				JSONObject responseObject = (JSONObject) new JSONTokener(
-						JSONResponse).nextValue();
-				String sTitle = responseObject.get(TAG_TITLE).toString();
-				//String sImgURL = responseObject.get(TAG_IMAGE).toString();
-				String sContent = responseObject.get(TAG_CONTENT).toString();
-				String html_string = null;
-				if (sContent != null){
-					html_string = "<body>" +  sContent + "</body>";
-					String pattern = "(<img.*?[jp][pn]g.*?\")(.?)(>)";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
-					html_string = html_string.replaceAll(pattern, "$1 width=\"100%\" alt=\"\"$3");
-				}
-				
-				// -- put the data together and display on the UI 
-				Map<String, String> results = new HashMap<String, String>();
-				results.put(HTML_TITLE, sTitle);
-				results.put(HTML_CONTENT, html_string);
-				// result.put("more contents", more contents);
-				
-				return results;
-			} catch (HttpResponseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Map<String, String> results) {
-			if (null != mClient)
-				mClient.close();
-			
-			String noContent = getResources().getString(R.string.no_content_available);
-			String sTitle = results.get(HTML_TITLE); 
-			if (sTitle != null){
-				mTitleTextView.setText(sTitle);
-			}else{
-				mTitleTextView.setText(noContent);
+		protected void onCallCompleted(Map<String, Object> result) {
+			// get the query information
+			if (result != null){
+				int i = 0;
+				i = i + 1;
 			}
-			
-			String html_string = results.get(HTML_CONTENT);
-			if (html_string == null){
-				html_string = "<body>" + noContent + "</body>";
-			}
-			mWebView.loadDataWithBaseURL(null, html_string, "text/html", HTTP.UTF_8, null);
-			
-			//String image_url = tokens[5];
-			//mImageView.setTag(image_url);			
-			//DownLoadImageTask loadImageTask = new DownLoadImageTask();
-			//loadImageTask.execute(mImageView);
-			
-			mProgBarView.setVisibility(View.GONE);
-			
-			
 		}
-	}*/
+
+		@Override
+		protected void onCallCompleted(List<Map<String, Object>> result) {
+			// get the query information
+			if (result != null){
+				int i = 0;
+				i = i + 1;
+			}
+		}
+	}
+	
+	
+	
+	
 }

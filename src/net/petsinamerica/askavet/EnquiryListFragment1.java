@@ -157,9 +157,11 @@ public class EnquiryListFragment1 extends Fragment {
 			// store the article ID clicked
 			//Record_Usage(articleID);
 			
-			String enqueryContent = ((EnquiryListAdapter)getListAdapter()).getEnqueryContent(v);
+			//String enqueryContent = ((EnquiryListAdapter)getListAdapter()).getEnqueryContent(v);
 			Intent newIntent = new Intent(mContext, EnquiryActivity.class);
-			newIntent.putExtra(KEY_CONTENT, enqueryContent);
+			//newIntent.putExtra(KEY_CONTENT, enqueryContent);
+			int queryId = ((EnquiryListAdapter)this.getListAdapter()).getQueryID(v);
+			newIntent.putExtra("QueryId", queryId);
 			startActivity(newIntent);
 		}
 	}

@@ -67,6 +67,7 @@
     <string name="label_pet_neuterage">绝育年龄</string>
     <string name="label_petsex">性别</string>
     <string name="label_petinsurance">保险公司</string>
+    <string name="label_pet_age">年龄</string>
     
     <!-- Enquiry form page -->
     <string name="prompt_please_select">请选择</string>
