@@ -68,15 +68,15 @@ public class EnquiryFormActivity extends FragmentActivity {
 	 * the class that holds all questions entries
 	 */
 	private static Bundle mUserInputs;
-	private static final String TITLE = "title";
-	private static final String PET_ID = "petid";
-	private static final String PET_DIET = "diettype";
-	private static final String PET_DIETDESCRIPTION = "dietdescr";
-	private static final String PET_WEIGHT = "weight";
-	private static final String PET_MENTATION = "responsive";
-	private static final String PET_APPETITE = "appetite";
-	private static final String PET_STOOL = "stool";
-	private static final String PROBLEM_DESCRIPTION = "content";
+	private static final String TITLE = Constants.KEY_TITLE;
+	private static final String PET_ID = Constants.KEY_ENQUIRY_PETID;
+	private static final String PET_DIET = Constants.KEY_ENQUIRY_PET_DIETTYPE;
+	private static final String PET_DIETDESCRIPTION = Constants.KEY_ENQUIRY_PET_DIETDESCR;
+	private static final String PET_WEIGHT = Constants.KEY_ENQUIRY_PET_WEIGHT;
+	private static final String PET_MENTATION = Constants.KEY_ENQUIRY_PET_RESPONSIVE;
+	private static final String PET_APPETITE = Constants.KEY_ENQUIRY_PET_APPETITE;
+	private static final String PET_STOOL = Constants.KEY_ENQUIRY_PET_STOOL;
+	private static final String PROBLEM_DESCRIPTION = Constants.KEY_CONTENT;
 	private static final String SHOW_PUBLIC = "public";
 
 	private static final String KEY_URI = "uri";

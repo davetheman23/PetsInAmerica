@@ -142,5 +142,16 @@
     <string name = "JSON_tag_petflea">flea</string>
     <string name = "JSON_tag_petdeworm">deworm</string>
     <string name = "JSON_tag_petvaccination">vaccination</string>
+    <string name = "JSON_tag_pet_enquiry_authorname">authorname</string>
+    <string name = "JSON_tag_pet_enquiry_authoravatar">authoravatar</string>
+    <string name = "JSON_tag_pet_enquiry_petid">petid</string>
+    <string name = "JSON_tag_pet_enquiry_diettype">diettype</string>
+    <string name = "JSON_tag_pet_enquiry_dietdescr">dietdescr</string>
+    <string name = "JSON_tag_pet_enquiry_responsive">responsive</string>
+    <string name = "JSON_tag_pet_enquiry_stool">stool</string>
+    <string name = "JSON_tag_pet_enquiry_weight">weight</string>
+    <string name = "JSON_tag_pet_enquiry_appetite">appetite</string>
+
+    
 
 </resources>

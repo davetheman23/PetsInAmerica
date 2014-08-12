@@ -93,6 +93,15 @@ public interface Constants {
   	public static final String KEY_PET_FLEA = App.appContext.getString(R.string.JSON_tag_petflea);
   	public static final String KEY_PET_DEWORM = App.appContext.getString(R.string.JSON_tag_petdeworm);
   	public static final String KEY_PET_VACCINATION = App.appContext.getString(R.string.JSON_tag_petvaccination);
+  	public static final String KEY_ENQUIRY_PET_AUTHORNAME = App.appContext.getString(R.string.JSON_tag_pet_enquiry_authorname);
+  	public static final String KEY_ENQUIRY_PETID = App.appContext.getString(R.string.JSON_tag_pet_enquiry_petid);
+  	public static final String KEY_ENQUIRY_PET_AUTHORAVATAR = App.appContext.getString(R.string.JSON_tag_pet_enquiry_authoravatar);
+  	public static final String KEY_ENQUIRY_PET_DIETTYPE = App.appContext.getString(R.string.JSON_tag_pet_enquiry_diettype);
+  	public static final String KEY_ENQUIRY_PET_DIETDESCR = App.appContext.getString(R.string.JSON_tag_pet_enquiry_dietdescr);
+  	public static final String KEY_ENQUIRY_PET_WEIGHT = App.appContext.getString(R.string.JSON_tag_pet_enquiry_weight);
+  	public static final String KEY_ENQUIRY_PET_STOOL = App.appContext.getString(R.string.JSON_tag_pet_enquiry_stool);
+  	public static final String KEY_ENQUIRY_PET_RESPONSIVE = App.appContext.getString(R.string.JSON_tag_pet_enquiry_responsive);
+  	public static final String KEY_ENQUIRY_PET_APPETITE = App.appContext.getString(R.string.JSON_tag_pet_enquiry_appetite);
   	public static final String KEY_TITLE = App.appContext.getString(R.string.JSON_tag_title);
   	public static final String KEY_IMAGE = App.appContext.getString(R.string.JSON_tag_image);
   	public static final String KEY_IMAGE_ALTERNATE = "summary_img";
