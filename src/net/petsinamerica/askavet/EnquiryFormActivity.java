@@ -31,6 +31,7 @@ import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
@@ -44,6 +45,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -63,6 +65,8 @@ public class EnquiryFormActivity extends FragmentActivity {
 	private Uri tmpFileUri = null;
 	
 	private static int imageId = 0;
+	
+	private ProgressDialog uploadProgDialog = null;
 	
 	/*
 	 * the class that holds all questions entries
@@ -236,6 +240,13 @@ public class EnquiryFormActivity extends FragmentActivity {
 	 * 3. setup an async Task to upload data
 	 */
 	private void submitEnquiry(){
+		
+		uploadProgDialog = new ProgressDialog(this);
+		
+		uploadProgDialog.setMessage("请稍等，正在上传提问 ...");
+		uploadProgDialog.show();
+		
+		
 		// get the inputs everytime the submit button is hit
 		extractUserInputs();
 		
@@ -395,10 +406,17 @@ public class EnquiryFormActivity extends FragmentActivity {
 
 		@Override
 		protected void onPostExecute(Map<String, Object> result) {
+			if (uploadProgDialog != null){
+				uploadProgDialog.dismiss();
+			}
+			
 			if (result != null){
 				if (!result.containsKey(Constants.KEY_ERROR_MESSAGE)){
 					// results are valid
 					// do something
+					GeneralHelpers.showAlertDialog(EnquiryFormActivity.this,
+							"提问成功！",
+							"您的提问已经成功，我们会尽快给你回复！");
 				}else{
 					// results are not valid
 					GeneralHelpers.showAlertDialog(EnquiryFormActivity.this, 

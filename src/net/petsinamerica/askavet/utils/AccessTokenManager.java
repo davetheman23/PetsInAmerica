@@ -172,7 +172,7 @@ public class AccessTokenManager {
     	if (null != post && null != context){ 
 	    	AccessToken accessToken = readAccessToken(context);
 	    	
-	    	if (!accessToken.isExpired()){
+	    	if (accessToken != null && !accessToken.isExpired()){
 				post = addAccessTokenPost(post, context, accessToken);
 	    	}else{
 	    		clear(context);

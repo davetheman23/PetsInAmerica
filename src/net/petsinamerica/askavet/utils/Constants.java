@@ -17,7 +17,7 @@ public interface Constants {
 	
 	public static final String URL_BASE = "http://petsinamerica.net/";
 	
-	public static final String URL_FILE_STORAGE = "http://petsinamerica.net/new/../upload/";
+	public static final String URL_CLOUD_STORAGE = "http://petsinamerica.net/new/../upload/";
 	
 	public static final String URL_API = URL_BASE + "api/";
 	
@@ -53,6 +53,16 @@ public interface Constants {
 	
 	public static final String URL_BIND_USER_CID = URL_API  + "bindUserCid/";
 	
+	public static final String URL_COMMENT = URL_API  + "comment/";
+	
+	
+	/* 
+	 * some commonly used keys
+	 */
+	public static final String KEY_NAME = "name";
+	
+	public static final String KEY_AVATAR = "avatar";
+	
     public static final String KEY_USERNAME = "username";
     
   	public static final String KEY_PASSWORD = "password";
@@ -65,11 +75,7 @@ public interface Constants {
   	
   	public static final String KEY_USERTOKEN = "token";
   	
-  	public static final String KEY_RESULT = App.appContext.getString(R.string.JSON_tag_result);
-	
-  	public static final String KEY_ERROR = App.appContext.getString(R.string.JSON_tag_error);
   	
-  	public static final String KEY_ERROR_MESSAGE = App.appContext.getString(R.string.JSON_tag_errorMessage);
   	
   	/*
   	 * for storage 
@@ -110,6 +116,9 @@ public interface Constants {
   	public static final String KEY_AUTHOR = App.appContext.getString(R.string.JSON_tag_owner);
   	public static final String KEY_TIME = App.appContext.getString(R.string.JSON_tag_time);
   	public static final String KEY_ARTICLE_LIKES = "like_num";
+  	public static final String KEY_RESULT = App.appContext.getString(R.string.JSON_tag_result);
+  	public static final String KEY_ERROR = App.appContext.getString(R.string.JSON_tag_error);
+  	public static final String KEY_ERROR_MESSAGE = App.appContext.getString(R.string.JSON_tag_errorMessage);
   	
 
 }

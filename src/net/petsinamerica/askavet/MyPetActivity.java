@@ -224,7 +224,7 @@ public class MyPetActivity extends FragmentActivity{
 			viewHolder.tvPetSex.setText("(" + sex + ")");
 			
 			if (sImgURL!= null && !sImgURL.startsWith("http")){
-				sImgURL = Constants.URL_FILE_STORAGE + sImgURL;
+				sImgURL = Constants.URL_CLOUD_STORAGE + sImgURL;
 			}
 			
 			// image loading procedure:

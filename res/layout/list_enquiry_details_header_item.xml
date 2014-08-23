@@ -1,0 +1,378 @@
+<LinearLayout 
+   	xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="10dp"
+      android:layout_margin="10dp"
+      android:background="@drawable/layer_card_background"
+      android:orientation="vertical">
+      <TextView
+          android:id="@+id/frag_enquiry_details_title"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:layout_gravity="left"
+             android:paddingTop="5dp"
+             android:paddingBottom="5dp"
+             android:text="title " 
+             android:textStyle="bold"
+             android:textSize="20sp"/>
+      <View
+            android:layout_span="2"
+            android:layout_width="wrap_content"
+            android:layout_height="0.5dp"
+            android:layout_weight="1"
+            android:background="#999" />
+   	  <TextView
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="left"
+              android:paddingTop="5dp"
+              android:paddingBottom="5dp"
+              android:text="相关宠物信息 " 
+              android:textStyle="bold"
+              android:textColor="@color/GreenYellow"
+              android:visibility="gone"/>
+   <View
+            android:layout_span="2"
+            android:layout_width="wrap_content"
+            android:layout_height="0.5dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="5dp"
+            android:background="#999" 
+            android:visibility="gone"/>
+   <RelativeLayout 
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:visibility="gone"
+       >
+       <LinearLayout 
+           android:id="@+id/frag_enquiry_details_linearlayout1"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentLeft="true"
+           android:layout_centerVertical="true"
+           android:orientation="vertical">
+           <ImageView 
+            android:id="@+id/frag_enquiry_details_pet_pic"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/somepet"/>
+        <TextView
+            android:id="@+id/frag_enquiry_details_petName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="@string/label_petname" />
+       </LinearLayout>
+       
+       <TableLayout
+           android:id="@+id/frag_enquiry_details_pet_info"
+       	android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_alignParentRight="true"
+           android:layout_marginLeft="10dp"
+           android:layout_toRightOf="@id/frag_enquiry_details_linearlayout1"
+           android:gravity="center_horizontal">
+        <TableRow >
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="@string/label_petspecies" />
+            <TextView
+                android:id="@+id/frag_enquiry_details_petspecies"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:text="狗" />
+            <TextView
+                android:id="@+id/frag_enquiry_details_petsex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_marginLeft="5dp"
+                android:text="(Male)" />
+        </TableRow>
+        <TableRow>
+            <View
+                android:layout_span="2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#999" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="@string/label_petbreed" />
+            <TextView
+                android:id="@+id/frag_enquiry_details_petbreed"
+                android:layout_width="0dp"
+                android:layout_weight="4"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_marginLeft="10dp"
+                android:text="mixed-breed" />
+        </TableRow>
+        <TableRow>
+            <View
+                android:layout_span="2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#999" />
+        </TableRow>
+        <RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft = "true"
+                android:text="@string/label_pet_age" />
+            <TextView
+                android:id="@+id/frag_enquiry_details_pet_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="10dp"
+                android:text="2013-11-13" />
+        </RelativeLayout>
+
+        <TableRow>
+            <View
+                android:layout_span="2"
+                android:layout_width="wrap_content"
+                android:layout_height="0.5dp"
+                android:layout_weight="1"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#999" />
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="@string/label_pet_neuterage" />
+            <TextView
+                android:id="@+id/frag_enquiry_details_pet_neuterage"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:layout_marginLeft="10dp"
+                android:text="15 个月" />
+        </TableRow>
+   	</TableLayout>
+   </RelativeLayout>
+   <View
+            android:layout_span="2"
+            android:layout_width="wrap_content"
+            android:layout_height="0.5dp"
+            android:layout_weight="1"
+            android:layout_marginTop="5dp"
+            android:background="#999" />
+   <TextView
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="left"
+              android:paddingTop="5dp"
+              android:paddingBottom="5dp"
+              android:text="询问单信息 " 
+              android:textStyle="bold"
+              android:textColor="@color/GreenYellow"/>
+   <View
+            android:layout_span="2"
+            android:layout_width="wrap_content"
+            android:layout_height="0.5dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="5dp"
+            android:background="#999" />
+   <TableLayout
+           android:id="@+id/frag_enquiry_details_petinfo2"
+       	android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:gravity="center_horizontal">
+       <TableRow >
+           <TextView
+               android:layout_width="0dp"
+               android:layout_weight="1"
+               android:layout_height="wrap_content"
+               android:paddingRight="5dp"
+               android:layout_gravity="left|center_vertical"
+               android:text="食物类别 " />
+           <TextView
+               android:id="@+id/frag_enquiry_details_diet_type"
+               android:layout_width="0dp"
+               android:layout_weight="2"
+               android:layout_height="wrap_content"
+               android:layout_gravity="left|center_vertical"
+               android:text="unknown" />
+            <TextView
+               android:layout_width="0dp"
+               android:layout_weight="1"
+               android:layout_height="wrap_content"
+               android:paddingRight="5dp"
+               android:layout_gravity="left|center_vertical"
+               android:text="体重" />
+           <TextView
+               android:id="@+id/frag_enquiry_details_weight"
+               android:layout_width="0dp"
+               android:layout_weight="2"
+               android:layout_height="wrap_content"
+               android:layout_gravity="left|center_vertical"
+               android:text="unknown" />
+       </TableRow>
+       <TableRow>
+           <View
+               android:layout_span="2"
+               android:layout_width="wrap_content"
+               android:layout_height="0.5dp"
+               android:layout_weight="1"
+               android:layout_marginTop="5dp"
+               android:layout_marginBottom="5dp"
+               android:background="#999" />
+       </TableRow>
+       
+       <TableRow >
+           <TextView
+               android:layout_width="0dp"
+               android:layout_weight="1"
+               android:layout_height="wrap_content"
+               android:layout_gravity="left|center_vertical"
+               android:text="食物" />
+           <TextView
+               android:id="@+id/frag_enquiry_details_diet"
+               android:layout_width="0dp"
+               android:layout_weight="2"
+               android:layout_height="wrap_content"
+               android:layout_gravity="left|center_vertical"
+               android:layout_marginLeft="5dp"
+               android:text="unknown" />
+           <TextView
+               android:layout_width="0dp"
+               android:layout_weight="1"
+               android:layout_height="wrap_content"
+               android:layout_gravity="left|center_vertical"
+               android:text="食欲" />
+           <TextView
+               android:id="@+id/frag_enquiry_details_appetite"
+               android:layout_width="0dp"
+               android:layout_weight="2"
+               android:layout_height="wrap_content"
+               android:layout_gravity="left|center_vertical"
+               android:layout_marginLeft="5dp"
+               android:text="unknown" />
+       </TableRow>
+       <TableRow>
+           <View
+               android:layout_span="2"
+               android:layout_width="wrap_content"
+               android:layout_height="0.5dp"
+               android:layout_weight="1"
+               android:layout_marginTop="5dp"
+               android:layout_marginBottom="5dp"
+               android:background="#999" />
+       </TableRow>
+       <TableRow >
+           <TextView
+               android:layout_width="0dp"
+               android:layout_weight="1"
+               android:layout_height="wrap_content"
+               android:paddingRight="5dp"
+               android:layout_gravity="left|center_vertical"
+               android:text="精神状态" />
+           <TextView
+               android:id="@+id/frag_enquiry_details_responsiveness"
+               android:layout_width="0dp"
+               android:layout_weight="2"
+               android:layout_height="wrap_content"
+               android:layout_gravity="left|center_vertical"
+               android:text="unknown" />
+           <TextView
+               android:layout_width="0dp"
+               android:layout_weight="1"
+               android:layout_height="wrap_content"
+               android:paddingRight="5dp"
+               android:layout_gravity="left|center_vertical"
+               android:text="大便情况" />
+           <TextView
+               android:id="@+id/frag_enquiry_details_stool"
+               android:layout_width="0dp"
+               android:layout_weight="2"
+               android:layout_height="wrap_content"
+               android:layout_gravity="left|center_vertical"
+               android:text="unknown" />
+       </TableRow>
+   	<TableRow>
+           <View
+               android:layout_span="2"
+               android:layout_width="wrap_content"
+               android:layout_height="0.5dp"
+               android:layout_weight="1"
+               android:layout_marginTop="5dp"
+               android:layout_marginBottom="5dp"
+               android:background="#999" />
+       </TableRow>
+       <TableRow
+           android:layout_height="wrap_content">
+       	<LinearLayout 
+      	        android:layout_width="wrap_content"
+      	        android:layout_height="wrap_content"
+      	        android:orientation="vertical">
+      	        <ImageView
+      	            android:id="@+id/frag_enquiry_details_author_pic"
+      	            android:layout_width="60dp"
+      	            android:layout_height="60dp"
+      	            android:layout_marginBottom="5dp"
+      	            android:src="@drawable/someone"/>
+      	        <TextView 
+      	            android:id="@+id/frag_enquiry_details_author_name"
+      	            android:layout_height="wrap_content"
+      	            android:layout_width="60dp"
+      	            android:layout_gravity="center_horizontal"
+      	            android:text="name"
+      	            android:maxWidth="100dp"/>
+      	    </LinearLayout>
+      	    <RelativeLayout 
+      	        android:layout_width="0dp"
+      	        android:layout_weight="1"
+      	        android:layout_height="wrap_content"
+      	        android:paddingLeft="5dp"
+      	        >
+       	    <TextView
+                android:id="@+id/frag_enquiry_details_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|top"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:text="details" /> 
+               <TextView
+                android:id="@+id/frag_enquiry_details_author_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/frag_enquiry_details_details"
+                android:layout_alignRight="@id/frag_enquiry_details_details"
+                android:layout_alignParentBottom="true"
+                android:gravity="bottom"
+                android:text="publish date" 
+                android:textColor="@color/Grey"/>   
+      	    </RelativeLayout>
+           
+          </TableRow>
+    </TableLayout>
+</LinearLayout>

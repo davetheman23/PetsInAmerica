@@ -100,7 +100,7 @@ public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 		viewHolder.checkBox.setChecked(selectStates[position]);
 		
 		if (sImgURL!= null && !sImgURL.startsWith("http")){
-			sImgURL = Constants.URL_FILE_STORAGE + sImgURL;
+			sImgURL = Constants.URL_CLOUD_STORAGE + sImgURL;
 		}
 		
 		// image loading procedure:

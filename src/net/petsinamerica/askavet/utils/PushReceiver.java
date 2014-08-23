@@ -136,7 +136,7 @@ public class PushReceiver extends BroadcastReceiver {
 		}
 	}
 	
-	class BindUserCidInBackground extends GeneralHelpers.CallPiaApiInBackground{
+	class BindUserCidInBackground extends CallPiaApiInBackground{
 		
 		@Override
 		protected void onCallCompleted(List<Map<String, Object>> result) {}

@@ -190,7 +190,8 @@ public class EnquiryListFragment1 extends Fragment {
 			
 			String enqueryContent = ((EnquiryListAdapter)getListAdapter()).getEnqueryContent(v);
 			Intent newIntent = new Intent(mContext, EnquiryActivity.class);
-			newIntent.putExtra(KEY_CONTENT, enqueryContent);
+			int queryId = ((EnquiryListAdapter)this.getListAdapter()).getQueryID(v);
+			newIntent.putExtra("QueryId", queryId);
 			startActivity(newIntent);
 			
 		}

@@ -356,8 +356,8 @@ public class HomeActivity extends FragmentActivity implements
 		public void onViewCreated(View view, Bundle savedInstanceState) {
 			super.onViewCreated(view, savedInstanceState);
 			setStyle(Style.card);
-			getListView().setHeaderDividersEnabled(true);
-			getListView().addHeaderView(new View(getActivity()));
+			//getListView().setHeaderDividersEnabled(true);
+			//getListView().addHeaderView(new View(getActivity()));
 			
 		}
 
@@ -430,14 +430,6 @@ public class HomeActivity extends FragmentActivity implements
 			try {				
 				HttpResponse response = mClient.execute(post);
 				
-				/*// obtain response from login
-				String loginResponse = new BasicResponseHandler().handleResponse(response);
-				
-				// parse response as JSON object
-				JSONObject responseObject = (JSONObject) new JSONTokener(loginResponse).nextValue();
-				Map<String, Object> resultMap = JsonHelper
-											.toMap(responseObject.getJSONObject(sTAG_RESULT));
-				return resultMap;*/
 				return GeneralHelpers.handlePiaResponse(response);
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();

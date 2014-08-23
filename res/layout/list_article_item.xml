@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:layout_margin="10dp"
@@ -9,14 +9,14 @@
     >
       <RelativeLayout 
           android:id="@+id/article_list_main_content"
-          android:layout_width="wrap_content"
+          android:layout_width="fill_parent"
 		    android:layout_height="wrap_content"
 		    android:minHeight="100dp"
 		    android:layout_gravity="center_horizontal"
 		    >
           <!-- This layout has image on the Right side -->
 		    <ImageView
-		        android:id="@+id/list_icon"
+		        android:id="@+id/article_list_icon"
 		        android:layout_width="100dp"
 		        android:layout_height="80dp"
 		        android:layout_alignParentRight="true"
@@ -32,12 +32,12 @@
 		        android:layout_height="match_parent"
 		        android:layout_alignParentLeft="true"
 		        android:layout_centerVertical="true"
-		        android:layout_toLeftOf="@id/list_icon"
+		        android:layout_toLeftOf="@id/article_list_icon"
 		        android:gravity="left|top"
 		        android:orientation="vertical" >
 		
 		        <TextView
-			        android:id="@+id/list_firstLine"
+			        android:id="@+id/article_list_firstLine"
 			        android:layout_width="fill_parent"
 			        android:layout_height="wrap_content"
 			        android:ellipsize="marquee"
@@ -52,7 +52,7 @@
 			        android:gravity="left|top"
 			        android:padding ="5dp">
 			        <TextView 
-			            android:id="@+id/list_secondline"
+			            android:id="@+id/article_list_secondline"
 			            android:layout_width="fill_parent"
 			            android:layout_height="wrap_content"
 			            android:ellipsize="end"

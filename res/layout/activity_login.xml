@@ -65,7 +65,6 @@
                 android:singleLine="true"
                 android:textColor="@color/Black"
                 android:background="@drawable/textlines"
-                android:text="naoh.zeng@gmail.com"
                 android:padding="3dp"
                 android:textSize="18sp"/>
           <!--  Password Label -->
@@ -84,7 +83,6 @@
                 android:inputType="textPassword"
                 android:textColor="@color/Black"
                 android:textSize="18sp"
-                android:text="12789321"
                 android:padding="3dp"
                 android:background="@drawable/textlines"
                 />
@@ -95,7 +93,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dip"
                 android:text="@string/button_login_login"
-                android:textColor="@color/Red"
+                android:textColor="@color/White"
                 android:textSize="18sp"/>
          <com.sina.weibo.sdk.widget.LoginButton
             android:id="@+id/button_login_weibo"

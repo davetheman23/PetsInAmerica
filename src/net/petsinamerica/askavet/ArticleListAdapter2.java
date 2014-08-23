@@ -98,9 +98,9 @@ public class ArticleListAdapter2 extends ArrayAdapter<Map<String, Object>> {
 				viewHolder.tv_firstline = (TextView) rowview.findViewById(R.id.list_header_title);
 			}else{
 				rowview = inflater.inflate(mResource, parent, false);
-				viewHolder.iv = (ImageView) rowview.findViewById(R.id.list_icon);
-				viewHolder.tv_firstline =(TextView) rowview.findViewById(R.id.list_firstLine);	
-				viewHolder.tv_secondline = (TextView) rowview.findViewById(R.id.list_secondline);
+				viewHolder.iv = (ImageView) rowview.findViewById(R.id.article_list_icon);
+				viewHolder.tv_firstline =(TextView) rowview.findViewById(R.id.article_list_firstLine);	
+				viewHolder.tv_secondline = (TextView) rowview.findViewById(R.id.article_list_secondline);
 			}
 			// set tag for future reuse of the view
 			rowview.setTag(viewHolder);

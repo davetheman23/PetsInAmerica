@@ -5,18 +5,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.App;
+import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.protocol.HTTP;
@@ -25,7 +24,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -39,13 +37,13 @@ import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -114,7 +112,7 @@ public class ArticleActivity extends Activity {
 		mSlideUpPanelLayout.setOverlayed(false);
 		mSlideUpPanelLayout.setMaxSlideRange((int)(height * 0.3));
 		
-		View mainLayout = findViewById(R.id.article_activity_main_view);
+		/*View mainLayout = findViewById(R.id.article_activity_main_view);
 		mainLayout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -122,7 +120,7 @@ public class ArticleActivity extends Activity {
 					mSlideUpPanelLayout.collapsePanel();
 				}
 			}
-		});
+		});*/
 		
 		
 		// get references to each layout views
@@ -143,7 +141,10 @@ public class ArticleActivity extends Activity {
 		mCommentButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showMessage("评论功能还在完善中！");
+				//showMessage("评论功能还在完善中！");
+				Intent newIntent = new Intent(ArticleActivity.this, CommentActivity.class);
+				newIntent.putExtra("ArticleId", articleId);
+				startActivity(newIntent);
 			}
 		});
 		mLikeButton = (Button) findViewById(R.id.article_activity_btn_like);
@@ -245,6 +246,19 @@ public class ArticleActivity extends Activity {
 		}
 	}
 
+	
+
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		if (mSlideUpPanelLayout != null && mSlideUpPanelLayout.isPanelExpanded()){
+			mSlideUpPanelLayout.collapsePanel();
+			return true;
+		}
+		return super.onTouchEvent(event);
+	}
+
+
 
 
 	class ShareIconClickListener implements View.OnClickListener{
@@ -342,7 +356,7 @@ public class ArticleActivity extends Activity {
 				   .show();
 	}
 	
-	private class GetArticleInBackground2 extends GeneralHelpers.CallPiaApiInBackground{
+	private class GetArticleInBackground2 extends CallPiaApiInBackground{
 		
 		@Override
 		protected void onCallCompleted(List<Map<String, Object>> result) {}
@@ -413,7 +427,7 @@ public class ArticleActivity extends Activity {
 		}
 	}
 	
-	/*
+	/**
 	 * define a private variable of the class Target to be used for Picasso
 	 */
 	private Target target = new Target() {
