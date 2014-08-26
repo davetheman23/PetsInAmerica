@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
+<RelativeLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/WhiteSmoke"
-    android:orientation="vertical" >
+    android:background="@color/WhiteSmoke" >
     
     <!-- <LinearLayout 
         android:layout_height="match_parent"
@@ -14,9 +13,53 @@
 	    
     </LinearLayout>
      -->
+
+    
+   	<LinearLayout 
+          android:id="@+id/frag_comments_controls"          
+          android:layout_width="fill_parent"
+          android:layout_height="40dp"
+          android:paddingTop="5dp"
+          android:paddingLeft="5dp"
+          android:paddingRight="5dp"
+          android:layout_alignParentBottom="true"
+          android:orientation="horizontal"
+          android:background="@drawable/border_top">
+          <Button 
+              android:id="@+id/frag_comments_btn_comment"
+              android:layout_width="0dp"
+	          	android:layout_height="wrap_content"
+	          	android:layout_weight="1"
+	          	android:background="?android:attr/selectableItemBackground"
+	          	android:text="发表"
+	          	android:textAppearance="@android:style/TextAppearance.Small"/>
+          <View
+	           android:layout_width="1dip"
+	           android:layout_height="match_parent"
+	           android:layout_marginTop="6dip"
+	           android:layout_marginBottom="6dip"
+	           android:background="?android:attr/dividerVertical"
+	           android:visibility="gone"/>
+      </LinearLayout>
+      <EditText
+	        android:id="@+id/frag_comments_comment_content"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_above="@id/frag_comments_controls"
+	        android:hint="可以在此发表你的看法哦"
+	        android:maxLines="2" />
+
     <ListView 
         android:id="@android:id/list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_above="@id/frag_comments_comment_content"/>
+    <TextView 
+        android:id="@android:id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_centerInParent="true"
+        android:text="还没有任何评论哟！"/>
 	
-</LinearLayout>
+</RelativeLayout>

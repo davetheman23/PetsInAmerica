@@ -11,12 +11,12 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
-import com.sina.weibo.sdk.auth.Oauth2AccessToken;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
+
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
 /**
  * Define parameters needed to access user data
@@ -89,6 +89,31 @@ public class AccessTokenManager {
         expireIn.setTimeInMillis(dateLong);
         
         return new AccessToken(uid, token, expireIn);
+    }
+    /**
+     * renew the PIA token, extending it locally 
+     */
+    public static AccessToken renewTokenLocal(Context context, AccessToken oldToken){
+    	if (null == context) {
+            return null;
+        }
+    	AccessToken newToken = new AccessToken(oldToken.getUserId(), oldToken.getToken());
+    	return newToken;
+    }
+    
+    /**
+     * Get the PIA id of the user current in session
+     * @param context
+     * @return the user id in integer format; -1 if not available
+     */
+    public static int getUserId(Context context){
+    	SharedPreferences pref = context.getSharedPreferences(sPREFERENCES_NAME, Context.MODE_PRIVATE);
+        String uid = pref.getString(sKEY_USERID, "");
+        int userid=-1;
+        if (uid != null && uid != ""){
+        	userid = Integer.parseInt(uid);
+        }
+        return userid;
     }
     
     /**
@@ -177,6 +202,7 @@ public class AccessTokenManager {
 	    	}else{
 	    		clear(context);
 	    		// TODO: do something more when token expired
+	    		GeneralHelpers.showAlertDialog(context, "登录过期", "您已经有一段长时间没登录了，请重新登录");
 	    	}
     	}
     	return post;

@@ -335,9 +335,6 @@ public class HomeActivity extends FragmentActivity implements
 		}
 	}
 
-	/**
-	 * 
-	 */
 	public static class ArticleListFragment extends BaseListFragment {
 		
 		@Override

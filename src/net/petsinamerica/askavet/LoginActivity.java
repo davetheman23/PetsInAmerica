@@ -136,6 +136,7 @@ public class LoginActivity extends Activity{
 		
 		AccessToken token = AccessTokenManager.readAccessToken(getApplicationContext());	    
 		if (token != null && !token.isExpired()){
+			AccessTokenManager.renewTokenLocal(App.appContext, token);
 			Intent intent = new Intent(this, HomeActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(intent);
@@ -216,8 +217,8 @@ public class LoginActivity extends Activity{
 							getApplicationContext(), 
 							new AccessToken(userid, token));
 					Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
+					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(intent);
 				}else{
 					GeneralHelpers.showAlertDialog(LoginActivity.this, 
 							"登录失败", result.get(Constants.KEY_ERROR_MESSAGE).toString());

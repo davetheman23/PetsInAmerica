@@ -14,7 +14,6 @@ public class AccessToken {
 	private static String userId = "";
 	private static String accessToken = "";
 	private static Calendar expiration = null;
-	private static int renewHours = 1;
 	
 	private static String sTAG = "Access Token";
 	
@@ -33,7 +32,7 @@ public class AccessToken {
 	
 	/**
 	 * Constructor for the access token, without specifying 
-	 * expiration time, the token will expire in 24 hours
+	 * expiration time, the token will be renewed in Constants.RENEW_LOCAL_TOKEN_HOURS
 	 *   
 	 */
 	public AccessToken(String userId, String token){
@@ -42,7 +41,7 @@ public class AccessToken {
 		
 		// get current time and set expiration to renewHours hrs later
 		Calendar time = Calendar.getInstance();
-		time.add(Calendar.HOUR, renewHours);
+		time.add(Calendar.HOUR, Constants.RENEW_LOCAL_TOKEN_HOURS);
 		AccessToken.expiration = time;		
 	}
 

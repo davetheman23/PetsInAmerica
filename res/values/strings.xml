@@ -52,7 +52,7 @@
     <string name="label_weibo_name">微博名</string>
     <string name="label_my_pets">我的宠物</string>
     <string name="label_my_enquiries">我的提问</string>
-    <string name="label_my_comments">我的评论</string>
+    <string name="label_my_comment_articles">我评论过的文章</string>
     <string name="label_my_like_articles">我赞过的文章</string>
     <string name="label_my_favorites">我的收藏</string>
     <string name="label_my_petfriends">我的宠物好友</string>

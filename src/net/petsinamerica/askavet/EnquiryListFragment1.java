@@ -31,9 +31,6 @@ import android.widget.TextView;
  */
 
 public class EnquiryListFragment1 extends Fragment {
-	
-	private static String KEY_CONTENT;
-	private static final String sTAG = "EnquiryListFragment";
 
 	private static Context mContext;
 	private Button mBtnAsk;
@@ -50,9 +47,7 @@ public class EnquiryListFragment1 extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		mContext = activity;
-		KEY_CONTENT = mContext.getResources().getString(R.string.JSON_tag_content);
-		
+		mContext = activity;		
 		
 		// creating the two fragments and keep them in memory for fast swapping
 		mAllListFragment = new AllEnquiryListFragment();
@@ -187,8 +182,6 @@ public class EnquiryListFragment1 extends Fragment {
 			
 			// store the article ID clicked
 			//Record_Usage(articleID);
-			
-			String enqueryContent = ((EnquiryListAdapter)getListAdapter()).getEnqueryContent(v);
 			Intent newIntent = new Intent(mContext, EnquiryActivity.class);
 			int queryId = ((EnquiryListAdapter)this.getListAdapter()).getQueryID(v);
 			newIntent.putExtra("QueryId", queryId);

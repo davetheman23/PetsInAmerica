@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.w3c.dom.Text;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -30,6 +31,7 @@ import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ArrayAdapter;
@@ -51,6 +53,10 @@ public abstract class BaseListFragment extends ListFragment{
 	};
 	// variables that can be used by subclasses
 	protected View mfooterview = null; 
+	
+	private ProgressBar mOverallProgBar = null;
+	
+	private TextView mOverallEmptyListView = null;
 	
 	private static final String TAG = "BaseListFragment";
 
@@ -141,7 +147,14 @@ public abstract class BaseListFragment extends ListFragment{
 		
 	}
 	
-	
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View rootview = inflater.inflate(R.layout.fragment_standard_list,container, false);
+		mOverallProgBar = (ProgressBar) rootview.findViewById(android.R.id.progress);
+		mOverallEmptyListView = (TextView) rootview.findViewById(android.R.id.empty);
+		return rootview;
+	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -239,7 +252,7 @@ public abstract class BaseListFragment extends ListFragment{
 		if (mfooterview!=null){
 			TextView tvFooter = (TextView) mfooterview
 					.findViewById(R.id.list_footer_tv_loading);
-			tvFooter.setText("没有可显示的内容");
+			tvFooter.setText(getResources().getString(R.string.no_content_available));
 			
 			ProgressBar pbFooter = (ProgressBar) mfooterview
 							.findViewById(R.id.list_footer_pb_loading);
@@ -287,6 +300,17 @@ public abstract class BaseListFragment extends ListFragment{
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 
 		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			if (mOverallProgBar != null && getListView().getCount() <= 1){
+				mOverallProgBar.setVisibility(View.VISIBLE);
+			}
+			if (mOverallEmptyListView != null){
+				mOverallEmptyListView.setText("");
+			}
+		}
+
+		@Override
 		protected List<Map<String, Object>> doInBackground(String... params) {
 			String url = params[0];
 			HttpPost post = new HttpPost(url);
@@ -316,6 +340,12 @@ public abstract class BaseListFragment extends ListFragment{
 		@Override
 		protected void onPostExecute(List<Map<String, Object>> resultArray) {
 			onHttpDone(resultArray);
+			if (mOverallProgBar != null){
+				mOverallProgBar.setVisibility(View.GONE);
+			}
+			if (mOverallEmptyListView != null){
+				mOverallEmptyListView.setText(getResources().getString(R.string.no_content_available));
+			}
 			if (isAdded() && resultArray != null){		
 			// always test isAdded for a fragment, this help make sure
 			// the getActivity doesn't return null pointer

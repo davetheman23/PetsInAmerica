@@ -41,6 +41,7 @@
             android:windowSoftInputMode="stateHidden"
             android:theme="@android:style/Theme.Holo.NoActionBar"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,6 +52,7 @@
         <activity
             android:name="net.petsinamerica.askavet.SignUpActivity"
             android:theme="@android:style/Theme.Holo.NoActionBar"
+            android:screenOrientation="portrait"
             >
         </activity>
         <activity
@@ -60,7 +62,8 @@
         </activity>
         <activity
             android:name="net.petsinamerica.askavet.ArticleActivity"
-            android:label="@string/page_title_article" >
+            android:label="@string/page_title_article"
+            android:screenOrientation="portrait" >
             
         </activity>
         <activity
@@ -93,7 +96,16 @@
             android:label="评论" 
             android:screenOrientation="portrait">
         </activity>
-       
+       <activity
+            android:name="net.petsinamerica.askavet.MyArticleListActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="net.petsinamerica.askavet.MyEnquiryListActivity"
+            android:label="我的提问"
+            android:screenOrientation="portrait">
+        </activity>
         
         <activity 
             android:name="net.petsinamerica.askavet.PushActivity"

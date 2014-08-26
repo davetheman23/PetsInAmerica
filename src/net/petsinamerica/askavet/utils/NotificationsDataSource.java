@@ -73,6 +73,11 @@ public class NotificationsDataSource {
 		return notifications;
 	}
 	
+	public List<PiaNotification> getAllRecentNotifications(){
+		//TODO this requires an update of the database, to include a time column
+		return null;
+	}
+	
 	public List<PiaNotification> getUnreadNotifications(){
 		List<PiaNotification> notifications = new ArrayList<PiaNotification>();
 		Cursor cursor = database.query(PiaSQLiteHelper.NOTIFICATION_TABLE_NAME,

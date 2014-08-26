@@ -20,7 +20,7 @@
          android:layout_centerInParent="true"
          android:layout_centerVertical="true"
          android:gravity="center"
-         android:text="@string/no_new_notifications"/>
+         android:text="@string/no_content_available"/>
      <ProgressBar
          android:id="@android:id/progress"
          android:layout_width="wrap_content"

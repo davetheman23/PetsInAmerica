@@ -1,5 +1,7 @@
 package net.petsinamerica.askavet;
 
+import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 import android.app.Activity;
 import android.content.Context;
@@ -35,7 +37,7 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 	/*private boolean firstAdd = true;	// first time the petlist fragment is added
 */	
 	static final int[] linearLayouts = new int[]{
-		R.id.frag_userinfo_ll_comments, R.id.frag_userinfo_ll_favorites,
+		R.id.frag_userinfo_ll_commentedarticles, R.id.frag_userinfo_ll_favorites,
 		R.id.frag_userinfo_ll_mypets, R.id.frag_userinfo_ll_myenquiries,
 		R.id.frag_userinfo_ll_likedarticles, R.id.frag_userinfo_ll_settings,
 	};
@@ -67,11 +69,25 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 			lls.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					Intent intent = null;
 					switch (linearLayout){
 						case R.id.frag_userinfo_ll_mypets:
-							Intent intent = new Intent(getActivity(), MyPetActivity.class);
+							intent = new Intent(getActivity(), MyPetActivity.class);
 							startActivity(intent);
 							break;
+						case R.id.frag_userinfo_ll_commentedarticles:
+							intent = new Intent(getActivity(), MyArticleListActivity.class);
+							intent.putExtra("ListType", MyArticleListActivity.LIST_TYPE_USERCOMMENTED);
+							startActivity(intent);
+							break;
+						case R.id.frag_userinfo_ll_likedarticles:
+							intent = new Intent(getActivity(), MyArticleListActivity.class);
+							intent.putExtra("ListType", MyArticleListActivity.LIST_TYPE_USERLIKED);
+							startActivity(intent);
+							break;
+						case R.id.frag_userinfo_ll_myenquiries:
+							intent = new Intent(getActivity(), MyEnquiryListActivity.class);
+							startActivity(intent);
 						default:
 							Toast.makeText(mContext, "功能还在完善中" + Integer.toString(linearLayout), Toast.LENGTH_LONG).show();
 					}

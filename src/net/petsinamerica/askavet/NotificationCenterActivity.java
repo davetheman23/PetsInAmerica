@@ -1,15 +1,13 @@
 package net.petsinamerica.askavet;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 import net.petsinamerica.askavet.utils.NotificationsDataSource;
 import net.petsinamerica.askavet.utils.PiaNotification;
 import net.petsinamerica.askavet.utils.PushReceiver;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -20,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class NotificationCenterActivity extends FragmentActivity {
@@ -66,10 +65,14 @@ public class NotificationCenterActivity extends FragmentActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_notificationlist, container, false);
+			View rootView = inflater.inflate(R.layout.fragment_standard_list, container, false);
 			
+			// get references to all objects
 			pb = (ProgressBar) rootView.findViewById(android.R.id.progress);
 			pb.setVisibility(View.VISIBLE);
+			
+			TextView tv = (TextView) rootView.findViewById(android.R.id.empty);
+			tv.setText(getResources().getString(R.string.no_new_notifications));
 			
 			return rootView;
 		}
@@ -143,11 +146,12 @@ public class NotificationCenterActivity extends FragmentActivity {
 		 * an adapter to show the notifications in custom views		 *
 		 */
 		private class NotificationAdapter extends ArrayAdapter<PiaNotification>{
-			private Context mContext;
+			
 			private int mResource;
 			
 			class ViewHolder{
 				long id;
+				RelativeLayout rl_container;
 				TextView tv_subject;
 				TextView tv_content;
 				int status;
@@ -156,7 +160,6 @@ public class NotificationCenterActivity extends FragmentActivity {
 			public NotificationAdapter(Context context, int layoutResourceId,
 					List<PiaNotification> objects) {
 				super(context, layoutResourceId, objects);
-				mContext = context;
 				mResource = layoutResourceId;
 			}
 
@@ -174,9 +177,11 @@ public class NotificationCenterActivity extends FragmentActivity {
 					
 					// inflate the layout view, and get individual views
 					rowview = inflater.inflate(mResource, parent, false);
+					viewHolder.rl_container = (RelativeLayout) rowview.findViewById(
+																R.id.list_notification_relativelayout);
 					viewHolder.tv_subject =(TextView) rowview.findViewById(R.id.list_notification_subject);	
 					viewHolder.tv_content = (TextView) rowview.findViewById(R.id.list_notification_content);
-
+				
 					// set tag for future reuse of the view
 					rowview.setTag(viewHolder);
 				}else{
@@ -194,6 +199,7 @@ public class NotificationCenterActivity extends FragmentActivity {
 				//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
 				
 				// set values to the viewholder
+				viewHolder.rl_container.setBackgroundResource(R.drawable.layer_card_background);
 				viewHolder.tv_subject.setText(str1);
 				//viewHolder.tv_content.setText(str2);
 				//viewHolder.tv_content.setText(sdf.format(createTime));

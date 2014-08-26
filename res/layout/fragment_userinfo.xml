@@ -2,12 +2,15 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:orientation="vertical">
-    <LinearLayout 
+
+    <LinearLayout
         android:layout_width="match_parent"
-    	android:layout_height="wrap_content"
-    	android:background="@color/WhiteSmoke"
-    	android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:background="@color/WhiteSmoke"
+        android:orientation="vertical" >
+
 	  	<RelativeLayout 
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
@@ -187,7 +190,8 @@
 		             android:layout_marginLeft="5dp"
 		             android:text="(2)"
 		             android:textColor="@color/Grey"
-		             android:textSize="12sp" />
+		             android:textSize="12sp" 
+		             android:visibility = "gone"/>
 	            <TextView
 		             android:layout_width="0dp"
 		             android:layout_weight="1"
@@ -200,7 +204,7 @@
 		             android:textAppearance="@android:style/TextAppearance.Small" />
 	      	</LinearLayout>
 	      	<LinearLayout
-	      	    android:id="@+id/frag_userinfo_ll_comments"
+	      	    android:id="@+id/frag_userinfo_ll_commentedarticles"
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
 	            android:gravity="center_horizontal"
@@ -228,7 +232,7 @@
 			             android:layout_marginLeft="5dp"
 			             android:paddingRight="8dp"
 			             android:gravity="center_vertical|left"
-			             android:text="@string/label_my_comments"
+			             android:text="@string/label_my_comment_articles"
 			             android:textAppearance="@android:style/TextAppearance.Small" />
             	    <ImageView 
 		                android:layout_width="12dp"
@@ -237,7 +241,7 @@
 		                android:layout_alignParentTop="true"
 		                android:layout_alignRight="@id/frag_userinfo_tv_mycomments"
 		                android:src="@drawable/ic_paw_like"
-		                android:contentDescription="@string/label_my_comments"
+		                android:contentDescription="@string/label_my_comment_articles"
 		                android:visibility="invisible"
 		                />
 	            </RelativeLayout>
@@ -251,7 +255,8 @@
 		             android:layout_marginLeft="5dp"
 		             android:text="(2)"
 		             android:textColor="@color/Grey"
-		             android:textSize="12sp" />
+		             android:textSize="12sp" 
+		             android:visibility = "gone"/>
 	            <TextView
 		             android:layout_width="0dp"
 		             android:layout_weight="1"
@@ -272,7 +277,8 @@
 	            android:paddingLeft="5dp"
 	            android:paddingRight="5dp"
 	            android:layout_marginBottom="10dp"
-	            android:background="@drawable/layout_selector" >
+	            android:background="@drawable/layout_selector" 
+	            android:visibility="gone">
 	            <ImageView 
 	                android:layout_width="30dp"
 	                android:layout_height="match_parent"
@@ -393,7 +399,8 @@
 		             android:layout_marginLeft="5dp"
 		             android:text="(3)"
 		             android:textColor="@color/Grey"
-		             android:textSize="12sp"/>
+		             android:textSize="12sp"
+		             android:visibility = "gone"/>
 	            
 	            <TextView
 		             android:layout_width="0dp"
@@ -445,6 +452,7 @@
 		                android:layout_alignRight="@id/frag_userinfo_tv_mypets"
 		                android:src="@drawable/ic_paw_like"
 		                android:contentDescription="@string/label_my_pets"
+		                android:visibility="gone"
 		                />
 	            </RelativeLayout>
 	            <TextView
@@ -457,7 +465,8 @@
 		             android:layout_marginLeft="5dp"
 		             android:text="(4)"
 		             android:textColor="@color/Grey"
-		             android:textSize="12sp" />
+		             android:textSize="12sp" 
+		             android:visibility = "gone"/>
 
 	            <TextView
 		             android:layout_width="0dp"

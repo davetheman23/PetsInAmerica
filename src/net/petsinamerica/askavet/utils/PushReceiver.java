@@ -112,7 +112,7 @@ public class PushReceiver extends BroadcastReceiver {
 		dataSource.close();
 		
 		
-		// Make a notification 
+		// Make a notification and send to android notification center
 		RemoteViews rm = new RemoteViews("net.petsinamerica.askavet",R.layout.list_notification_item);
 		rm.setTextViewText(R.id.list_notification_subject, subject);
 		rm.setTextViewText(R.id.list_notification_content, content);

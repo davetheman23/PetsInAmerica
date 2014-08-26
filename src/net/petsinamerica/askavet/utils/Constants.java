@@ -10,6 +10,8 @@ public interface Constants {
 	
 	public static final int NO_ERROR = 0; 
 	
+	public static final int RENEW_LOCAL_TOKEN_HOURS = 1; 	// every time the user start the app, should renew the local token
+	
 	/*
 	 * for internet connections
 	 */
@@ -54,6 +56,13 @@ public interface Constants {
 	public static final String URL_BIND_USER_CID = URL_API  + "bindUserCid/";
 	
 	public static final String URL_COMMENT = URL_API  + "comment/";
+	
+	public static final String URL_USER_COMMENTS = URL_API  + "userComments/";
+	
+	public static final String URL_USER_LIKES = URL_API  + "userLikes/";
+	
+	
+	
 	
 	
 	/* 

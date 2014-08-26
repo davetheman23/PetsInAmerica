@@ -442,12 +442,16 @@ public class ArticleActivity extends Activity {
 				@Override
 				public void run() {
 					File tmpFile = GeneralHelpers.getOutputMediaFile(
-							GeneralHelpers.MEDIA_TYPE_IMAGE, true);					
+							GeneralHelpers.MEDIA_TYPE_IMAGE, false);
+					if (tmpFile == null){
+						GeneralHelpers.showMessage(ArticleActivity.this, "文章缩略图本地保存失败！");
+						return;
+					}
 					try 
 					{
 						tmpFile.createNewFile();
 						FileOutputStream ostream = new FileOutputStream(tmpFile);
-						bitmap.compress(CompressFormat.JPEG, 75, ostream);
+						//bitmap.compress(CompressFormat.JPEG, 75, ostream);
 						ostream.close();
 					} 
 					catch (IOException e) 
