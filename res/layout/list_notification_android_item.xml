@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list_notification_relativelayout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:padding="10dp"
-    android:layout_margin="10dp"
-    android:background="@drawable/layer_card_background">
+    android:layout_margin="10dp">
  <!-- This layout has image on the Right side -->
 
 	<ImageView
         android:id="@+id/list_notification_icon"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_margin="5dp"
         android:contentDescription="@string/article_pic"
         android:scaleType="centerCrop"
-        android:visibility="gone"/>
+        android:src="@drawable/ic_launcher_new80x80"/>
 	
     <TextView
         android:id="@+id/list_notification_subject"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@id/list_notification_icon"        
@@ -32,32 +30,31 @@
         android:text="Title"
         android:textColor="@color/Black"
         android:textSize="18sp" />
-    
+    <!--
+    <TextView
+        android:id="@+id/list_notification_status"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/list_notification_subject"
+        android:ellipsize="marquee"
+        android:text="tag1"
+        android:textSize="13sp" 
+        android:textColor="@color/Grey"
+        android:visibility="gone"/>
+      -->
      <TextView
         android:id="@+id/list_notification_content"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/list_notification_subject"
         android:layout_toRightOf="@id/list_notification_icon"
-        android:paddingLeft="10dp"
+        android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:ellipsize="marquee"
         android:text="tag1"
         android:textSize="12sp" 
-        android:textColor="@color/Grey"
-        android:visibility="gone"/>   
-        
-     <TextView
-        android:id="@+id/list_notification_time"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:paddingLeft="10dp"
-        android:layout_below="@id/list_notification_content"
-        android:ellipsize="marquee"
-        android:text="tag1"
-        android:textSize="13sp" 
-        android:textColor="@color/Grey"
-        />
+        android:textColor="@color/Grey"/>   
     
 </RelativeLayout>

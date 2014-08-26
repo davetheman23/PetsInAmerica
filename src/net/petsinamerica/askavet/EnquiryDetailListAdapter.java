@@ -2,6 +2,9 @@ package net.petsinamerica.askavet;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.apache.http.protocol.HTTP;
 
 import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.Constants;
@@ -10,6 +13,8 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -41,6 +46,8 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 	private TextView tv_petStool;
 	private TextView tv_petAppetite;
 	
+	private WebView wv_enquirydetails;
+	
 	private TextView tv_author;
 	private TextView tv_authordate;
 	private TextView tv_enquirydetails;
@@ -63,6 +70,8 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 		mContext = context;
 		mResource = resource_regular;
 		mResource_header = resource_header;
+		
+		
 	}
 
 	/*
@@ -113,6 +122,8 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 				tv_enquirydetails = (TextView) rowview.findViewById(R.id.frag_enquiry_details_details);
 				iv_authorPic = (ImageView) rowview.findViewById(R.id.frag_enquiry_details_author_pic);
 				
+				wv_enquirydetails = (WebView) rowview.findViewById(R.id.frag_enquiry_details_webview_details);
+				
 			}else if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
 				// inflate the layout view, and get individual views
 				rowview = inflater.inflate(mResource, parent, false);
@@ -130,6 +141,7 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 		
 		if (getItemViewType(position) == LIST_VIEW_TYPE_HEADER){
 			
+			// load the enquiry info
 			tv_title.setText(queryInfo.get(Constants.KEY_TITLE).toString());
 			tv_petDiet.setText(queryInfo.get(Constants.KEY_ENQUIRY_PET_DIETDESCR).toString());
 			tv_petDietType.setText(queryInfo.get(Constants.KEY_ENQUIRY_PET_DIETTYPE).toString());
@@ -142,6 +154,8 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 			tv_authordate.setText(queryInfo.get("date").toString());
 			tv_enquirydetails.setText(Html.fromHtml(
 					queryInfo.get(Constants.KEY_CONTENT).toString()));
+			
+			// load the user info
 			String urlAuthorPic = queryInfo.get(Constants.KEY_ENQUIRY_PET_AUTHORAVATAR).toString();
 			Picasso.with(App.appContext)
 				   .load(urlAuthorPic)
@@ -152,6 +166,17 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 				Picasso.with(App.appContext)
 					.cancelRequest(iv_authorPic);
 			}
+			// load the webview
+			wv_enquirydetails.setWebViewClient(new WebViewClient());
+			wv_enquirydetails.getSettings().setBuiltInZoomControls(false);
+			wv_enquirydetails.getSettings().setSupportZoom(false);
+			
+			// replace the 
+			String html_string = queryInfo.get(Constants.KEY_CONTENT).toString();
+			String pattern1 = "(" + Pattern.quote("[img]")+")(.*?)("+ Pattern.quote("[/img]")+ ")";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
+			html_string = html_string.replaceAll(pattern1, "<img src = $2 width=\"100%\" alt=\"\">");
+			wv_enquirydetails.loadDataWithBaseURL(null, html_string, "text/html", HTTP.UTF_8, null);
+			
 		}else{
 			String authorname = queryInfo.get(Constants.KEY_ENQUIRY_PET_AUTHORNAME).toString();
 			String userAvatarURL = queryInfo.get(Constants.KEY_ENQUIRY_PET_AUTHORAVATAR).toString();

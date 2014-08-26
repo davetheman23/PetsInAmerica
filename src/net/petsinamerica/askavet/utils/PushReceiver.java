@@ -26,6 +26,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -112,23 +113,32 @@ public class PushReceiver extends BroadcastReceiver {
 		dataSource.close();
 		
 		
-		// Make a notification and send to android notification center
-		RemoteViews rm = new RemoteViews("net.petsinamerica.askavet",R.layout.list_notification_item);
-		rm.setTextViewText(R.id.list_notification_subject, subject);
+		// --- Make a notification and send to android notification center
+		// 1. set custom remote view
+		RemoteViews rm = new RemoteViews("net.petsinamerica.askavet",R.layout.list_notification_android_item);
 		rm.setTextViewText(R.id.list_notification_content, content);
+		rm.setTextViewText(R.id.list_notification_subject, subject);
+		
+		// 2. set action intent
 		Intent intent = new Intent(context, NotificationCenterActivity.class);
 		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, 
 								intent, Intent.FLAG_ACTIVITY_NEW_TASK);
 		
-		Notification.Builder builder = new Notification.Builder(context)
+		// 3. build the notification
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
 			.setTicker(subject)
 			.setAutoCancel(true)
 			.setSmallIcon(R.drawable.ic_launcher_new80x80)
 			.setContentIntent(pendingIntent)
-			.setContent(rm);
+			.setContentTitle(subject)	// if need to use custom view, should comment this
+			.setContentText(content)	// if need to use custom view, should comment this
+			.setContentInfo("haha");	// if need to use custom view, should comment this
+			//.setContent(rm);	// if need to use custom view, can uncomment this
 		
+		//4. issue the notification
 		NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		manager.notify(1, builder.getNotification());
+		
 		
 		// notify all those registered to this channel
 		if (mPiaNotificationListener != null){

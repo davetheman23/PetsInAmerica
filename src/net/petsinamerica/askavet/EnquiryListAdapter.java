@@ -3,6 +3,7 @@ package net.petsinamerica.askavet;
 import java.util.List;
 import java.util.Map;
 
+import net.petsinamerica.askavet.utils.Constants;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -141,6 +142,9 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 		// 1. check if image available in memory / disk
 		// 2. set image if not in memory then fetch from URL
 		// Note: currently, use picasso instead 
+		if (userAvatarURL != null && !userAvatarURL.contains("http")){
+			userAvatarURL = Constants.URL_CLOUD_STORAGE + userAvatarURL;
+		}
 		Picasso.with(mContext)
 				.load(userAvatarURL)
 				.placeholder(R.drawable.someone)

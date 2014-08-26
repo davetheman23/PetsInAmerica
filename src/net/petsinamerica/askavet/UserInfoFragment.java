@@ -102,26 +102,47 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		loadProfilePic();
 		loadUserInfo();
+		loadPiaProfilePic();
 	}
 
 	@Override
 	public void onWeiboInfoStateChange() {
-		loadProfilePic();
+		//loadWeiboProfilePic();
 	}
 
 	@Override
 	public void onPiaInfoStateChange() {
 		loadUserInfo();
+		loadPiaProfilePic();
 	}
 	
-	private void loadProfilePic(){
+	private void loadWeiboProfilePic(){
 		if (UserInfoManager.isWeiboInfoAvailable()){
 			Picasso.with(mContext)
 					.load(UserInfoManager.weiboUser.avatar_large)
 					.resize(70, 70)
 					.into(iv_avatar);
+		}
+	}
+	
+	private void loadPiaProfilePic(){
+		if (UserInfoManager.isInfoAvailable()){
+			String userAvatarURL = UserInfoManager.avatarURL;
+			if (userAvatarURL != null && !userAvatarURL.startsWith("http")){
+				userAvatarURL = Constants.URL_CLOUD_STORAGE + userAvatarURL;
+			}
+			Picasso.with(mContext)
+			.load(userAvatarURL)
+			.resize(70, 70)
+			.into(iv_avatar);
+			if (null == userAvatarURL || userAvatarURL.endsWith("someone.png")){
+				// cancel request when download is not needed
+				Picasso.with(mContext)
+					.cancelRequest(iv_avatar);
+				// instead try load profile pic from weibo
+				loadWeiboProfilePic();
+			}
 		}
 	}
 	private void loadUserInfo(){
@@ -132,27 +153,6 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 			if (UserInfoManager.avatar != null){
 				iv_avatar.setImageBitmap(UserInfoManager.avatar);
 			}
-			
-			/*if (mPetListFragment == null){
-				mPetListFragment = new PetListFragment();
-				mPetListFragment.setParameters(Constants.URL_USERPETS, sKEY_RESULT,false);
-				mPetListFragment.setPage(Integer.parseInt(UserInfoManager.userid));
-				mPetListFragment.setUserDataFlag(true);
-			}
-			if (firstAdd){
-				getFragmentManager()
-					.beginTransaction()
-					//.add(R.id.frag_userinfo_petlist_container, mPetListFragment)
-					.add(mPetListFragment, "petListFragment")
-					.commit();
-				firstAdd = false;
-			}else{
-				getFragmentManager()
-					.beginTransaction()
-					.replace(R.id.frag_userinfo_petlist_container, mPetListFragment)
-					.addToBackStack(null)
-					.commit();
-			}*/
 		}
 	}
 	

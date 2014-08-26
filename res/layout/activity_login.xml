@@ -64,10 +64,11 @@
                 android:inputType="text"
                 android:singleLine="true"
                 android:textColor="@color/Black"
-                android:text="naoh.zeng@gmail.com"
+               
                 android:background="@drawable/textlines"
                 android:padding="3dp"
                 android:textSize="18sp"/>
+          <!--  android:text="naoh.zeng@gmail.com" -->
           <!--  Password Label -->
           <TextView android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -83,11 +84,12 @@
                 android:singleLine="true"
                 android:inputType="textPassword"
                 android:textColor="@color/Black"
-                android:text="12789321"
+                
                 android:textSize="18sp"
                 android:padding="3dp"
                 android:background="@drawable/textlines"
                 />
+          <!-- android:text="12789321" -->
           <!-- Login button -->
           <Button android:id="@+id/button_login"
                 android:layout_width="150dp"

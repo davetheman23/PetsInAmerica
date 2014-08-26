@@ -353,14 +353,22 @@
       	        android:layout_height="wrap_content"
       	        android:paddingLeft="5dp"
       	        >
+      	    <WebView 
+      	        android:id="@+id/frag_enquiry_details_webview_details"
+      	        android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+      	        />
        	    <TextView
                 android:id="@+id/frag_enquiry_details_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/frag_enquiry_details_webview_details"
                 android:gravity="left|top"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:text="details" /> 
+                android:text="details"
+                android:visibility="gone" /> 
                <TextView
                 android:id="@+id/frag_enquiry_details_author_date"
                 android:layout_width="wrap_content"

@@ -73,6 +73,21 @@ public class NotificationsDataSource {
 		return notifications;
 	}
 	
+	public List<PiaNotification> getAllNotifications(String uid){
+		String[] uids = {uid};
+		List<PiaNotification> notifications = new ArrayList<PiaNotification>();
+		Cursor cursor = database.query(PiaSQLiteHelper.NOTIFICATION_TABLE_NAME,
+				allcolumns, PiaSQLiteHelper.COLUMN_UID + " = ?", uids, null, null, PiaSQLiteHelper.COLUMN_CREATEAT + " DESC");
+		cursor.moveToFirst();
+		while (! cursor.isAfterLast()){
+			PiaNotification notification = cursorToNotification(cursor);
+			notifications.add(notification);
+			cursor.moveToNext();
+		}
+		cursor.close();
+		return notifications;
+	}
+	
 	public List<PiaNotification> getAllRecentNotifications(){
 		//TODO this requires an update of the database, to include a time column
 		return null;

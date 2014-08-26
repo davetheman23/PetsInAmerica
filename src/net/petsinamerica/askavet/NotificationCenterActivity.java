@@ -2,16 +2,23 @@ package net.petsinamerica.askavet;
 
 import java.util.List;
 
+import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.GeneralHelpers;
 import net.petsinamerica.askavet.utils.NotificationsDataSource;
 import net.petsinamerica.askavet.utils.PiaNotification;
 import net.petsinamerica.askavet.utils.PushReceiver;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 public class NotificationCenterActivity extends FragmentActivity {
@@ -81,7 +89,10 @@ public class NotificationCenterActivity extends FragmentActivity {
 		public void onViewCreated(View view, Bundle savedInstanceState) {
 			super.onViewCreated(view, savedInstanceState);
 			if (getListAdapter() == null){
-				List<PiaNotification> notifications = dataSource.getAllNotifications();
+				
+				// query the SQLite database
+				List<PiaNotification> notifications = dataSource.getAllNotifications(
+						Integer.toString(AccessTokenManager.getUserId(getActivity())));
 				
 				adapter = new NotificationAdapter(getActivity(), 
 												  R.layout.list_notification_item,
@@ -118,8 +129,6 @@ public class NotificationCenterActivity extends FragmentActivity {
 			// if the status being clicked is the new notification
 			if (status == PiaNotification.STATUS_RECEIVED){
 				
-				//TODO popup a dialog box to get further information
-				
 				// update the database on the status of the notification record being clicked
 				long nId = ((NotificationAdapter)getListAdapter()).getNotificationId(v);
 				dataSource.updateStatus(nId, PiaNotification.STATUS_VIEWED);
@@ -127,8 +136,17 @@ public class NotificationCenterActivity extends FragmentActivity {
 				// change the text color for the list item that has been clicked
 				TextView tv_subject = (TextView) v.findViewById(R.id.list_notification_subject);
 				TextView tv_content = (TextView) v.findViewById(R.id.list_notification_content);
+				TextView tv_time = (TextView) v.findViewById(R.id.list_notification_time);
 				tv_subject.setTextColor(getResources().getColor(R.color.LightGrey));
 				tv_content.setTextColor(getResources().getColor(R.color.LightGrey));
+				tv_time.setTextColor(getResources().getColor(R.color.LightGrey));
+				
+				Context context = getActivity();
+				String subject = tv_subject.getText().toString();
+				String content = tv_content.getText().toString();
+				
+				//TODO popup a dialog box to get further information
+				GeneralHelpers.showAlertDialog(context, subject, content);
 			}
 		}
 
@@ -151,9 +169,9 @@ public class NotificationCenterActivity extends FragmentActivity {
 			
 			class ViewHolder{
 				long id;
-				RelativeLayout rl_container;
 				TextView tv_subject;
 				TextView tv_content;
+				TextView tv_time;
 				int status;
 			}
 
@@ -177,10 +195,9 @@ public class NotificationCenterActivity extends FragmentActivity {
 					
 					// inflate the layout view, and get individual views
 					rowview = inflater.inflate(mResource, parent, false);
-					viewHolder.rl_container = (RelativeLayout) rowview.findViewById(
-																R.id.list_notification_relativelayout);
 					viewHolder.tv_subject =(TextView) rowview.findViewById(R.id.list_notification_subject);	
 					viewHolder.tv_content = (TextView) rowview.findViewById(R.id.list_notification_content);
+					viewHolder.tv_time = (TextView) rowview.findViewById(R.id.list_notification_time);
 				
 					// set tag for future reuse of the view
 					rowview.setTag(viewHolder);
@@ -199,11 +216,10 @@ public class NotificationCenterActivity extends FragmentActivity {
 				//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
 				
 				// set values to the viewholder
-				viewHolder.rl_container.setBackgroundResource(R.drawable.layer_card_background);
 				viewHolder.tv_subject.setText(str1);
-				//viewHolder.tv_content.setText(str2);
+				viewHolder.tv_content.setText(str2);
 				//viewHolder.tv_content.setText(sdf.format(createTime));
-				viewHolder.tv_content.setText(createTime);
+				viewHolder.tv_time.setText(createTime);
 				viewHolder.id = id;
 				viewHolder.status = status;
 				
@@ -211,6 +227,7 @@ public class NotificationCenterActivity extends FragmentActivity {
 				if (status == PiaNotification.STATUS_VIEWED){
 					viewHolder.tv_subject.setTextColor(getResources().getColor(R.color.LightGrey));
 					viewHolder.tv_content.setTextColor(getResources().getColor(R.color.LightGrey));
+					viewHolder.tv_time.setTextColor(getResources().getColor(R.color.LightGrey));
 				}
 				
 				return rowview;

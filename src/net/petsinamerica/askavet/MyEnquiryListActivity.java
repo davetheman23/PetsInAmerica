@@ -52,7 +52,6 @@ public class MyEnquiryListActivity extends FragmentActivity{
 			// store the article ID clicked
 			//Record_Usage(articleID);
 			
-			String enqueryContent = ((EnquiryListAdapter)getListAdapter()).getEnqueryContent(v);
 			Intent newIntent = new Intent(mContext, EnquiryActivity.class);
 			int queryId = ((EnquiryListAdapter)this.getListAdapter()).getQueryID(v);
 			newIntent.putExtra("QueryId", queryId);
