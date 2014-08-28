@@ -25,9 +25,9 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 	
 	// these tags are those for reading the JSON objects
 	private static String TAG_TITLE;
-	private static String TAG_IMAGE;
+	//private static String TAG_IMAGE;
 	private static String TAG_ID;
-	private static String TAG_TAG;
+	//private static String TAG_TAG;
 	private static String TAG_AVATAR;
 	private static String TAG_OWNERNAME;
 	private static String TAG_CONTENT;
@@ -55,7 +55,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 		mResource = resource;
 		
 		TAG_TITLE = mContext.getResources().getString(R.string.JSON_tag_title);
-		TAG_IMAGE = mContext.getResources().getString(R.string.JSON_tag_image);
+		//TAG_IMAGE = mContext.getResources().getString(R.string.JSON_tag_image);
 		TAG_ID = mContext.getResources().getString(R.string.JSON_tag_queryid);
 		TAG_OWNERNAME = mContext.getResources().getString(R.string.JSON_tag_ownername);
 		TAG_AVATAR = mContext.getResources().getString(R.string.JSON_tag_avatar);

@@ -2,6 +2,7 @@ package net.petsinamerica.askavet;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.http.protocol.HTTP;
@@ -9,7 +10,13 @@ import org.apache.http.protocol.HTTP;
 import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.Constants;
 import android.content.Context;
+import android.content.Intent;
+import android.sax.StartElementListener;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,6 +66,7 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 		TextView tv_authorname;
 		TextView tv_enquirydetails;
 		TextView tv_publishdate;
+		WebView wv_details;
 	}
 	
 	/*
@@ -131,6 +139,9 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 				viewHolder.tv_authorname =(TextView) rowview.findViewById(R.id.list_enquiry_details_author_name);	
 				viewHolder.tv_enquirydetails = (TextView) rowview.findViewById(R.id.list_enquiry_details_details);
 				viewHolder.tv_publishdate = (TextView) rowview.findViewById(R.id.list_enquiry_details_author_date);
+				viewHolder.wv_details = (WebView) rowview.findViewById(R.id.list_enquiry_details_webview_details);
+				
+				
 			}
 			// set tag for future reuse of the view
 			rowview.setTag(viewHolder);
@@ -186,10 +197,58 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 				userAvatarURL = Constants.URL_CLOUD_STORAGE + userAvatarURL;
 			}
 			
+			// -- allow some text to be clickable, especially those that will direct to another article
+			String str_articleId = "0";
+			//int start_pos = 0, end_pos = 0;
+			// 1. first detect if there are any text should be clickable
+			String pattern_str = "(\\[url=)(.*?article/)([0-9]+)(\\])(.*?)(\\[/url\\])";
+			Pattern pattern = Pattern.compile(pattern_str);
+			Matcher matcher = pattern.matcher(details);
+			if (matcher.find()){
+				str_articleId = matcher.group(3);
+				String linkContent = matcher.group(5);
+				details = details.replaceAll(pattern_str, "<a href = \"loadarticle:$3\">$5</a>");
+				//start_pos = details.indexOf(linkContent);
+				//end_pos = start_pos + linkContent.length();
+			}
+			final int article_id = Integer.parseInt(str_articleId);
+			
+			// 2. second, set the clickable text action to be taken 
+			
+			/*SpannableString ss = new SpannableString(details);
+			ClickableSpan cs = new ClickableSpan() {
+				@Override
+				public void onClick(View v) {
+					if (article_id != 0){
+						Intent intent = new Intent(mContext, ArticleActivity.class);
+						intent.putExtra("ArticleId", article_id);
+						mContext.startActivity(intent);
+					}
+				}
+			};
+			ss.setSpan(cs, start_pos, end_pos, Spanned.SPAN_INCLUSIVE_INCLUSIVE);*/
+			
+			// 3. set the clickable text just formulated to the textview
+			//viewHolder.tv_enquirydetails.setText(Html.fromHtml(ss));
+			//viewHolder.tv_enquirydetails.setClickable(true);
+			
 			viewHolder.tv_authorname.setText(authorname);
-			viewHolder.tv_enquirydetails.setText(Html.fromHtml(details));
+			//viewHolder.tv_enquirydetails.setText(Html.fromHtml(details));
 			viewHolder.tv_publishdate.setText(date);
-	
+			viewHolder.wv_details.loadDataWithBaseURL(null, details, "text/html", HTTP.UTF_8, null);
+			viewHolder.wv_details.setWebViewClient(new WebViewClient(){
+				@Override
+				public boolean shouldOverrideUrlLoading(WebView view, String url) {
+					if (url.startsWith("loadarticle")){
+						Intent intent = new Intent(mContext, ArticleActivity.class);
+						intent.putExtra("ArticleId", article_id);
+						mContext.startActivity(intent);
+						return true;
+					}
+					return false;
+				}
+			});
+			
 			// image loading procedure:
 			// 1. check if image available in memory / disk
 			// 2. set image if not in memory then fetch from URL

@@ -1,6 +1,5 @@
 package net.petsinamerica.askavet;
 
-import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 import android.app.Activity;
@@ -22,7 +21,7 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 	
 	
 	
-	private static final String sTAG = "Profile Activity";
+	//private static final String sTAG = "Profile Activity";
 
 	private static Context mContext;
 	private TextView tv_nickname;

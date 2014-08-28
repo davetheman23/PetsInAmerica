@@ -182,46 +182,6 @@ public class EnquiryActivity extends FragmentActivity {
 		return super.onTouchEvent(event);
 	}
 	
-	/**
-	 * define a private variable of the class Target to be used for Picasso
-	 */
-	private static Target target = new Target() {
-		@Override
-		public void onPrepareLoad(Drawable placeHolderDrawable) {
-		}
-		
-		@Override
-		public void onBitmapLoaded(final Bitmap bitmap, LoadedFrom from) {
-			new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					File tmpFile = GeneralHelpers.getOutputMediaFile(
-							GeneralHelpers.MEDIA_TYPE_IMAGE, true);					
-					try 
-					{
-						tmpFile.createNewFile();
-						FileOutputStream ostream = new FileOutputStream(tmpFile);
-						bitmap.compress(CompressFormat.JPEG, 75, ostream);
-						ostream.close();
-					} 
-					catch (IOException e) 
-					{
-						e.printStackTrace();
-					}
-					mShareImage = Uri.fromFile(tmpFile);
-					
-				}
-			}).start();
-
-		}
-		
-		@Override
-		public void onBitmapFailed(Drawable errorDrawable) {
-
-		}
-	};
-	
 	
 	public static class EnquiryDetailFragment extends ListFragment{
 		private Context mContext;
@@ -285,5 +245,45 @@ public class EnquiryActivity extends FragmentActivity {
 			}
 		}
 	}
+	
+	/**
+	 * define a private variable of the class Target to be used for Picasso
+	 */
+	private static Target target = new Target() {
+		@Override
+		public void onPrepareLoad(Drawable placeHolderDrawable) {
+		}
+		
+		@Override
+		public void onBitmapLoaded(final Bitmap bitmap, LoadedFrom from) {
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					File tmpFile = GeneralHelpers.getOutputMediaFile(
+							GeneralHelpers.MEDIA_TYPE_IMAGE, true);					
+					try 
+					{
+						tmpFile.createNewFile();
+						FileOutputStream ostream = new FileOutputStream(tmpFile);
+						bitmap.compress(CompressFormat.JPEG, 75, ostream);
+						ostream.close();
+					} 
+					catch (IOException e) 
+					{
+						e.printStackTrace();
+					}
+					mShareImage = Uri.fromFile(tmpFile);
+					
+				}
+			}).start();
+
+		}
+		
+		@Override
+		public void onBitmapFailed(Drawable errorDrawable) {
+
+		}
+	};
 	
 }

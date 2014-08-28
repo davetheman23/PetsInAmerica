@@ -125,6 +125,10 @@ public class NotificationCenterActivity extends FragmentActivity {
 		public void onListItemClick(ListView l, View v, int position, long id) {
 			super.onListItemClick(l, v, position, id);
 			
+			TextView tv_subject = (TextView) v.findViewById(R.id.list_notification_subject);
+			TextView tv_content = (TextView) v.findViewById(R.id.list_notification_content);
+			TextView tv_time = (TextView) v.findViewById(R.id.list_notification_time);
+			
 			int status = ((NotificationAdapter)getListAdapter()).getNotificationStatus(v);
 			// if the status being clicked is the new notification
 			if (status == PiaNotification.STATUS_RECEIVED){
@@ -134,20 +138,16 @@ public class NotificationCenterActivity extends FragmentActivity {
 				dataSource.updateStatus(nId, PiaNotification.STATUS_VIEWED);
 				
 				// change the text color for the list item that has been clicked
-				TextView tv_subject = (TextView) v.findViewById(R.id.list_notification_subject);
-				TextView tv_content = (TextView) v.findViewById(R.id.list_notification_content);
-				TextView tv_time = (TextView) v.findViewById(R.id.list_notification_time);
 				tv_subject.setTextColor(getResources().getColor(R.color.LightGrey));
 				tv_content.setTextColor(getResources().getColor(R.color.LightGrey));
 				tv_time.setTextColor(getResources().getColor(R.color.LightGrey));
-				
-				Context context = getActivity();
-				String subject = tv_subject.getText().toString();
-				String content = tv_content.getText().toString();
-				
-				//TODO popup a dialog box to get further information
-				GeneralHelpers.showAlertDialog(context, subject, content);
 			}
+			
+			Context context = getActivity();
+			String subject = tv_subject.getText().toString();
+			String content = tv_content.getText().toString();
+			//TODO popup a dialog box to get further information
+			GeneralHelpers.showAlertDialog(context, subject, content);
 		}
 
 		@Override

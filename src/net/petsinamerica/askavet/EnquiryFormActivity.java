@@ -45,7 +45,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -100,8 +100,9 @@ public class EnquiryFormActivity extends FragmentActivity {
 		 *  set up the listener for inserting an image to the post, it should be 
 		 *  either picking an image from local storage or taking a picture
 		 */
-		Button btnInsertImage = (Button) findViewById(R.id.activity_enquiry_btn_insertImage);
-		btnInsertImage.setOnClickListener(new View.OnClickListener() {
+		//Button btnInsertImage = (Button) findViewById(R.id.activity_enquiry_btn_insertImage);
+		LinearLayout ll_InsertImage = (LinearLayout) findViewById(R.id.activity_enquiry_ll_insertImage);
+		ll_InsertImage.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				
@@ -207,9 +208,9 @@ public class EnquiryFormActivity extends FragmentActivity {
 	private void showErrorDialog(){
 		
 	}
-	private void showInvalidInputDialog(View v){
+	/*private void showInvalidInputDialog(View v){
 		
-	}
+	}*/
 	
 	private void addUploadImageUri(Uri uriFile){
 		if (imageData == null){

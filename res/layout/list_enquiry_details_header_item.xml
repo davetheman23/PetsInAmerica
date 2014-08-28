@@ -371,12 +371,12 @@
                 android:visibility="gone" /> 
                <TextView
                 android:id="@+id/frag_enquiry_details_author_date"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/frag_enquiry_details_details"
                 android:layout_alignRight="@id/frag_enquiry_details_details"
                 android:layout_alignParentBottom="true"
-                android:gravity="bottom"
+                android:gravity="bottom|right"
                 android:text="publish date" 
                 android:textColor="@color/Grey"/>   
       	    </RelativeLayout>
