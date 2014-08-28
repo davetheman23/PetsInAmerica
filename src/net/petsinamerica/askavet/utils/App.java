@@ -40,5 +40,16 @@ public class App extends Application {
 		
 		appContext = getApplicationContext();
 	}
+
+	@Override
+	public void onTerminate() {
+		if (PushManager.getInstance() != null){
+			PushManager.getInstance().turnOffPush(appContext);
+			//PushManager.getInstance().stopService(appContext);
+		}
+		super.onTerminate();
+	}
+	
+	
 	
 }

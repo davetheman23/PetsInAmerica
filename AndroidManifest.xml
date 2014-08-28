@@ -107,11 +107,6 @@
             android:screenOrientation="portrait">
         </activity>
         
-        <activity 
-            android:name="net.petsinamerica.askavet.PushActivity"
-            android:label="TestPushService">
-        </activity>
-        
         
         
         <!-- ================== 个推SDK配置开始 ====================== -->

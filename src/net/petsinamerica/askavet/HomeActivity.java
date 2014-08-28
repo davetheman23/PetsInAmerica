@@ -1,7 +1,6 @@
 package net.petsinamerica.askavet;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -9,6 +8,7 @@ import java.util.Map;
 
 import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.BaseListFragment;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
@@ -26,7 +26,6 @@ import org.json.JSONException;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentTransaction;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.http.AndroidHttpClient;
@@ -43,8 +42,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RemoteViews;
-import android.widget.RemoteViews.RemoteView;
 import android.widget.Toast;
 
 import com.igexin.sdk.PushManager;
@@ -97,8 +94,10 @@ public class HomeActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		Log.d("HomeActivity", "OnCreate() method is called");
+		
 		// initialize push service 
-		PushManager.getInstance().initialize(this.getApplicationContext());
+		PushManager.getInstance().initialize(getApplicationContext());
 		
 		final ActionBar actionBar = setupActionBar();
 		
@@ -215,6 +214,11 @@ public class HomeActivity extends FragmentActivity implements
 		if (btnNotification!= null && mResumed){
  			updateNotificationIcon();
  		}
+		// see if pushservice is turned on, if not then turn it on
+		if (PushManager.getInstance() != null ){
+			PushManager.getInstance().turnOnPush(getApplicationContext());
+			Log.d("HomeActivity", "Push Service is turned on");
+		}
 	}
 	
 	
@@ -272,8 +276,18 @@ public class HomeActivity extends FragmentActivity implements
 	
 	public void logMeOut(MenuItem item){
 		if (item.getTitle().equals(getResources().getString(R.string.action_logout))){
+			// clean up the user token
 			AccessTokenManager.clear(this);
 			AccessTokenManager.clearWeiboToken(this);
+			
+			// turn off the pushservice
+			if (PushManager.getInstance() != null ){
+				PushManager.getInstance().turnOffPush(App.appContext);
+				//PushManager.getInstance().stopService(App.appContext);
+				Log.d("HomeActivity", "PushService Stopped");
+			}
+			
+			// take user back to the log-in page
 			Intent intent = new Intent(this, LoginActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(intent);

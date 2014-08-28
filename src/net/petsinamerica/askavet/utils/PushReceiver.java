@@ -58,6 +58,7 @@ public class PushReceiver extends BroadcastReceiver {
 				{
 					String data = new String(payload);
 					handlePayloadMessage(data, context);
+					Log.d("Got Payload", payload.toString());
 				}
 				break;
 			case PushConsts.GET_CLIENTID:
