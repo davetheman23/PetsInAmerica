@@ -451,7 +451,7 @@ public class ArticleActivity extends Activity {
 					{
 						tmpFile.createNewFile();
 						FileOutputStream ostream = new FileOutputStream(tmpFile);
-						//bitmap.compress(CompressFormat.JPEG, 75, ostream);
+						bitmap.compress(CompressFormat.JPEG, 100, ostream);
 						ostream.close();
 					} 
 					catch (IOException e) 

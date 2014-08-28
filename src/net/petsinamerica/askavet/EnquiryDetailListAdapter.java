@@ -61,7 +61,7 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 	private ImageView iv_authorPic;
 	
 	
-	private class ViewHolder{
+	private static class ViewHolder{
 		ImageView iv_authorpic;
 		TextView tv_authorname;
 		TextView tv_enquirydetails;
@@ -182,7 +182,7 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 			wv_enquirydetails.getSettings().setBuiltInZoomControls(false);
 			wv_enquirydetails.getSettings().setSupportZoom(false);
 			
-			// replace the 
+			// replace the url back to proper image url
 			String html_string = queryInfo.get(Constants.KEY_CONTENT).toString();
 			String pattern1 = "(" + Pattern.quote("[img]")+")(.*?)("+ Pattern.quote("[/img]")+ ")";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
 			html_string = html_string.replaceAll(pattern1, "<img src = $2 width=\"100%\" alt=\"\">");
@@ -197,45 +197,28 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 				userAvatarURL = Constants.URL_CLOUD_STORAGE + userAvatarURL;
 			}
 			
-			// -- allow some text to be clickable, especially those that will direct to another article
+			// -- allow some text within a webview to be clickable, especially those that will direct to another article
 			String str_articleId = "0";
-			//int start_pos = 0, end_pos = 0;
 			// 1. first detect if there are any text should be clickable
+			// 1-a. match article url
 			String pattern_str = "(\\[url=)(.*?article/)([0-9]+)(\\])(.*?)(\\[/url\\])";
-			Pattern pattern = Pattern.compile(pattern_str);
-			Matcher matcher = pattern.matcher(details);
+			Pattern pattern1 = Pattern.compile(pattern_str);
+			Matcher matcher = pattern1.matcher(details);
 			if (matcher.find()){
 				str_articleId = matcher.group(3);
-				String linkContent = matcher.group(5);
 				details = details.replaceAll(pattern_str, "<a href = \"loadarticle:$3\">$5</a>");
-				//start_pos = details.indexOf(linkContent);
-				//end_pos = start_pos + linkContent.length();
 			}
 			final int article_id = Integer.parseInt(str_articleId);
-			
-			// 2. second, set the clickable text action to be taken 
-			
-			/*SpannableString ss = new SpannableString(details);
-			ClickableSpan cs = new ClickableSpan() {
-				@Override
-				public void onClick(View v) {
-					if (article_id != 0){
-						Intent intent = new Intent(mContext, ArticleActivity.class);
-						intent.putExtra("ArticleId", article_id);
-						mContext.startActivity(intent);
-					}
-				}
-			};
-			ss.setSpan(cs, start_pos, end_pos, Spanned.SPAN_INCLUSIVE_INCLUSIVE);*/
-			
-			// 3. set the clickable text just formulated to the textview
-			//viewHolder.tv_enquirydetails.setText(Html.fromHtml(ss));
-			//viewHolder.tv_enquirydetails.setClickable(true);
+			// 1-b. match the image url
+			String pattern2 = "(" + Pattern.quote("[img]")+")(.*?)("+ Pattern.quote("[/img]")+ ")";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
+			details = details.replaceAll(pattern2, "<img src = $2 width=\"100%\" alt=\"\">");
 			
 			viewHolder.tv_authorname.setText(authorname);
 			//viewHolder.tv_enquirydetails.setText(Html.fromHtml(details));
 			viewHolder.tv_publishdate.setText(date);
 			viewHolder.wv_details.loadDataWithBaseURL(null, details, "text/html", HTTP.UTF_8, null);
+			
+			// overwrite how to load url
 			viewHolder.wv_details.setWebViewClient(new WebViewClient(){
 				@Override
 				public boolean shouldOverrideUrlLoading(WebView view, String url) {

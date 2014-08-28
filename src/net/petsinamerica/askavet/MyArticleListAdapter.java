@@ -29,7 +29,7 @@ public class MyArticleListAdapter extends ArrayAdapter<Map<String, Object>> {
 	private static String TAG_ID = App.appContext.getString(R.string.JSON_tag_id);
 	private static final String TAG_CONTENT = App.appContext.getString(R.string.JSON_tag_content);
 	
-	private class ViewHolder{
+	private static class ViewHolder{
 		ImageView iv;
 		TextView tv_firstline;
 		TextView tv_secondline;

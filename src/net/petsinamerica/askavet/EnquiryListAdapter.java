@@ -35,7 +35,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 	private static String TAG_STATUS;
 	
 	
-	private class ViewHolder{
+	private static class ViewHolder{
 		ImageView iv;
 		TextView tv_firstline;
 		TextView tv_secondline;
