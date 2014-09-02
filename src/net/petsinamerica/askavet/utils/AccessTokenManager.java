@@ -6,15 +6,20 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import net.petsinamerica.askavet.LoginActivity;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.text.AndroidCharacter;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 
@@ -189,21 +194,23 @@ public class AccessTokenManager {
     }
     
     /**
-     * package the input post with a non-expiring token stored in shared pref 
-     * A test of token expiration will be conducted, if expired return the same
-     * post supplied in the input
+     * clear all tokens from SharedPreferences
+     */
+    public static void clearAllTokens(Context context){
+    	clear(context);
+    	clearWeiboToken(context);
+    }
+    
+    /**
+     * this is a convenience method that reads the token from sharedpref and adds
+     * the stored token into an HttpPost object, it is possible that the token is 
+     * either null or expired, encompass this call with {@link #isValidSession(Context)}
+     * to ensure token validity, and handle when token invalid.  
      */
     public static HttpPost addAccessTokenPost(HttpPost post, Context context){
     	if (null != post && null != context){ 
 	    	AccessToken accessToken = readAccessToken(context);
-	    	
-	    	if (accessToken != null && !accessToken.isExpired()){
-				post = addAccessTokenPost(post, context, accessToken);
-	    	}else{
-	    		clear(context);
-	    		// TODO: do something more when token expired
-	    		GeneralHelpers.showAlertDialog(context, "登录过期", "您已经有一段长时间没登录了，请重新登录");
-	    	}
+	    	post = addAccessTokenPost(post, context, accessToken);
     	}
     	return post;
     }
@@ -227,6 +234,18 @@ public class AccessTokenManager {
     	return post;
     }
     
-    
+    /**
+     * Test if current session is valid, can be called from any page to see if current Pia token is valid
+     * @param context supply current application context will surffice 
+     * @return
+     */
+    public static boolean isValidSession(Context context){
+    	AccessToken token = readAccessToken(context);
+    	
+    	if (token!=null && !token.isExpired()){
+    		return true;
+    	}
+    	return false;
+    }
 
 }

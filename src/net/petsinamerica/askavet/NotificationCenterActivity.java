@@ -2,7 +2,9 @@ package net.petsinamerica.askavet;
 
 import java.util.List;
 
+import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
 import net.petsinamerica.askavet.utils.NotificationsDataSource;
 import net.petsinamerica.askavet.utils.PiaNotification;
@@ -106,6 +108,16 @@ public class NotificationCenterActivity extends FragmentActivity {
 		@Override
 		public void onResume() {
 			super.onResume();
+			
+			/* if session not valid, then need to go back to the login page
+			 * this could be triggered from outside of the app, when user clicked on 
+			 * notification icon after the session expired */ 
+			if (!AccessTokenManager.isValidSession(App.appContext)){
+				AccessTokenManager.clearAllTokens(App.appContext);
+				Intent intent = new Intent(getActivity(), LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
+			}
 			if (dataSource == null){
 				dataSource.open();
 			}

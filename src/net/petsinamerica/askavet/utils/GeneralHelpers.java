@@ -228,6 +228,10 @@ public final class GeneralHelpers {
 		dialog.show();
 	}
 	
+	public static void showLoginExpiredAlertDialog(Context context){
+		showAlertDialog(context,"登录过期", "您已经有一段长时间没登录了，请重新登录");
+	}
+	
 	public static void showMessage(Context context, String message){
 		Toast.makeText(context, 
 				   message, 
@@ -284,9 +288,6 @@ public final class GeneralHelpers {
 		catch (IllegalAccessException e) {}
 		catch (IllegalArgumentException e) {}
 	}
-
-	
-	
 
 
 }

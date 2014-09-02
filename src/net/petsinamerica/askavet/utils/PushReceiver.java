@@ -132,8 +132,8 @@ public class PushReceiver extends BroadcastReceiver {
 			.setSmallIcon(R.drawable.ic_launcher_new80x80)
 			.setContentIntent(pendingIntent)
 			.setContentTitle(subject)	// if need to use custom view, should comment this
-			.setContentText(content)	// if need to use custom view, should comment this
-			.setContentInfo("haha");	// if need to use custom view, should comment this
+			.setContentText(content);	// if need to use custom view, should comment this
+			//.setContentInfo("haha");	// if need to use custom view, should comment this
 			//.setContent(rm);	// if need to use custom view, can uncomment this
 		
 		//4. issue the notification
@@ -165,7 +165,7 @@ public class PushReceiver extends BroadcastReceiver {
 			
 			AccessToken token = AccessTokenManager.readAccessToken(context);
 			
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
 			
 			// add user login information
 			nameValuePairs.add(new BasicNameValuePair(Constants.KEY_USERID, token.getUserId()));
@@ -177,6 +177,11 @@ public class PushReceiver extends BroadcastReceiver {
 			
 			// add the params into the post, make sure to include encoding UTF_8 as follows
 			post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
+		}
+
+		@Override
+		protected void handleInvalidSession() {
+			AccessTokenManager.clearAllTokens(App.appContext);
 		}
 	}
 }

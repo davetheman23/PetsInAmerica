@@ -6,6 +6,7 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 
+import net.petsinamerica.askavet.LoginActivity;
 import net.petsinamerica.askavet.R;
 
 import org.apache.http.HttpResponse;
@@ -22,6 +23,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -160,13 +162,13 @@ public abstract class BaseListFragment extends ListFragment{
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		if (getListAdapter() == null){
-			// first time the view is created
-			setListAdapter(mCustomAdapter);
-			loadListInBackground();
 			// set up footer 
 			if (mHasFooter){
 				setUpFooterView();
 			}
+			// first time the view is created
+			setListAdapter(mCustomAdapter);
+			loadListInBackground();
 		}
 		
 		//mReadArticleList = new HashSet<String>();
@@ -188,9 +190,9 @@ public abstract class BaseListFragment extends ListFragment{
 						&& scrollState == SCROLL_STATE_IDLE){
 						mPage += 1;
 						loadListInBackground();
-						if (getListView().getFooterViewsCount() == 0){
+						/*if (getListView().getFooterViewsCount() == 0){
 							setUpFooterView();
-						}
+						}*/
 						if (mfooterview != null){
 							mfooterview.setVisibility(View.VISIBLE);
 						}
@@ -307,6 +309,18 @@ public abstract class BaseListFragment extends ListFragment{
 			}
 			if (mOverallEmptyListView != null){
 				mOverallEmptyListView.setText("");
+			}
+			// this call needs a valid token, so handle when local token is not valid
+			if (!AccessTokenManager.isValidSession(App.appContext)){
+				// handling invalid session
+				// 1. cancel the asynctask
+				cancel(true);
+				// 2. clear all token
+				AccessTokenManager.clearAllTokens(App.appContext);
+				// 3. redirect the user to the login page
+				Intent intent = new Intent(getActivity(), LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
 			}
 		}
 

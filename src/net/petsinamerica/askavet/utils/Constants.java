@@ -10,7 +10,7 @@ public interface Constants {
 	
 	public static final int NO_ERROR = 0; 
 	
-	public static final int RENEW_LOCAL_TOKEN_HOURS = 7*24; 	// every time the user start the app, should renew the local token
+	public static final int RENEW_LOCAL_TOKEN_HOURS = 1; 	// every time the user start the app, should renew the local token
 	
 	/*
 	 * for internet connections

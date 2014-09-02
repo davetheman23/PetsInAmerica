@@ -5,11 +5,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
+import net.petsinamerica.askavet.LoginActivity;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONException;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -42,7 +45,20 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	public void setResultType(int type){
 		mType = type;
 	}
-	
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		
+		if (!AccessTokenManager.isValidSession(App.appContext)){
+			// 1. cancel thread
+			cancel(true);
+			// 2. let subclass inplement more action to handle it
+			handleInvalidSession();
+		}
+	}
+
+
+
 	@Override
 	protected Object doInBackground(String... params) {
 		HttpPost post = new HttpPost(params[0]);
@@ -77,11 +93,16 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void onPostExecute(Object result) {
+		// -- below for alpha test use -- //
 		if (result != null){
-			Toast.makeText(mContext, "成功", Toast.LENGTH_LONG).show();		
+			String outstr = result.toString();
+			int len = result.toString().length();
+			outstr = outstr.substring(1, (len-1>20? 20 : len-1));
+			Toast.makeText(mContext, "成功" + outstr, Toast.LENGTH_LONG).show();		
 		}else{
 			Toast.makeText(mContext, "失败", Toast.LENGTH_LONG).show();
 		}
+		// -- above for alpha test use -- //
 		
 		List<Map<String, Object>> result_list = null;
 		Map<String, Object> result_map = null;
@@ -105,9 +126,14 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	 * then no implementation is needed for this method */
 	protected abstract void onCallCompleted(List<Map<String, Object>> result);
 	
-	/** add additional parameters to the post object */
+	/** this provides a way for subclasses to handle when session is invalid
+	 * such as token is expired or not available. Note canceling background thread
+	 * is handled automatically, handle other events such as clearing token, and log out*/
+	protected abstract void handleInvalidSession();
+	
+	/** add additional parameters to the post object, do not need to call super(),
+	 * this assumes the app session is valid */
 	protected void addParamstoPost(HttpPost post, Context context) 
 			 						throws UnsupportedEncodingException{
-		
 	}
 }

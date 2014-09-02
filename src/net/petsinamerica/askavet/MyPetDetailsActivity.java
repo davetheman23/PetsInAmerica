@@ -3,9 +3,11 @@ package net.petsinamerica.askavet;
 import java.util.List;
 import java.util.Map;
 
+import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
@@ -142,6 +144,16 @@ public class MyPetDetailsActivity extends FragmentActivity {
 				Picasso.with(App.appContext)
 					   .load(petImageUrl)
 					   .into(ivPetAvatar);
+			}
+
+			@Override
+			protected void handleInvalidSession() {
+				// 1. clear all token
+				AccessTokenManager.clearAllTokens(App.appContext);
+				// 2. redirect the user to the login page
+				Intent intent = new Intent(getActivity(), LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
 			}			
 		}
 	}

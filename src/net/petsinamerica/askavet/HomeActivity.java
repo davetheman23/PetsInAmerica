@@ -96,8 +96,12 @@ public class HomeActivity extends FragmentActivity implements
 		
 		Log.d("HomeActivity", "OnCreate() method is called");
 		
-		// initialize push service 
-		PushManager.getInstance().initialize(getApplicationContext());
+		// initialize/turn on push service 
+		//PushManager.getInstance().initialize(App.appContext);
+		PushManager.getInstance().turnOnPush(App.appContext);
+		boolean abc = PushManager.getInstance().isPushTurnedOn(App.appContext);
+		// NOTE: it seems like initialize and turn on serve the same purpose, only one needs to be called
+		// & the method isPushTurnedOn always return false;
 		
 		final ActionBar actionBar = setupActionBar();
 		
@@ -206,6 +210,7 @@ public class HomeActivity extends FragmentActivity implements
 	protected void onResume() {
 		super.onResume();
 		mResumed = true;
+		
 		// get from the SQL database on the number of notifications
 		if (dataSource == null){
 			dataSource = new NotificationsDataSource(this);
@@ -214,11 +219,7 @@ public class HomeActivity extends FragmentActivity implements
 		if (btnNotification!= null && mResumed){
  			updateNotificationIcon();
  		}
-		// see if pushservice is turned on, if not then turn it on
-		if (PushManager.getInstance() != null ){
-			PushManager.getInstance().turnOnPush(getApplicationContext());
-			Log.d("HomeActivity", "Push Service is turned on");
-		}
+		
 	}
 	
 	
@@ -277,14 +278,13 @@ public class HomeActivity extends FragmentActivity implements
 	public void logMeOut(MenuItem item){
 		if (item.getTitle().equals(getResources().getString(R.string.action_logout))){
 			// clean up the user token
-			AccessTokenManager.clear(this);
-			AccessTokenManager.clearWeiboToken(this);
+			AccessTokenManager.clearAllTokens(this);
 			
 			// turn off the pushservice
 			if (PushManager.getInstance() != null ){
 				PushManager.getInstance().turnOffPush(App.appContext);
 				//PushManager.getInstance().stopService(App.appContext);
-				Log.d("HomeActivity", "PushService Stopped");
+				//Log.d("HomeActivity", "PushService Stopped");
 			}
 			
 			// take user back to the log-in page

@@ -3,12 +3,15 @@ package net.petsinamerica.askavet;
 import java.util.List;
 import java.util.Map;
 
+import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
 import android.R.bool;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
@@ -129,20 +132,17 @@ public class CommentActivity extends FragmentActivity{
 							R.layout.list_comment_item, result);
 					
 					setListAdapter(commentlist);
-					
-					// TODO notify user that they can be the first to comment. 
-					
-					//Map<String, Object> queryInfo = result.get(0);
-					
-					/* set up a background task to load the snapshot url into the target
-				 	in case user will share it, so it can be ready after user read */	
-					//mShareSnapshotUrl = queryInfo.get(Constants.KEY_SNAPSHOT).toString();
-					/*Picasso.with(App.appContext)
-						.load(Uri.parse(mShareSnapshotUrl))
-						.into(target);*/
-					int i = 0;
-					i= i +1;
 				}
+			}
+
+			@Override
+			protected void handleInvalidSession() {
+				// 1. clear all token
+				AccessTokenManager.clearAllTokens(App.appContext);
+				// 2. redirect the user to the login page
+				Intent intent = new Intent(getActivity(), LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
 			}
 		}
 	}

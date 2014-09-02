@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import net.petsinamerica.askavet.utils.AccessTokenManager;
+import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
@@ -252,6 +254,16 @@ public class EnquiryActivity extends FragmentActivity {
 					int i = 0;
 					i= i +1;
 				}
+			}
+
+			@Override
+			protected void handleInvalidSession() {
+				// 1. clear all token
+				AccessTokenManager.clearAllTokens(App.appContext);
+				// 2. redirect the user to the login page
+				Intent intent = new Intent(getActivity(), LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
 			}
 		}
 	}

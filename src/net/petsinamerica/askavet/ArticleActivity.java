@@ -39,6 +39,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -179,8 +180,10 @@ public class ArticleActivity extends Activity {
 
 		mWebView = (WebView) findViewById(R.id.article_activity_web_view);
 		mWebView.setWebViewClient(new WebViewClient());
+		mWebView.setHorizontalScrollBarEnabled(false);
 		mWebView.getSettings().setBuiltInZoomControls(false);
 		mWebView.getSettings().setSupportZoom(false);
+		mWebView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
 
 		// get article id from the extra that was set when the activity was started
 		articleId = getIntent().getIntExtra("ArticleId", 0);
@@ -203,8 +206,7 @@ public class ArticleActivity extends Activity {
 	
 	public void logMeOut(MenuItem item){
 		if (item.getTitle().equals(getResources().getString(R.string.action_logout))){
-			AccessTokenManager.clear(this);
-			AccessTokenManager.clearWeiboToken(this);
+			AccessTokenManager.clearAllTokens(this);
 			Intent intent = new Intent(this, LoginActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(intent);
@@ -283,7 +285,11 @@ public class ArticleActivity extends Activity {
 				showMessage("页面还未完全读取完成，请稍后再试");
 			}else{
 				Intent intent = GeneralHelpers.shareByApp(appName, shareTextUri, mShareImage);
-				startActivity(intent);
+				if (intent != null){
+					startActivity(intent);
+				}else{
+					GeneralHelpers.showAlertDialog(ArticleActivity.this, "无法分享", "找不到本地客户端");
+				}
 			}
 			
 			// close up the share panel
@@ -295,6 +301,22 @@ public class ArticleActivity extends Activity {
 	
 	private class SendLikeInBackground extends AsyncTask<String, Void, Integer>{
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
+		
+		@Override
+		protected void onPreExecute() {
+			// this call needs a valid token, so handle when local token is not valid
+			if (!AccessTokenManager.isValidSession(App.appContext)){
+				// handling invalid session
+				// 1. cancel the asynctask
+				cancel(true);
+				// 2. clear all token
+				AccessTokenManager.clearAllTokens(App.appContext);
+				// 3. redirect the user to the login page
+				Intent intent = new Intent(ArticleActivity.this, LoginActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
+			}
+		}
 
 		@Override
 		protected Integer doInBackground(String... params) {
@@ -399,7 +421,7 @@ public class ArticleActivity extends Activity {
 					String pattern1 = "(<img src=\".*?\")(.*?)(>)";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
 					sContent = sContent.replaceAll(pattern1, "$1 width=\"100%\" alt=\"\"$3");
 					// delete the reference section, which is too long and cannot be wrapped, if not deleted, the webview will try to fit it. 
-					String pattern2 = "<p>Reference.+</p>"; 
+					String pattern2 = "<p>[rR]eference.+</p>"; 
 					sContent = sContent.replaceAll(pattern2, "");
 					html_string = "<body>" + sContent + "</body>";
 				}else{
@@ -424,6 +446,17 @@ public class ArticleActivity extends Activity {
 				
 				mProgBarView.setVisibility(View.GONE);
 			}
+		}
+
+		@Override
+		protected void handleInvalidSession() {
+			// 1. clear all token
+			AccessTokenManager.clearAllTokens(App.appContext);
+			// 2. redirect the user to the login page
+			Intent intent = new Intent(ArticleActivity.this, LoginActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
+			
 		}
 	}
 	
