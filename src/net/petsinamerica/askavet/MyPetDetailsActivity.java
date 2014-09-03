@@ -7,6 +7,7 @@ import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
+import net.petsinamerica.askavet.utils.UserInfoManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -107,6 +108,9 @@ public class MyPetDetailsActivity extends FragmentActivity {
 		}
 
 		private class GetPetInfo extends CallPiaApiInBackground{
+			
+			@Override
+			protected void onCallCompleted(Integer result) {}
 
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {}
@@ -145,16 +149,6 @@ public class MyPetDetailsActivity extends FragmentActivity {
 					   .load(petImageUrl)
 					   .into(ivPetAvatar);
 			}
-
-			@Override
-			protected void handleInvalidSession() {
-				// 1. clear all token
-				AccessTokenManager.clearAllTokens(App.appContext);
-				// 2. redirect the user to the login page
-				Intent intent = new Intent(getActivity(), LoginActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
-			}			
 		}
 	}
 }

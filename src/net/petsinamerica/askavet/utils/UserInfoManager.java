@@ -104,6 +104,7 @@ public class UserInfoManager {
 		userName = null;
 		userDisplayName = null;
 		email = null;
+		city = null;
 		weiboUsername = null;
 		avatarURL = null;
 		language = null;
@@ -129,6 +130,11 @@ public class UserInfoManager {
 		if (mWeiboInfoListener != null){
 			mWeiboInfoListener.onWeiboInfoStateChange();
 		}
+	}
+	
+	public static void clearAllUserInfo(){
+		clearUserInfo();
+		clearWeiboUserInfo();
 	}
 	
 	public static void cacheUserAvatar(Bitmap userAvatar){

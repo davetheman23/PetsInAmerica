@@ -14,6 +14,7 @@ import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
+import net.petsinamerica.askavet.utils.UserInfoManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -48,6 +49,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.igexin.sdk.PushManager;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Picasso.LoadedFrom;
@@ -74,8 +76,11 @@ public class ArticleActivity extends Activity {
 	// these tags are those for reading the JSON objects
 	private static Resources res = App.appContext.getResources();
 	private static final String likeString = res.getString(R.string.action_like);
+	private static final String commentString = "评论";
 	
 	private int articleId; 
+	private int commentNum;
+	private int likeNum;
 	private Uri mShareText = null;
 	private Uri mShareImage = null;
 	private String mShareSnapshotUrl = null;
@@ -104,6 +109,14 @@ public class ArticleActivity extends Activity {
 		// inflate the layouts
 		setContentView(R.layout.activity_article);
 		
+		
+		// get article id from the extra that was set when the activity was started
+		articleId = getIntent().getIntExtra("ArticleId", 0);
+		//articleId = 397;
+		commentNum = getIntent().getIntExtra(Constants.KEY_ARTICLE_COMMENTS, 0);
+		likeNum = getIntent().getIntExtra(Constants.KEY_ARTICLE_LIKES, 0);
+		
+		
 		// get a screen height
 		DisplayMetrics displaymetrics = new DisplayMetrics();
 		getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -112,17 +125,7 @@ public class ArticleActivity extends Activity {
         mSlideUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
 		mSlideUpPanelLayout.setOverlayed(false);
 		mSlideUpPanelLayout.setMaxSlideRange((int)(height * 0.3));
-		
-		/*View mainLayout = findViewById(R.id.article_activity_main_view);
-		mainLayout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (mSlideUpPanelLayout != null && mSlideUpPanelLayout.isPanelExpanded()){
-					mSlideUpPanelLayout.collapsePanel();
-				}
-			}
-		});*/
-		
+				
 		
 		// get references to each layout views
 		mTitleTextView = (TextView) findViewById(R.id.article_activity_title);
@@ -152,8 +155,9 @@ public class ArticleActivity extends Activity {
 		mLikeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new SendLikeInBackground().execute(Constants.URL_ARTICLE_LIKES 
-						+ Integer.toString(articleId));
+				new SendLikeInBackground()
+					//.setParameters(ArticleActivity.this, CallPiaApiInBackground.TYPE_RETURN_INT)
+					.execute(Constants.URL_ARTICLE_LIKES + Integer.toString(articleId));
 			}
 		});
 		
@@ -185,15 +189,15 @@ public class ArticleActivity extends Activity {
 		mWebView.getSettings().setSupportZoom(false);
 		mWebView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
 
-		// get article id from the extra that was set when the activity was started
-		articleId = getIntent().getIntExtra("ArticleId", 0);
-		//articleId = 397;
+		
 		if (articleId != 0){
 			String articleURL_API = Constants.URL_ARTICLE_API + Integer.toString(articleId);
 			new GetArticleInBackground2().execute(articleURL_API);
 		}else{
 			//TODO notify the user
 		}
+		mLikeButton.setText(likeString + " " + Integer.toString(likeNum));
+		mCommentButton.setText(commentString + " " + Integer.toString(commentNum));
 	}
 	
 		
@@ -206,7 +210,18 @@ public class ArticleActivity extends Activity {
 	
 	public void logMeOut(MenuItem item){
 		if (item.getTitle().equals(getResources().getString(R.string.action_logout))){
+			// clean up the user token
 			AccessTokenManager.clearAllTokens(this);
+			// clean up user info
+			UserInfoManager.clearAllUserInfo();
+			
+			
+			// turn off the pushservice
+			if (PushManager.getInstance() != null ){
+				PushManager.getInstance().turnOffPush(App.appContext);
+			}
+			
+			// take user back to the log-in page
 			Intent intent = new Intent(this, LoginActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(intent);
@@ -217,15 +232,17 @@ public class ArticleActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()){
-			case R.id.action_like:
+			/*case R.id.action_like:
 				if (!isClicked){
-					new SendLikeInBackground().execute(Constants.URL_ARTICLE_LIKES 
-													+ Integer.toString(articleId));
+					new SendLikeInBackground()
+						.setParameters(this, CallPiaApiInBackground.TYPE_RETURN_INT)
+						.execute(Constants.URL_ARTICLE_LIKES + Integer.toString(articleId));
+					
 					isClicked = true;
 				}else{
-					showMessage("你已经点过赞了，谢谢你的支持");
+					GeneralHelpers.showMessage(App.appContext,"你已经点过赞了，谢谢你的支持");
 				}
-				return true;
+				return true;*/
 			//case R.id.action_share:
 				//return true;
 			case R.id.action_logout:
@@ -262,7 +279,6 @@ public class ArticleActivity extends Activity {
 
 
 
-
 	class ShareIconClickListener implements View.OnClickListener{
 		private String appName = "";
 		private Uri shareTextUri = null;
@@ -282,7 +298,7 @@ public class ArticleActivity extends Activity {
 				shareTextUri = Uri.parse("--来自于 北美宠物网");
 			}
 			if (mShareImage == null){
-				showMessage("页面还未完全读取完成，请稍后再试");
+				GeneralHelpers.showMessage(App.appContext,"页面还未完全读取完成，请稍后再试");
 			}else{
 				Intent intent = GeneralHelpers.shareByApp(appName, shareTextUri, mShareImage);
 				if (intent != null){
@@ -299,13 +315,30 @@ public class ArticleActivity extends Activity {
 		}
 	}
 	
+	/*private class SendLikeInBackground extends CallPiaApiInBackground{
+
+		@Override
+		protected void onCallCompleted(Integer result) {
+			if (result != null && result >= 0){
+				mLikeButton.setText(likeString + " " + result.toString());
+			}
+		}
+		
+		@Override
+		protected void onCallCompleted(Map<String, Object> result) {}
+
+		@Override
+		protected void onCallCompleted(List<Map<String, Object>> result) {}
+		
+	}*/
+	
 	private class SendLikeInBackground extends AsyncTask<String, Void, Integer>{
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 		
 		@Override
 		protected void onPreExecute() {
 			// this call needs a valid token, so handle when local token is not valid
-			if (!AccessTokenManager.isValidSession(App.appContext)){
+			if (!AccessTokenManager.isSessionValid(App.appContext)){
 				// handling invalid session
 				// 1. cancel the asynctask
 				cancel(true);
@@ -354,31 +387,27 @@ public class ArticleActivity extends Activity {
 			if (mClient != null){
 				mClient.close();
 			}
-			/*
-			 * if results is negative, then its absolute value is the error code
-			 * else, it is the number of likes for the article
-			 */
+			
+			 /* if results is negative, then its absolute value is the error code
+			 * else, it is the number of likes for the article*/
 			if (result >= 0){
 				mLikeButton.setText(likeString + " " + result);
 			}else{
 				result = -result;
 				if (result == 13){
-					showMessage("你已经点过赞了，谢谢你的支持");
+					GeneralHelpers.showMessage(App.appContext, "你已经点过赞了，谢谢你的支持");
 				}else{
-					showMessage("unknown error, possibly network connection failure");
+					GeneralHelpers.showMessage(App.appContext,
+									"unknown error, possibly network connection failure");
 				}
 			}
 		}
 	}
 	
-	private void showMessage(String message){
-		Toast.makeText(getApplication(), 
-				   message, 
-				   Toast.LENGTH_LONG)
-				   .show();
-	}
-	
 	private class GetArticleInBackground2 extends CallPiaApiInBackground{
+		
+		@Override
+		protected void onCallCompleted(Integer result) {}
 		
 		@Override
 		protected void onCallCompleted(List<Map<String, Object>> result) {}
@@ -436,27 +465,13 @@ public class ArticleActivity extends Activity {
 					.load(Uri.parse(mShareSnapshotUrl))
 					.into(target);
 				
-				/*if (mMenu != null){
-					MenuItem item = mMenu.findItem(R.id.action_like);
-					String likeString = getResources().getString(R.string.action_like);
-					item.setTitle(likeString + " " + like_nums);
-				}*/
-				
 				mLikeButton.setText(likeString + " " + like_nums);
+				/*  if commentNum is available from this api call, then use that instead of the one passed in from article list,
+				 *  because that may not reflect the latest number*/
+				mCommentButton.setText(commentString + " " + Integer.toString(commentNum));
 				
 				mProgBarView.setVisibility(View.GONE);
 			}
-		}
-
-		@Override
-		protected void handleInvalidSession() {
-			// 1. clear all token
-			AccessTokenManager.clearAllTokens(App.appContext);
-			// 2. redirect the user to the login page
-			Intent intent = new Intent(ArticleActivity.this, LoginActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-			startActivity(intent);
-			
 		}
 	}
 	

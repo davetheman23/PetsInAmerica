@@ -10,7 +10,7 @@ public interface Constants {
 	
 	public static final int NO_ERROR = 0; 
 	
-	public static final int RENEW_LOCAL_TOKEN_HOURS = 1; 	// every time the user start the app, should renew the local token
+	public static final int RENEW_LOCAL_TOKEN_MINS = 60*20*7; 	// every time the user start the app, should renew the local token
 	
 	/*
 	 * for internet connections
@@ -72,9 +72,11 @@ public interface Constants {
 	
 	public static final String KEY_AVATAR = "avatar";
 	
-    public static final String KEY_USERNAME = "username";
+    public static final String KEY_USERNAME = "username";    
     
   	public static final String KEY_PASSWORD = "password";
+  	
+  	public static final String KEY_EMAIL = "email";
   	
   	public static final String KEY_WEIBO_USERNAME = "weibo_id";
     
@@ -125,6 +127,7 @@ public interface Constants {
   	public static final String KEY_AUTHOR = App.appContext.getString(R.string.JSON_tag_owner);
   	public static final String KEY_TIME = App.appContext.getString(R.string.JSON_tag_time);
   	public static final String KEY_ARTICLE_LIKES = "like_num";
+  	public static final String KEY_ARTICLE_COMMENTS = "comment_num";
   	public static final String KEY_RESULT = App.appContext.getString(R.string.JSON_tag_result);
   	public static final String KEY_ERROR = App.appContext.getString(R.string.JSON_tag_error);
   	public static final String KEY_ERROR_MESSAGE = App.appContext.getString(R.string.JSON_tag_errorMessage);

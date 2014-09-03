@@ -148,6 +148,8 @@ public class PushReceiver extends BroadcastReceiver {
 	}
 	
 	class BindUserCidInBackground extends CallPiaApiInBackground{
+		@Override
+		protected void onCallCompleted(Integer result) {}
 		
 		@Override
 		protected void onCallCompleted(List<Map<String, Object>> result) {}
@@ -182,6 +184,9 @@ public class PushReceiver extends BroadcastReceiver {
 		@Override
 		protected void handleInvalidSession() {
 			AccessTokenManager.clearAllTokens(App.appContext);
+			UserInfoManager.clearAllUserInfo();
 		}
+
+
 	}
 }

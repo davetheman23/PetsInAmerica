@@ -204,7 +204,7 @@ public class AccessTokenManager {
     /**
      * this is a convenience method that reads the token from sharedpref and adds
      * the stored token into an HttpPost object, it is possible that the token is 
-     * either null or expired, encompass this call with {@link #isValidSession(Context)}
+     * either null or expired, encompass this call with {@link #isSessionValid(Context)}
      * to ensure token validity, and handle when token invalid.  
      */
     public static HttpPost addAccessTokenPost(HttpPost post, Context context){
@@ -239,7 +239,7 @@ public class AccessTokenManager {
      * @param context supply current application context will surffice 
      * @return
      */
-    public static boolean isValidSession(Context context){
+    public static boolean isSessionValid(Context context){
     	AccessToken token = readAccessToken(context);
     	
     	if (token!=null && !token.isExpired()){

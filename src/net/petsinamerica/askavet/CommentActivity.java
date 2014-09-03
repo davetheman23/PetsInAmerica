@@ -111,14 +111,17 @@ public class CommentActivity extends FragmentActivity{
 				url = Constants.URL_COMMENT + Integer.toString(mItemId);
 			}
 			// call api in background
-			GetCommentsInBackground getComments = new GetCommentsInBackground();
-			getComments.setResultType(CallPiaApiInBackground.TYPE_RETURN_LIST);
-			getComments.execute(url);
+			new GetCommentsInBackground()
+				.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_LIST)
+				.execute(url);
 			
 			return rootView;
 		}
 		
 		private class GetCommentsInBackground extends CallPiaApiInBackground{
+			
+			@Override
+			protected void onCallCompleted(Integer result) {}
 			
 			@Override
 			protected void onCallCompleted(Map<String, Object> result) {}
@@ -133,16 +136,6 @@ public class CommentActivity extends FragmentActivity{
 					
 					setListAdapter(commentlist);
 				}
-			}
-
-			@Override
-			protected void handleInvalidSession() {
-				// 1. clear all token
-				AccessTokenManager.clearAllTokens(App.appContext);
-				// 2. redirect the user to the login page
-				Intent intent = new Intent(getActivity(), LoginActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
 			}
 		}
 	}

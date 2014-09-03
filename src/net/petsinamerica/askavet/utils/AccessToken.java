@@ -41,7 +41,7 @@ public class AccessToken {
 		
 		// get current time and set expiration to renewHours hrs later
 		Calendar time = Calendar.getInstance();
-		time.add(Calendar.HOUR, Constants.RENEW_LOCAL_TOKEN_HOURS);
+		time.add(Calendar.MINUTE, Constants.RENEW_LOCAL_TOKEN_MINS);
 		AccessToken.expiration = time;		
 	}
 

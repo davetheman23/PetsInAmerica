@@ -35,7 +35,7 @@ public class MyEnquiryListActivity extends FragmentActivity{
 			super.onAttach(activity);
 			mContext = activity;
 			
-			setParameters(Constants.URL_MYENQUIRY,false,false,true);
+			setParameters(Constants.URL_MYENQUIRY,false,false,false);
 			setUserDataFlag(true);
 			
 			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
@@ -46,11 +46,6 @@ public class MyEnquiryListActivity extends FragmentActivity{
 
 		@Override
 		protected void onItemClickAction(View v, int position, long id) {
-			// obtain the article ID clicked
-			//int articleID = ((ArticleListAdapter)this.getListAdapter()).getArticleID(v);
-			
-			// store the article ID clicked
-			//Record_Usage(articleID);
 			
 			Intent newIntent = new Intent(mContext, EnquiryActivity.class);
 			int queryId = ((EnquiryListAdapter)this.getListAdapter()).getQueryID(v);

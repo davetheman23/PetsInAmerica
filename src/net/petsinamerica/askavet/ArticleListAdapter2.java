@@ -5,11 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.petsinamerica.askavet.utils.App;
-import net.petsinamerica.askavet.utils.JsonHelper;
+import net.petsinamerica.askavet.utils.Constants;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -57,6 +54,8 @@ public class ArticleListAdapter2 extends ArrayAdapter<Map<String, Object>> {
 		TextView[] tv_tags;
 		LinearLayout linearLayout;
 		int articleID;
+		int comment_num;
+		int like_num;
 	}
 	
 	/*
@@ -115,6 +114,8 @@ public class ArticleListAdapter2 extends ArrayAdapter<Map<String, Object>> {
 		sImgURL = (String) articlesummary.get(TAG_IMAGE);
 		sArticleID = (String) articlesummary.get(TAG_ID);
 		String content = (String) articlesummary.get(TAG_CONTENT);
+		String sCommentNum = (String)articlesummary.get(Constants.KEY_ARTICLE_COMMENTS);
+		String sLikeNum = (String)articlesummary.get(Constants.KEY_ARTICLE_LIKES);
 		
 		//content = content.replaceAll("<br />", "");
 		sTitle = sTitle.trim().replaceAll("<.*?>", "");
@@ -123,6 +124,8 @@ public class ArticleListAdapter2 extends ArrayAdapter<Map<String, Object>> {
 		
 		
 		viewHolder.articleID = Integer.parseInt(sArticleID);
+		viewHolder.comment_num = Integer.parseInt(sCommentNum);
+		viewHolder.like_num = Integer.parseInt(sLikeNum);
 		viewHolder.tv_firstline.setText(Html.fromHtml(sTitle));
 		if (getItemViewType(position) == LIST_VIEW_TYPE_REGULAR){
 			viewHolder.tv_secondline.setText(Html.fromHtml(content));
@@ -184,7 +187,7 @@ public class ArticleListAdapter2 extends ArrayAdapter<Map<String, Object>> {
 		return 2;
 	}
 
-	/*
+	/**
 	 * return a article ID from view selected
 	 */
 	public int getArticleID(View v) {
@@ -195,11 +198,28 @@ public class ArticleListAdapter2 extends ArrayAdapter<Map<String, Object>> {
 	}
 	
 	/**
+	 * Get the number of comments on the current article
+	 */
+	public int getCommentNum(View v){
+		ViewHolder vh = (ViewHolder) v.getTag();
+		return vh.comment_num;
+	}
+	
+	/**
+	 * Get the number of likes on the current article
+	 */
+	public int getLikeNum(View v){
+		ViewHolder vh = (ViewHolder) v.getTag();
+		return vh.like_num;
+	}
+	
+	
+	/**
 	 * Get Chinese tags for each article
 	 * @param object
 	 * @return
 	 */
-	private String[] getCnTags(Object object){
+	/*private String[] getCnTags(Object object){
 		String[] tagArray = null;
 		
 		try{
@@ -215,6 +235,6 @@ public class ArticleListAdapter2 extends ArrayAdapter<Map<String, Object>> {
 			e.printStackTrace();
 		}
 		return tagArray;
-	}
+	}*/
 
 }

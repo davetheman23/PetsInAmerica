@@ -217,14 +217,17 @@ public class EnquiryActivity extends FragmentActivity {
 			
 			// call api in background 
 			String queryURL_API = Constants.URL_ENQUIRY_DETAILS + Integer.toString(mQueryId);
-			GetEnquiryInBackground getEuquiry = new GetEnquiryInBackground();
-			getEuquiry.setResultType(CallPiaApiInBackground.TYPE_RETURN_LIST);
-			getEuquiry.execute(queryURL_API);
+			new GetEnquiryInBackground()
+				.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST)
+				.execute(queryURL_API);
 			
 			return rootView;
 		}
 		
 		private class GetEnquiryInBackground extends CallPiaApiInBackground{
+			
+			@Override
+			protected void onCallCompleted(Integer result) {}
 			
 			@Override
 			protected void onCallCompleted(Map<String, Object> result) {}
@@ -254,16 +257,6 @@ public class EnquiryActivity extends FragmentActivity {
 					int i = 0;
 					i= i +1;
 				}
-			}
-
-			@Override
-			protected void handleInvalidSession() {
-				// 1. clear all token
-				AccessTokenManager.clearAllTokens(App.appContext);
-				// 2. redirect the user to the login page
-				Intent intent = new Intent(getActivity(), LoginActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
 			}
 		}
 	}

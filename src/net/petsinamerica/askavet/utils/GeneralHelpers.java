@@ -213,6 +213,30 @@ public final class GeneralHelpers {
 		return null;
 	}
 	
+	/**
+	 * parse a PIA server response, return an integer result if no error,  
+	 * @param response raw response from PIA server
+	 * @return an integer result from PIA server, null if error
+	 */
+	public static Integer handlePiaResponseInt(HttpResponse response) throws 
+									JSONException, HttpResponseException, IOException {
+		String responseString = new BasicResponseHandler().handleResponse(response);
+		
+		JSONObject responseObject = (JSONObject) new JSONTokener(responseString).nextValue(); 
+		
+		Map<String, Object> responseMap = JsonHelper.toMap(responseObject);
+		
+		if (responseMap != null){
+			int errorCode = Integer.parseInt(responseMap.get(Constants.KEY_ERROR).toString());
+			switch (errorCode) {
+			case 0:
+				Integer jObject = (Integer)responseMap.get(Constants.KEY_RESULT);
+				return jObject;
+			}
+		}
+		return null;
+	}
+	
 	public static void showAlertDialog(Context context, String title, String message){
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setTitle(title)

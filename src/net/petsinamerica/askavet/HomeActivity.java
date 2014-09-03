@@ -99,7 +99,7 @@ public class HomeActivity extends FragmentActivity implements
 		// initialize/turn on push service 
 		//PushManager.getInstance().initialize(App.appContext);
 		PushManager.getInstance().turnOnPush(App.appContext);
-		boolean abc = PushManager.getInstance().isPushTurnedOn(App.appContext);
+		//boolean abc = PushManager.getInstance().isPushTurnedOn(App.appContext);
 		// NOTE: it seems like initialize and turn on serve the same purpose, only one needs to be called
 		// & the method isPushTurnedOn always return false;
 		
@@ -211,6 +211,10 @@ public class HomeActivity extends FragmentActivity implements
 		super.onResume();
 		mResumed = true;
 		
+		if (!AccessTokenManager.isSessionValid(mContext)){
+			App.inValidateSession(this);
+		}
+		
 		// get from the SQL database on the number of notifications
 		if (dataSource == null){
 			dataSource = new NotificationsDataSource(this);
@@ -279,6 +283,9 @@ public class HomeActivity extends FragmentActivity implements
 		if (item.getTitle().equals(getResources().getString(R.string.action_logout))){
 			// clean up the user token
 			AccessTokenManager.clearAllTokens(this);
+			// clean up user info
+			UserInfoManager.clearAllUserInfo();
+			
 			
 			// turn off the pushservice
 			if (PushManager.getInstance() != null ){
@@ -367,8 +374,6 @@ public class HomeActivity extends FragmentActivity implements
 		public void onViewCreated(View view, Bundle savedInstanceState) {
 			super.onViewCreated(view, savedInstanceState);
 			setStyle(Style.card);
-			//getListView().setHeaderDividersEnabled(true);
-			//getListView().addHeaderView(new View(getActivity()));
 			
 		}
 
@@ -378,12 +383,18 @@ public class HomeActivity extends FragmentActivity implements
 			// obtain the article ID clicked
 			int articleID = ((ArticleListAdapter2)this.getListAdapter()).getArticleID(v);
 			
+			int likeNum = ((ArticleListAdapter2)this.getListAdapter()).getLikeNum(v);
+			
+			int commentNum = ((ArticleListAdapter2)this.getListAdapter()).getCommentNum(v);
+			
 			// store the article ID clicked
 			//Record_Usage(articleID);
 			
 			// start a new activity 
 			Intent newIntent = new Intent(this.getActivity(), ArticleActivity.class);
 			newIntent.putExtra("ArticleId", articleID);
+			newIntent.putExtra(Constants.KEY_ARTICLE_COMMENTS, commentNum);
+			newIntent.putExtra(Constants.KEY_ARTICLE_LIKES, likeNum);
 			startActivity(newIntent);
 			
 		}

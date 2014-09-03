@@ -21,6 +21,8 @@ import org.w3c.dom.Text;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import com.igexin.sdk.PushManager;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -42,6 +44,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
+/**
+ * This abstract listfragment class is intended to be used to call PIA api and 
+ * show the results in a listview, with a standard footerview added already for lazyloading.
+ * Simply extending it and supply basic parameters using {@link #setParameters} method. <p>
+ * This listfragment inflates a R.layout.fragment_standard_list layout. This will prevent the list
+ * fragment from showing a footerview when the list is empty, if that's not desirable, then
+ * shall not use this list fragment. 
+ * 
+ * @author David
+ *
+ */
 public abstract class BaseListFragment extends ListFragment{
 	
 	public static final boolean FLAG_URL_NO_PAGE = false;
@@ -104,6 +117,7 @@ public abstract class BaseListFragment extends ListFragment{
 		mHasFooter = hasfooter;
 	}
 	
+	
 	public void setUserDataFlag(boolean isUserSpecific){
 		mIsUserSpecific = isUserSpecific;
 	}
@@ -157,6 +171,7 @@ public abstract class BaseListFragment extends ListFragment{
 		mOverallEmptyListView = (TextView) rootview.findViewById(android.R.id.empty);
 		return rootview;
 	}
+	
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -190,9 +205,9 @@ public abstract class BaseListFragment extends ListFragment{
 						&& scrollState == SCROLL_STATE_IDLE){
 						mPage += 1;
 						loadListInBackground();
-						/*if (getListView().getFooterViewsCount() == 0){
+						if (mHasFooter && getListView().getFooterViewsCount() == 0){
 							setUpFooterView();
-						}*/
+						}
 						if (mfooterview != null){
 							mfooterview.setVisibility(View.VISIBLE);
 						}
@@ -311,16 +326,12 @@ public abstract class BaseListFragment extends ListFragment{
 				mOverallEmptyListView.setText("");
 			}
 			// this call needs a valid token, so handle when local token is not valid
-			if (!AccessTokenManager.isValidSession(App.appContext)){
+			if (!AccessTokenManager.isSessionValid(App.appContext)){
 				// handling invalid session
 				// 1. cancel the asynctask
 				cancel(true);
-				// 2. clear all token
-				AccessTokenManager.clearAllTokens(App.appContext);
-				// 3. redirect the user to the login page
-				Intent intent = new Intent(getActivity(), LoginActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
+				
+				App.inValidateSession(getActivity());
 			}
 		}
 
@@ -353,6 +364,9 @@ public abstract class BaseListFragment extends ListFragment{
 
 		@Override
 		protected void onPostExecute(List<Map<String, Object>> resultArray) {
+			if (!AccessTokenManager.isSessionValid(mContext)){
+				return;
+			}
 			onHttpDone(resultArray);
 			if (mOverallProgBar != null){
 				mOverallProgBar.setVisibility(View.GONE);
@@ -382,9 +396,8 @@ public abstract class BaseListFragment extends ListFragment{
 						handleEndofList();
 					}
 				}
-				
-			}
-			else{
+				mCustomAdapter.notifyDataSetChanged();
+			}else{
 				Log.d(TAG, "Need to handle null return result cases");
 			}
 		}
