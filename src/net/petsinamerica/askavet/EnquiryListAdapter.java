@@ -42,6 +42,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 		TextView tv_status;
 		String enQueryContent = "";
 		int enqueryID;
+		int ownerId;
 	}
 	
 	/*
@@ -98,6 +99,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 		
 		Map<String,Object> enquiry = getItem(position);
 		
+		String ownerId = enquiry.get("owner").toString();
 		String title = enquiry.get(TAG_TITLE).toString();
 		String userAvatarURL = enquiry.get(TAG_AVATAR).toString();
 		String ownerName = enquiry.get(TAG_OWNERNAME).toString();
@@ -131,6 +133,7 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 			break;
 		}
 		
+		viewHolder.ownerId = Integer.parseInt(ownerId);
 		viewHolder.enqueryID = Integer.parseInt(queryID);
 		viewHolder.enQueryContent = content;
 		viewHolder.tv_firstline.setText(title);
@@ -160,8 +163,9 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 		return rowview;
 	}
 	
-	/*
-	 * return a article ID from view selected
+	/**
+	 * return a enquiry ID from view selected
+	 * @param v view of a listview item
 	 */
 	public int getQueryID(View v) {
 		// this assumes the view is the row view so it has a viewholder
@@ -173,6 +177,16 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 	public String getEnqueryContent(View v){
 		ViewHolder vh = (ViewHolder) v.getTag();
 		return vh.enQueryContent;
+	}
+	
+	/**
+	 * Get the id of the owner that posted the enquiry
+	 * @param v view of a listview item
+	 */
+	public int getOwnerId(View v){
+		// this assumes the view is the row view so it has a viewholder
+		ViewHolder vh = (ViewHolder) v.getTag();
+		return vh.ownerId;
 	}
 	
 

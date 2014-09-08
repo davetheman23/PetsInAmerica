@@ -87,6 +87,8 @@ public class HomeActivity extends FragmentActivity implements
 	
 	private boolean mResumed = false;
 	
+	private GetUserInfoTask getUserInfoTask = null;
+	
 	
 	private NotificationsDataSource dataSource;
 
@@ -114,7 +116,7 @@ public class HomeActivity extends FragmentActivity implements
 		// get userinfo
 		if (!UserInfoManager.isInfoAvailable() && mToken != null 
 											   && !mToken.isExpired()){
-			new GetUserInfoTask().execute(Constants.URL_USERINFO 
+			getUserInfoTask = (GetUserInfoTask) new GetUserInfoTask().execute(Constants.URL_USERINFO 
 												+ mToken.getUserId());
 		}
 		
@@ -237,6 +239,9 @@ public class HomeActivity extends FragmentActivity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		if (getUserInfoTask != null){
+			getUserInfoTask.cancel(true);
+		}
 		
 	}
 	
@@ -272,10 +277,6 @@ public class HomeActivity extends FragmentActivity implements
 			}
 		});
         
-        
-        
-        
-		
         return ab;
     }
 	
@@ -470,6 +471,10 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		protected void onPostExecute(Map<String, Object> result) {
 			super.onPostExecute(result);
+			
+			if (isCancelled()){
+				return;
+			}
 			
 			if (result != null){
 				/*

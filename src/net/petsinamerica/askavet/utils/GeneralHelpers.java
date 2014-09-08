@@ -192,7 +192,8 @@ public final class GeneralHelpers {
 	 * parse a PIA server response, return results in a list of maps if no error, 
 	 * This applies to the responses that returns a list of objects 
 	 * @param response raw response from PIA server
-	 * @return a data map contains responses from PIA server, null if error
+	 * @return a data map contains responses from PIA server, if error, an error message from PIA server will be return in the 
+	 * first element of the return array
 	 */
 	public static List<Map<String, Object>> handlePiaResponseArray(HttpResponse response) throws 
 	JSONException, HttpResponseException, IOException {
@@ -208,6 +209,12 @@ public final class GeneralHelpers {
 			case 0:
 				JSONArray responseArray = responseObject.getJSONArray(Constants.KEY_RESULT);
 				return JsonHelper.toList(responseArray);
+			default:
+				Map<String, Object> jErrObject = new HashMap<String, Object>();
+				jErrObject.put(Constants.KEY_ERROR_MESSAGE, responseMap.get(Constants.KEY_ERROR_MESSAGE).toString());
+				List<Map<String, Object>> errArray = new ArrayList<Map<String,Object>>(); 
+				errArray.add(jErrObject);
+				return errArray;
 			}
 		}
 		return null;

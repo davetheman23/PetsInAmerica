@@ -47,7 +47,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_above="@id/frag_comments_controls"
 	        android:hint="可以在此发表你的看法哦"
-	        android:maxLines="2" />
+	        android:maxLines="5" />
 
     <ListView 
         android:id="@android:id/list"

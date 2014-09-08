@@ -87,6 +87,7 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 						case R.id.frag_userinfo_ll_myenquiries:
 							intent = new Intent(getActivity(), MyEnquiryListActivity.class);
 							startActivity(intent);
+							break;
 						default:
 							Toast.makeText(mContext, "功能还在完善中" + Integer.toString(linearLayout), Toast.LENGTH_LONG).show();
 					}

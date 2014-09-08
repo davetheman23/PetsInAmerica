@@ -72,6 +72,8 @@ public class MyPetDetailsActivity extends FragmentActivity {
 		
 		private int mPetid = NOT_INITIALIZED;
 		
+		private GetPetInfoTask getPetInfoTask;
+		
 		/**
 		 * Set Pet ID immediately after created a new instance of the class
 		 * This is a required parameter. 
@@ -101,13 +103,21 @@ public class MyPetDetailsActivity extends FragmentActivity {
 			
 			// this has to be initialized first 
 			if (mPetid != NOT_INITIALIZED){
-				new GetPetInfo().execute(Constants.URL_PETINFO + mPetid);
+				getPetInfoTask = (GetPetInfoTask) new GetPetInfoTask().execute(Constants.URL_PETINFO + mPetid);
 			}
 
 			return rootview;
 		}
-
-		private class GetPetInfo extends CallPiaApiInBackground{
+		
+		@Override
+		public void onDestroyView() {
+			if (getPetInfoTask!= null){
+				getPetInfoTask.cancel(true);
+			}
+			super.onDestroyView();
+		}
+		
+		private class GetPetInfoTask extends CallPiaApiInBackground{
 			
 			@Override
 			protected void onCallCompleted(Integer result) {}

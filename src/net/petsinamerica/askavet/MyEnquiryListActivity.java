@@ -49,7 +49,9 @@ public class MyEnquiryListActivity extends FragmentActivity{
 			
 			Intent newIntent = new Intent(mContext, EnquiryActivity.class);
 			int queryId = ((EnquiryListAdapter)this.getListAdapter()).getQueryID(v);
-			newIntent.putExtra("QueryId", queryId);
+			int ownerId = ((EnquiryListAdapter)this.getListAdapter()).getOwnerId(v);
+			newIntent.putExtra(Constants.KEY_QUERYID, queryId);
+			newIntent.putExtra(Constants.KEY_ENQUIRY_OWNERID, ownerId);
 			startActivity(newIntent);
 			
 		}

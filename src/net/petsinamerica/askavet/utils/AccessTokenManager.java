@@ -6,20 +6,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import net.petsinamerica.askavet.LoginActivity;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.text.AndroidCharacter;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 

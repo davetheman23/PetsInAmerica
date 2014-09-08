@@ -1,35 +1,27 @@
 package net.petsinamerica.askavet.utils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 
-import net.petsinamerica.askavet.LoginActivity;
 import net.petsinamerica.askavet.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-import org.w3c.dom.Text;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import com.igexin.sdk.PushManager;
-
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Xml;
@@ -55,7 +47,7 @@ import android.widget.TextView;
  * @author David
  *
  */
-public abstract class BaseListFragment extends ListFragment{
+public abstract class BaseListFragment extends ListFragment implements OnRefreshListener{
 	
 	public static final boolean FLAG_URL_NO_PAGE = false;
 	public static final boolean FLAG_URL_HAS_PAGE = true;
@@ -73,7 +65,11 @@ public abstract class BaseListFragment extends ListFragment{
 	
 	private TextView mOverallEmptyListView = null;
 	
+	private HttpPostTask httpPostTask = null;
+	
 	private static final String TAG = "BaseListFragment";
+	
+	private SwipeRefreshLayout mSwipeRefreshLayout;
 
 	
 	/**
@@ -123,6 +119,16 @@ public abstract class BaseListFragment extends ListFragment{
 	}
 	
 	/**
+	 * This method will cancel the asynctask enclosed in this listfragment. It should be called in 
+	 * the parent activity when the parent activity is destroyed or no longer visible
+	 */
+	public void cancelOngoingTask(){
+		if (httpPostTask != null){
+			httpPostTask.cancel(true);
+		}
+	}
+	
+	/**
 	 * this is useful when certain style need to be achieved, call this function after
 	 * the onViewCreated(). <p>
 	 * If <b>card style</b> is needed, in the item layout xml, need to set both 
@@ -144,13 +150,13 @@ public abstract class BaseListFragment extends ListFragment{
 	
 	public void loadListInBackground(){
 		if (!mflag_page && !mflag_objectId){
-			new HttpPostTask().execute(mUrl);
+			httpPostTask = (HttpPostTask) new HttpPostTask().execute(mUrl);
 		}else if (mflag_page){
 			// fetch list data from the network
-			new HttpPostTask().execute(mUrl + Integer.toString(mPage));
+			httpPostTask = (HttpPostTask) new HttpPostTask().execute(mUrl + Integer.toString(mPage));
 		}else if (mflag_objectId){
 			// fetch object data from the network
-			new HttpPostTask().execute(mUrl + Integer.toString(mPage));
+			httpPostTask = (HttpPostTask) new HttpPostTask().execute(mUrl + Integer.toString(mPage));
 		}
 	}
 	
@@ -167,10 +173,34 @@ public abstract class BaseListFragment extends ListFragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootview = inflater.inflate(R.layout.fragment_standard_list,container, false);
-		mOverallProgBar = (ProgressBar) rootview.findViewById(android.R.id.progress);
-		mOverallEmptyListView = (TextView) rootview.findViewById(android.R.id.empty);
+		//mOverallProgBar = (ProgressBar) rootview.findViewById(android.R.id.progress);
+		//mOverallEmptyListView = (TextView) rootview.findViewById(android.R.id.empty);
+		
+		mSwipeRefreshLayout = (SwipeRefreshLayout) rootview.findViewById(R.id.swipe_container);
+		mSwipeRefreshLayout.setOnRefreshListener(this);
+		
 		return rootview;
 	}
+	
+	@Override 
+	public void onRefresh() {
+        /*new Handler().postDelayed(new Runnable() {
+            @Override public void run() {
+            	mSwipeRefreshLayout.setRefreshing(false);
+            }
+        }, 5000);*/
+		if (httpPostTask != null){
+			if (httpPostTask.isIdle()){
+				// if the thread is in idle state, 
+				loadListInBackground();
+			}else{
+				// if the thread is getting list in the background
+				GeneralHelpers.showAlertDialog(getActivity(), "请稍等", "正在和服务器在通信中");
+			}
+			
+		}
+		
+    }
 	
 
 	@Override
@@ -226,8 +256,12 @@ public abstract class BaseListFragment extends ListFragment{
 		}
 		
 	}
-	
 
+	@Override
+	public void onDestroyView() {
+		cancelOngoingTask();
+		super.onDestroyView();
+	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
@@ -315,10 +349,16 @@ public abstract class BaseListFragment extends ListFragment{
 	private class HttpPostTask extends AsyncTask<String, Void, List<Map<String, Object>>> {
 
 		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
+		
+		private boolean mIsStarted = false;
+		private boolean mIsIdle = true;
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
+			mIsStarted = false;
+			mIsIdle = true;
+			
 			if (mOverallProgBar != null && getListView().getCount() <= 1){
 				mOverallProgBar.setVisibility(View.VISIBLE);
 			}
@@ -330,13 +370,15 @@ public abstract class BaseListFragment extends ListFragment{
 				// handling invalid session
 				// 1. cancel the asynctask
 				cancel(true);
-				
 				App.inValidateSession(getActivity());
 			}
 		}
 
 		@Override
 		protected List<Map<String, Object>> doInBackground(String... params) {
+			mIsStarted = true;
+			mIsIdle = false;
+			
 			String url = params[0];
 			HttpPost post = new HttpPost(url);
 			if (mIsUserSpecific){
@@ -364,6 +406,9 @@ public abstract class BaseListFragment extends ListFragment{
 
 		@Override
 		protected void onPostExecute(List<Map<String, Object>> resultArray) {
+			if (isCancelled()){
+				return;
+			}
 			if (!AccessTokenManager.isSessionValid(mContext)){
 				return;
 			}
@@ -396,11 +441,31 @@ public abstract class BaseListFragment extends ListFragment{
 						handleEndofList();
 					}
 				}
-				mCustomAdapter.notifyDataSetChanged();
+				if (mCustomAdapter!= null){
+					mCustomAdapter.notifyDataSetChanged();
+				}
 			}else{
 				Log.d(TAG, "Need to handle null return result cases");
 			}
+			mIsIdle = true;
 		}
+		
+		/**
+		 * Check if the current AsyncTask started
+		 * @return
+		 */
+		public boolean isStarted(){
+			return mIsStarted;
+		}
+		
+		/**
+		 * Check if the current AsyncTask is in working state
+		 * @return true if thread is idle, false if thread is running in background
+		 */
+		public boolean isIdle(){
+			return mIsIdle;
+		}
+		
 	}
 	
 	/**

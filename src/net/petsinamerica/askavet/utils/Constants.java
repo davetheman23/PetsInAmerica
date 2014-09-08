@@ -41,6 +41,8 @@ public interface Constants {
 	
 	public static final String URL_MYENQUIRY = URL_API  + "userQueryList/";
 	
+	public static final String URL_ENQUIRY_REPLY = URL_API  + "postReply/";
+	
 	public static final String URL_NEWENQUIRY = URL_API  + "newQuery/";
 	
 	public static final String URL_PRODUCTLIST = URL_API  + "productlist/";
@@ -57,12 +59,11 @@ public interface Constants {
 	
 	public static final String URL_COMMENT = URL_API  + "comment/";
 	
+	public static final String URL_NEW_COMMENT = URL_API + "postComment/";
+			
 	public static final String URL_USER_COMMENTS = URL_API  + "userComments/";
 	
-	public static final String URL_USER_LIKES = URL_API  + "userLikes/";
-	
-	
-	
+	public static final String URL_USER_LIKES = URL_API  + "userLikes/";	
 	
 	
 	/* 
@@ -85,6 +86,12 @@ public interface Constants {
   	public static final String KEY_USERID = "userid";
   	
   	public static final String KEY_USERTOKEN = "token";
+  	
+  	public static final String KEY_ARTICALID = "ArticleId";
+  	
+  	public static final String KEY_QUERYID = "QueryId";
+  	
+  	public static final String KEY_ENQUIRY_OWNERID = "owner";
   	
   	
   	

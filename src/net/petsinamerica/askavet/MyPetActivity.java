@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
+import net.petsinamerica.askavet.utils.GeneralHelpers;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -174,6 +175,8 @@ public class MyPetActivity extends FragmentActivity{
 		
 		private Context mContext;
 		
+		private GetCommentsInBackground getCommentsInBackground;
+		
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
@@ -199,12 +202,18 @@ public class MyPetActivity extends FragmentActivity{
 			
 		}
 
-
+		@Override
+		public void onDestroyView() {
+			if (getCommentsInBackground!= null){
+				getCommentsInBackground.cancel(true);
+			}
+			super.onDestroyView();
+		}
 
 		@Override
 		public void onViewCreated(View view, Bundle savedInstanceState) {
 			super.onViewCreated(view, savedInstanceState);
-			new GetCommentsInBackground()
+			getCommentsInBackground = (GetCommentsInBackground) new GetCommentsInBackground()
 				.setParameters(
 					getActivity(),
 					CallPiaApiInBackground.TYPE_RETURN_LIST)
@@ -224,16 +233,24 @@ public class MyPetActivity extends FragmentActivity{
 			protected void onCallCompleted(List<Map<String, Object>> result) {
 				// get the query information
 				if (result != null){
-					LayoutInflater inflater = (LayoutInflater) getActivity()
-							.getSystemService(Context.LAYOUT_INFLATER_SERVICE);										
-					View footerview = (View) inflater.inflate(R.layout.list_footer_pet_item_addpet, null);
-					getListView().addFooterView(footerview);
-					getListView().setFooterDividersEnabled(true);
-					
-					PetListAdapter2 petlist = new PetListAdapter2(mContext, 
-							R.layout.list_pet_item, result);
-					
-					setListAdapter(petlist);
+					if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+						// if no error
+						LayoutInflater inflater = (LayoutInflater) getActivity()
+								.getSystemService(Context.LAYOUT_INFLATER_SERVICE);										
+						View footerview = (View) inflater.inflate(R.layout.list_footer_pet_item_addpet, null);
+						getListView().addFooterView(footerview);
+						getListView().setFooterDividersEnabled(true);
+						
+						PetListAdapter2 petlist = new PetListAdapter2(mContext, 
+								R.layout.list_pet_item, result);
+						
+						setListAdapter(petlist);
+					}else{
+						// if error 
+						String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
+						GeneralHelpers.showMessage(mContext, errorMsg);
+					}
+						
 				}
 			}
 		}

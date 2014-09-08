@@ -44,6 +44,8 @@ public class SignUpActivity extends Activity {
 	private String validUsername = null;
 	private String validEmail = null;
 	private String validPassword = null;
+	
+	private SignupInBackground signupInBackground;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +67,7 @@ public class SignUpActivity extends Activity {
 			public void onClick(View v) {
 				//GeneralHelpers.showMessage(SignUpActivity.this, "注册功能还在完善中");
 				if (isUserEntriesValid()){					
-					new SignupInBackground()
+					signupInBackground = (SignupInBackground) new SignupInBackground()
 						.setParameters(SignUpActivity.this, CallPiaApiInBackground.TYPE_RETURN_MAP, false)
 						.execute(Constants.URL_SIGN_UP);
 				}
@@ -86,6 +88,28 @@ public class SignUpActivity extends Activity {
 		});
 	}
 	
+	
+	
+	@Override
+	public void onBackPressed() {
+		if (progressDialog!= null && progressDialog.isShowing()){
+			GeneralHelpers.showMessage(this, "请稍后，注册正在进行中，暂时不能被取消！");
+		}
+		super.onBackPressed();
+	}
+
+
+
+	@Override
+	protected void onDestroy() {
+		if (signupInBackground!= null){
+			signupInBackground.cancel(true);
+		}
+		super.onDestroy();
+	}
+
+
+
 	private boolean isUserEntriesValid(){
 		String errorString = "";
 		boolean hasError = false;

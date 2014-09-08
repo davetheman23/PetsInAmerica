@@ -1,8 +1,7 @@
 package net.petsinamerica.askavet;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -11,12 +10,17 @@ import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -27,12 +31,13 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.squareup.picasso.Picasso.LoadedFrom;
-import com.squareup.picasso.Target;
 
 public class EnquiryActivity extends FragmentActivity {
 	
@@ -55,6 +60,10 @@ public class EnquiryActivity extends FragmentActivity {
 	private ImageView mFacebookShareIcon;
 	private ImageView mShareMoreIcon;
 	
+	private int enquiryOwnerId;
+	
+	private int queryId;
+	
 	
 	/*private static ProgressBar progressbar;*/
 	@Override
@@ -62,13 +71,14 @@ public class EnquiryActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_enquiry_detail);
 		
+		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		
 		// get query id from the extra that was set when the activity was started
-		int queryId = getIntent().getIntExtra("QueryId", 0);
-		//queryId = 1439;
+		queryId = getIntent().getIntExtra(Constants.KEY_QUERYID, 0);
+		enquiryOwnerId = getIntent().getIntExtra(Constants.KEY_ENQUIRY_OWNERID, 0);
 				
 		EnquiryDetailFragment enquiryfrag = new EnquiryDetailFragment();
-		
-		enquiryfrag.setParameters(queryId);
+		enquiryfrag.setParameters(queryId, enquiryOwnerId);
 		
 		getSupportFragmentManager().beginTransaction()
 			.add(R.id.activity_enquiry_details_content_container, enquiryfrag)
@@ -102,7 +112,7 @@ public class EnquiryActivity extends FragmentActivity {
 			}
 		});
 		mReplyButton = (Button) findViewById(R.id.activity_enquiry_details_btn_reply);
-		mCommentButton.setOnClickListener(new View.OnClickListener() {
+		mReplyButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				GeneralHelpers.showMessage(EnquiryActivity.this, "回复功能还在完善中！");
@@ -198,7 +208,18 @@ public class EnquiryActivity extends FragmentActivity {
 	public static class EnquiryDetailFragment extends ListFragment{
 		private Context mContext;
 		
-		private int mQueryId;
+		private int mQueryId = 0;
+		private int mQueryOwnerId = 0;
+		
+		private GetEnquiryInBackground getEnquiryInBackground;
+		
+		private SubmitReplyInBackground submitReplyInBackground;
+		
+		private Button btn_SubmitReply;
+		
+		private EditText et_ReplyContent;
+		
+		private EnquiryDetailListAdapter detailList;
 
 		@Override
 		public void onAttach(Activity activity) {
@@ -206,8 +227,9 @@ public class EnquiryActivity extends FragmentActivity {
 			mContext = activity;
 		}
 		
-		public void setParameters(int queryId){
+		public void setParameters(int queryId, int ownerId){
 			mQueryId = queryId;
+			mQueryOwnerId = ownerId;
 		}
 
 		@Override
@@ -215,15 +237,76 @@ public class EnquiryActivity extends FragmentActivity {
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_enquirydetails, null, false);
 			
+			btn_SubmitReply = (Button) rootView.findViewById(R.id.frag_enquiry_details_btn_reply);
+			btn_SubmitReply.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					if (!checkIsInputValid()){
+						return;
+					}
+					if (submitReplyInBackground == null){
+						submitReplyInBackground = (SubmitReplyInBackground) new SubmitReplyInBackground()
+							.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST)
+							.setProgressDialog(true)
+							.execute(Constants.URL_ENQUIRY_REPLY);
+					}else{
+						if (!submitReplyInBackground.isIdle()){
+							GeneralHelpers.showAlertDialog(getActivity(), null, "问题提交正在处理中，请稍后再试");
+						}else{
+							// submit another reply 
+							submitReplyInBackground.execute(Constants.URL_ENQUIRY_REPLY);
+						}
+					}
+				}
+			});
+			et_ReplyContent = (EditText) rootView.findViewById(R.id.frag_enquiry_details_reply_content);
+			
+			LinearLayout ll = (LinearLayout) rootView.findViewById(R.id.frag_enquiry_details_controls);
+			
+			// check to see if the enquiry is asked by the user, if not, only allow viewing
+			if (mQueryOwnerId != AccessTokenManager.getUserId(App.appContext)){
+				ll.setVisibility(View.GONE);
+				btn_SubmitReply.setVisibility(View.GONE);
+				et_ReplyContent.setVisibility(View.GONE);
+			}
+			
 			// call api in background 
 			String queryURL_API = Constants.URL_ENQUIRY_DETAILS + Integer.toString(mQueryId);
-			new GetEnquiryInBackground()
+			getEnquiryInBackground = (GetEnquiryInBackground) new GetEnquiryInBackground()
 				.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST)
 				.execute(queryURL_API);
 			
 			return rootView;
 		}
 		
+		private boolean checkIsInputValid(){
+			String  replyContent = et_ReplyContent.getText().toString();
+			
+			if (replyContent.equals("")){
+				GeneralHelpers.showAlertDialog(getActivity(), null, "您还没有输入任何问题");
+				return false;
+			}
+			
+			if (mQueryId == 0){
+				GeneralHelpers.showAlertDialog(getActivity(), "应用错误", "无法获取询问单 ID");
+				return false;
+			}
+			
+			return true;
+		}
+		
+		
+		@Override
+		public void onDestroyView() {
+			if (getEnquiryInBackground!=null){
+				getEnquiryInBackground.cancel(true);
+			}
+			if (submitReplyInBackground != null){
+				submitReplyInBackground.cancel(true);
+			}
+			super.onDestroyView();
+		}
+
 		private class GetEnquiryInBackground extends CallPiaApiInBackground{
 			
 			@Override
@@ -236,69 +319,65 @@ public class EnquiryActivity extends FragmentActivity {
 			protected void onCallCompleted(List<Map<String, Object>> result) {
 				// get the query information
 				if (result != null){
-					
-					EnquiryDetailListAdapter detailList = new EnquiryDetailListAdapter(mContext, 
+					detailList = new EnquiryDetailListAdapter(mContext, 
 									R.layout.list_enquiry_details_header_item, 
 									R.layout.list_enquiry_details_item, result);
 					
 					setListAdapter(detailList);
-					
-					
-					Map<String, Object> queryInfo = result.get(0);
-					
-					/* set up a background task to load the snapshot url into the target
-				 	in case user will share it, so it can be ready after user read */	
-					
-					
-					//mShareSnapshotUrl = queryInfo.get(Constants.KEY_SNAPSHOT).toString();
-					/*Picasso.with(App.appContext)
-						.load(Uri.parse(mShareSnapshotUrl))
-						.into(target);*/
-					int i = 0;
-					i= i +1;
 				}
 			}
 		}
+		
+		private class SubmitReplyInBackground extends CallPiaApiInBackground{
+
+			@Override
+			protected void addParamstoPost(HttpPost post, Context context)
+					throws UnsupportedEncodingException, IOException {
+				
+				// here assume that user inputs are all valid, checks need to be performed before 
+				String content = et_ReplyContent.getText().toString();
+				
+				// get the parameters already exited in the post, normally are user Id and token
+				List<NameValuePair> nameValuePairs = URLEncodedUtils.parse(post.getEntity());
+				// add more parameters to the post
+				nameValuePairs.add(new BasicNameValuePair("queryid", Integer.toString(mQueryId)));
+				nameValuePairs.add(new BasicNameValuePair(Constants.KEY_CONTENT, content));
+				
+				// reset a new entity with all parameters 
+				post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
+				
+			}
+
+			@Override
+			protected void onCallCompleted(Map<String, Object> result) {
+			}
+
+			@Override
+			protected void onCallCompleted(List<Map<String, Object>> result) {
+				if (result != null){
+					if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+						// if no error
+						Log.i("Test", result.toString());
+						if (detailList != null){
+							detailList.clear();
+							detailList.addAll(result);
+							detailList.notifyDataSetChanged();
+						}
+					}else{
+						// if error 
+						String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
+						GeneralHelpers.showAlertDialog(getActivity(), null, errorMsg);
+					}
+				}
+			}
+
+			@Override
+			protected void onCallCompleted(Integer result) {		
+			}
+			
+		}
 	}
 	
-	/**
-	 * define a private variable of the class Target to be used for Picasso
-	 */
-	private static Target target = new Target() {
-		@Override
-		public void onPrepareLoad(Drawable placeHolderDrawable) {
-		}
-		
-		@Override
-		public void onBitmapLoaded(final Bitmap bitmap, LoadedFrom from) {
-			new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					File tmpFile = GeneralHelpers.getOutputMediaFile(
-							GeneralHelpers.MEDIA_TYPE_IMAGE, true);					
-					try 
-					{
-						tmpFile.createNewFile();
-						FileOutputStream ostream = new FileOutputStream(tmpFile);
-						bitmap.compress(CompressFormat.JPEG, 75, ostream);
-						ostream.close();
-					} 
-					catch (IOException e) 
-					{
-						e.printStackTrace();
-					}
-					mShareImage = Uri.fromFile(tmpFile);
-					
-				}
-			}).start();
-
-		}
-		
-		@Override
-		public void onBitmapFailed(Drawable errorDrawable) {
-
-		}
-	};
+	
 	
 }

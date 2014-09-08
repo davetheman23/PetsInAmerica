@@ -13,6 +13,7 @@ import org.json.JSONException;
 
 import com.igexin.sdk.PushManager;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.http.AndroidHttpClient;
@@ -40,7 +41,14 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	
 	private boolean mRequireValidSession = true;
 	
+	private boolean mIsStarted = false;
+	private boolean mIsIdle = true;
+	private boolean mShowDialog = false;
+	
 	private Context mContext = App.appContext;
+	
+	private ProgressDialog mDialog = null;
+	
 	
 	protected AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 	
@@ -65,10 +73,21 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 		mType = resultType;
 		return this;
 	}
+	public CallPiaApiInBackground setProgressDialog(boolean showDialog){
+		mShowDialog = showDialog;
+		return this;
+	}
+	
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
-		
+		mIsStarted = false;
+		mIsIdle = true;
+		if (mDialog == null && mShowDialog){
+			mDialog = new ProgressDialog(mContext);
+			mDialog.setMessage("请稍后...");
+			mDialog.show();
+		}
 		if (!AccessTokenManager.isSessionValid(App.appContext) && mRequireValidSession){
 			handleInvalidSession();
 		}
@@ -77,6 +96,9 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	@Override
 	protected Object doInBackground(String... params) {
 		HttpPost post = new HttpPost(params[0]);
+		
+		mIsStarted = true;
+		mIsIdle = false;
 		
 		if (mRequireValidSession){
 			AccessTokenManager.addAccessTokenPost(post, mContext);
@@ -112,6 +134,12 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void onPostExecute(Object result) {
+		if (mDialog!= null && mDialog.isShowing()){
+			mDialog.dismiss();
+		}
+		if (isCancelled()){
+			return;
+		}
 		// -- below for alpha test use -- //
 		if (result != null){
 			String outstr = result.toString();
@@ -140,7 +168,7 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 			onCallCompleted(result_int);
 			break;
 		}
-		
+		mIsIdle = true;
 		
 	}
 
@@ -163,8 +191,6 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 		// 1. cancel thread
 		cancel(true);
 		
-		
-
 		// 2. invalidate the login session
 		App.inValidateSession(mContext);
 	};
@@ -172,6 +198,23 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	/** add additional parameters to the post object, do not need to call super(),
 	 * this assumes the app session is valid */
 	protected void addParamstoPost(HttpPost post, Context context) 
-			 						throws UnsupportedEncodingException{
+			 						throws UnsupportedEncodingException, IOException{
 	}
+	
+	/**
+	 * Check if the current AsyncTask started
+	 * @return
+	 */
+	public boolean isStarted(){
+		return mIsStarted;
+	}
+	
+	/**
+	 * Check if the current AsyncTask is in working state
+	 * @return true if thread is idle, false if thread is running in background
+	 */
+	public boolean isIdle(){
+		return mIsIdle;
+	}
+	
 }

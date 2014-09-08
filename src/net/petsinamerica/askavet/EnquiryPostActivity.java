@@ -51,7 +51,7 @@ import android.widget.Toast;
 
 import com.meetme.android.horizontallistview.HorizontalListView;
 
-public class EnquiryFormActivity extends FragmentActivity {
+public class EnquiryPostActivity extends FragmentActivity {
 	
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	
@@ -90,7 +90,7 @@ public class EnquiryFormActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_enquiry_form);
+		setContentView(R.layout.activity_enquiry_post);
 		
 		
 		// inhibit the auto-popup of the soft key board when creating the activity
@@ -415,12 +415,12 @@ public class EnquiryFormActivity extends FragmentActivity {
 				if (!result.containsKey(Constants.KEY_ERROR_MESSAGE)){
 					// results are valid
 					// do something
-					GeneralHelpers.showAlertDialog(EnquiryFormActivity.this,
+					GeneralHelpers.showAlertDialog(EnquiryPostActivity.this,
 							"提问成功！",
 							"您的提问已经成功，我们会尽快给你回复！");
 				}else{
 					// results are not valid
-					GeneralHelpers.showAlertDialog(EnquiryFormActivity.this, 
+					GeneralHelpers.showAlertDialog(EnquiryPostActivity.this, 
 							"您进行的操作似乎有误",
 							result.get(Constants.KEY_ERROR_MESSAGE).toString());
 				}
@@ -444,7 +444,18 @@ public class EnquiryFormActivity extends FragmentActivity {
 			mImageLocalId = id;
 			return this;
 		}
-
+		
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			if (uploadProgDialog == null){
+				uploadProgDialog = new ProgressDialog(EnquiryPostActivity.this);
+			}
+			uploadProgDialog.setMessage("请稍等，正在上传图片 ...");
+			uploadProgDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			uploadProgDialog.show();
+		}
+		
 		@Override
 		protected Map<String, Object> doInBackground(Uri... params) {
 			if (mImageLocalId == -1){
@@ -482,6 +493,7 @@ public class EnquiryFormActivity extends FragmentActivity {
 				// execute post
 				HttpResponse response = mClient.execute(post);
 				
+				
 				return GeneralHelpers.handlePiaResponse(response);
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
@@ -500,6 +512,9 @@ public class EnquiryFormActivity extends FragmentActivity {
 		@Override
 		protected void onPostExecute(Map<String, Object> result) {
 			super.onPostExecute(result);
+			if (uploadProgDialog!= null){
+				uploadProgDialog.dismiss();
+			}
 			if (result != null && imageData !=null){
 				Toast.makeText(getApplication(), "上传成功", Toast.LENGTH_LONG).show();
 				String url = result.get(KEY_URL).toString();

@@ -101,6 +101,10 @@ public class ArticleActivity extends Activity {
 	
 	private SlidingUpPanelLayout mSlideUpPanelLayout;
 	
+	private GetArticleInBackground2 getArticleInBackground2;
+	
+	private SendLikeInBackground sendLikeInBackground;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +159,7 @@ public class ArticleActivity extends Activity {
 		mLikeButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new SendLikeInBackground()
+				sendLikeInBackground = (SendLikeInBackground) new SendLikeInBackground()
 					//.setParameters(ArticleActivity.this, CallPiaApiInBackground.TYPE_RETURN_INT)
 					.execute(Constants.URL_ARTICLE_LIKES + Integer.toString(articleId));
 			}
@@ -192,7 +196,7 @@ public class ArticleActivity extends Activity {
 		
 		if (articleId != 0){
 			String articleURL_API = Constants.URL_ARTICLE_API + Integer.toString(articleId);
-			new GetArticleInBackground2().execute(articleURL_API);
+			getArticleInBackground2 = (GetArticleInBackground2) new GetArticleInBackground2().execute(articleURL_API);
 		}else{
 			//TODO notify the user
 		}
@@ -253,8 +257,6 @@ public class ArticleActivity extends Activity {
 		}		
 	}
 	
-	
-	
 	@Override
 	public void onBackPressed() {
 		if (mSlideUpPanelLayout != null && mSlideUpPanelLayout.isPanelExpanded()){
@@ -265,7 +267,16 @@ public class ArticleActivity extends Activity {
 		}
 	}
 
-	
+	@Override
+	protected void onDestroy() {
+		if (getArticleInBackground2!= null){
+			getArticleInBackground2.cancel(true);
+		}
+		if (sendLikeInBackground != null){
+			sendLikeInBackground.cancel(true);
+		}
+		super.onDestroy();
+	}
 
 
 	@Override
@@ -276,8 +287,6 @@ public class ArticleActivity extends Activity {
 		}
 		return super.onTouchEvent(event);
 	}
-
-
 
 	class ShareIconClickListener implements View.OnClickListener{
 		private String appName = "";
