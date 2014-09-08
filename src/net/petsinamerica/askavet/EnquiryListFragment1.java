@@ -16,8 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 /**
  * This fragment class uses the FragmentManager to swap the two child fragments
@@ -36,8 +34,6 @@ public class EnquiryListFragment1 extends Fragment {
 	private Button mBtnAsk;
 	private Button mBtnMyQuery;
 	private Button mBtnAllQuery;
-	private TextView mTvEmpty;
-	private ProgressBar mProgBar;
 	
 	private BaseListFragment mAllListFragment = null;
 	private BaseListFragment mMyListFragment = null;
@@ -51,8 +47,13 @@ public class EnquiryListFragment1 extends Fragment {
 		
 		// creating the two fragments and keep them in memory for fast swapping
 		mAllListFragment = new AllEnquiryListFragment();
+		mAllListFragment.setParameters(Constants.URL_ENQUIRY, true, false,true, true, false);
+		mAllListFragment.setPage(1);
 		
 		mMyListFragment = new MyEnquiryListFragment();
+		mMyListFragment.setParameters(Constants.URL_MYENQUIRY, true, false,true, true, false);
+		mMyListFragment.setUserDataFlag(true);
+		mMyListFragment.setPage(1);
 		
 		
 	}
@@ -121,12 +122,6 @@ public class EnquiryListFragment1 extends Fragment {
 			}
 		});
 		
-		// get a reference to progress bar
-		mProgBar = (ProgressBar) rootView.findViewById(R.id.frag_enquirylist_progressbar);
-				
-		// get a refernce to the textview when no data available to list
-		mTvEmpty = (TextView) rootView.findViewById(android.R.id.empty);
-		
 		return rootView;
 	}
 	
@@ -137,8 +132,6 @@ public class EnquiryListFragment1 extends Fragment {
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_ENQUIRY, true, false,true);
-			setPage(1);
 			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
 			setCustomAdapter(new EnquiryListAdapter(mContext, 
 					R.layout.list_enquiry_item, emptyList));
@@ -162,10 +155,7 @@ public class EnquiryListFragment1 extends Fragment {
 		
 		@Override
 		public void onAttach(Activity activity) {
-			super.onAttach(activity);
-			setParameters(Constants.URL_MYENQUIRY,false,false,true);
-			setUserDataFlag(true);
-			
+			super.onAttach(activity);			
 			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
 			setCustomAdapter(new EnquiryListAdapter(mContext, 
 					R.layout.list_enquiry_item, emptyList));

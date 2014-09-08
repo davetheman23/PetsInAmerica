@@ -247,7 +247,8 @@ public class EnquiryActivity extends FragmentActivity {
 					if (submitReplyInBackground == null){
 						submitReplyInBackground = (SubmitReplyInBackground) new SubmitReplyInBackground()
 							.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST)
-							.setProgressDialog(true)
+							.setProgressDialog(true,"回复正在提交中，请稍后。。。")
+							.setErrorDialog(true)
 							.execute(Constants.URL_ENQUIRY_REPLY);
 					}else{
 						if (!submitReplyInBackground.isIdle()){
@@ -310,28 +311,18 @@ public class EnquiryActivity extends FragmentActivity {
 		private class GetEnquiryInBackground extends CallPiaApiInBackground{
 			
 			@Override
-			protected void onCallCompleted(Integer result) {}
-			
-			@Override
 			protected void onCallCompleted(Map<String, Object> result) {}
 
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {
 				// get the query information
-				if (result != null){
-					if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
-						// if no error
-						detailList = new EnquiryDetailListAdapter(mContext, 
-								R.layout.list_enquiry_details_header_item, 
-								R.layout.list_enquiry_details_item, result);
-				
-						setListAdapter(detailList);
-					}else{
-						// if error 
-						String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
-						GeneralHelpers.showAlertDialog(getActivity(), null, errorMsg);
-					}
-					
+				if (result != null && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+					// if no error
+					detailList = new EnquiryDetailListAdapter(mContext, 
+							R.layout.list_enquiry_details_header_item, 
+							R.layout.list_enquiry_details_item, result);
+			
+					setListAdapter(detailList);
 				}
 			}
 		}
@@ -362,27 +353,16 @@ public class EnquiryActivity extends FragmentActivity {
 
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {
-				if (result != null){
-					if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
-						// if no error
-						Log.i("Test", result.toString());
-						if (detailList != null){
-							detailList.clear();
-							detailList.addAll(result);
-							detailList.notifyDataSetChanged();
-						}
-					}else{
-						// if error 
-						String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
-						GeneralHelpers.showAlertDialog(getActivity(), null, errorMsg);
+				if (result != null && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+					// if no error
+					if (detailList != null){
+						detailList.clear();
+						detailList.addAll(result);
+						detailList.notifyDataSetChanged();
 					}
 				}
 			}
 
-			@Override
-			protected void onCallCompleted(Integer result) {		
-			}
-			
 		}
 	}
 	

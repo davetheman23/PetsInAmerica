@@ -1,6 +1,5 @@
 package net.petsinamerica.askavet;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -10,26 +9,20 @@ import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.BaseListFragment;
+import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
-import net.petsinamerica.askavet.utils.GeneralHelpers;
 import net.petsinamerica.askavet.utils.NotificationsDataSource;
 import net.petsinamerica.askavet.utils.PiaNotification;
 import net.petsinamerica.askavet.utils.PushReceiver;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.util.TextUtils;
-import org.json.JSONException;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -56,7 +49,7 @@ import com.sina.weibo.sdk.utils.LogUtil;
 public class HomeActivity extends FragmentActivity implements
 		ActionBar.TabListener, PushReceiver.onReceiveNotificationListener {
 
-	private static final String sTAG = "HomeActivity"; 
+	//private static final String sTAG = "HomeActivity"; 
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -116,8 +109,9 @@ public class HomeActivity extends FragmentActivity implements
 		// get userinfo
 		if (!UserInfoManager.isInfoAvailable() && mToken != null 
 											   && !mToken.isExpired()){
-			getUserInfoTask = (GetUserInfoTask) new GetUserInfoTask().execute(Constants.URL_USERINFO 
-												+ mToken.getUserId());
+			getUserInfoTask = (GetUserInfoTask) new GetUserInfoTask()
+				.setErrorDialog(true)
+				.execute(Constants.URL_USERINFO + mToken.getUserId());
 		}
 		
 		// get weibo userinfo
@@ -322,9 +316,17 @@ public class HomeActivity extends FragmentActivity implements
 				break;
 			case 1:
 				fragment = new ArticleListFragment();
+				((ArticleListFragment)fragment).setParameters(
+						Constants.URL_BLOGCN, 
+						true, false, true, true, false);
+				((ArticleListFragment)fragment).setPage(1);
 				break;
 			/*case 2:
 				fragment = new ProductListFragment();
+				((ProductListFragment)fragment).setParameters(
+						Constants.URL_PRODUCTLIST, 
+						true, false, true, true, false);
+				((ProductListFragment)fragment).setPage(1);
 				break;*/
 			case 2:
 				fragment = new UserInfoFragment();
@@ -362,8 +364,6 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_BLOGCN, true, false, true);
-			setPage(1);
 			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
 			setCustomAdapter(new ArticleListAdapter2(
 					this.getActivity(), R.layout.list_article_header,
@@ -408,7 +408,6 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(Constants.URL_PRODUCTLIST, true,false,true);
 			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
 			setCustomAdapter(new ProductListAdapter(mContext,
 					R.layout.list_large_item2, emptyList));
@@ -435,48 +434,11 @@ public class HomeActivity extends FragmentActivity implements
 	/**
 	 * A subclass of AsyncTask to get userinfo after user verification
 	 */
-	public class GetUserInfoTask extends AsyncTask<String, Void, Map<String, Object>> {
-
-		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
+	private class GetUserInfoTask extends CallPiaApiInBackground{
 
 		@Override
-		protected Map<String, Object> doInBackground(String... params) {
-			String url = params[0];				
-			HttpPost post = new HttpPost(url);
-
-			if (!mToken.isExpired()){
-				post = AccessTokenManager.addAccessTokenPost(post, mContext, mToken);
-			}else{
-				// TODO: report problem here
-				Log.d(sTAG, "Token expired");
-			}
-			try {				
-				HttpResponse response = mClient.execute(post);
-				
-				return GeneralHelpers.handlePiaResponse(response);
-			} catch (ClientProtocolException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}catch (JSONException e) {
-				e.printStackTrace();
-			}finally{
-				if (null != mClient)
-					mClient.close();
-			}
-			return null;
-		}
-
-
-		@Override
-		protected void onPostExecute(Map<String, Object> result) {
-			super.onPostExecute(result);
-			
-			if (isCancelled()){
-				return;
-			}
-			
-			if (result != null){
+		protected void onCallCompleted(Map<String, Object> result) {
+			if (result != null && !result.containsKey(Constants.KEY_ERROR_MESSAGE)){
 				/*
 				 *  Store the userinfo in a global scope
 				 *  Note: cache action needs to be done at the UI thread because
@@ -486,8 +448,11 @@ public class HomeActivity extends FragmentActivity implements
 				UserInfoManager.cacheUserInfo(result);
 			}
 		}
-		
 
+		@Override
+		protected void onCallCompleted(List<Map<String, Object>> result) {
+			
+		}
 	}
 	
 	/**

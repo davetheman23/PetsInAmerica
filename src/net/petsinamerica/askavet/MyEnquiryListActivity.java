@@ -20,6 +20,8 @@ public class MyEnquiryListActivity extends FragmentActivity{
 		super.onCreate(savedInstanceState);
 		
 		MyEnquiryListFragment myEnquiries = new MyEnquiryListFragment();
+		myEnquiries.setParameters(Constants.URL_MYENQUIRY,false,false,false,true,false);
+		myEnquiries.setUserDataFlag(true);
 		
 		getSupportFragmentManager().beginTransaction()
 			.add(android.R.id.content, myEnquiries)
@@ -34,9 +36,6 @@ public class MyEnquiryListActivity extends FragmentActivity{
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
 			mContext = activity;
-			
-			setParameters(Constants.URL_MYENQUIRY,false,false,false);
-			setUserDataFlag(true);
 			
 			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
 			setCustomAdapter(new EnquiryListAdapter(mContext, 

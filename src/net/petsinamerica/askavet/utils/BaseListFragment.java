@@ -35,13 +35,17 @@ import android.widget.TextView;
  * Simply extending it and supply basic parameters using {@link #setParameters} method. <p>
  * This listfragment inflates a R.layout.fragment_standard_list layout. This will prevent the list
  * fragment from showing a footerview when the list is empty, if that's not desirable, then
- * shall not use this list fragment. 
+ * shall not use this list fragment. <p>
+ * This fragment also implements a refreshlistener, so allow user to swipe down to trigger another 
+ * call to the backend server and load additional data, if any, to its internal adapter. <p? 
+ * Methods can be called are {@link #setParameters}, {@link #setPage}, {@link #setStyle}, {@link #setUserDataFlag}, 
+ * to customize the behavior of the listfragment <p> 
+ * Methods can be overwritten {@link #handleEmptyList}, {@link #handleEndofList}, {@link #handleErrorMessage}
  * 
  * @author David
  *
  */
 public abstract class BaseListFragment extends ListFragment implements OnRefreshListener{
-//public abstract class BaseListFragment extends ListFragment{
 	
 	public static final boolean FLAG_URL_NO_PAGE = false;
 	public static final boolean FLAG_URL_HAS_PAGE = true;
@@ -76,6 +80,9 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	private boolean mflag_objectId = false;		// flag whether an object id should be added to url
 	private boolean mIsUserSpecific = false;	// flag for user specific data
 	private boolean mHasFooter = true;			// flag to indicate if footer is needed
+	private boolean mShowErrorDialog = false;	// set if to show error dialog
+	private boolean mShowProgressDialog = false;	// set if to show progress dialog
+	
 	
 	private ArrayAdapter<Map<String, Object>> mCustomAdapter;
 	private List<Map<String, Object>> mData = new ArrayList<Map<String,Object>>();
@@ -101,11 +108,14 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	//Set<String> mReadArticleList = null;		// the article list that has been read by the user
 	//SharedPreferences mUsageData;
 		
-	public void setParameters(String url,  boolean hasPageId, boolean hasObjectId, boolean hasfooter) {
+	public void setParameters(String url,  boolean hasPageId, boolean hasObjectId, 
+			boolean hasfooter, boolean showErrorDialog, boolean showProgressDialog) {
 		mUrl = url;
 		mflag_page = hasPageId;
 		mflag_objectId = hasObjectId;
 		mHasFooter = hasfooter;
+		mShowErrorDialog = showErrorDialog;
+		mShowProgressDialog = showProgressDialog;
 	}
 	
 	
@@ -154,6 +164,8 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 		}
 		httpPostTask = (HttpPostTask) new HttpPostTask()
 			.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_LIST, mIsUserSpecific)
+			.setErrorDialog(mShowErrorDialog)
+			.setProgressDialog(mShowProgressDialog, null)
 			.execute(url);
 	}
 	
@@ -326,6 +338,15 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 		}
 	}
 	
+	/**
+	 * this function allows customizing error message displaying
+	 * subclasses can overwrite this function to handle error message
+	 * The default implementation is empty, using {@link #setParameters}
+	 * can show standard alert message  
+	 * @param message response error message from PIA server
+	 */
+	protected void handleErrorMessage(String message) {}
+	
 	
 	/**
 	 * This method simply provide a reference of a custom adapter instance to a private variable,
@@ -408,9 +429,9 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 						}
 					}
 				}else{
-					// if error 
+					// if error, can set show error dialog to false then do something here
 					String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
-					GeneralHelpers.showAlertDialog(getActivity(), null, errorMsg);
+					handleErrorMessage(errorMsg);
 				}
 			}
 			
@@ -419,9 +440,6 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 				mSwipeRefreshLayout.setRefreshing(false);
 			}
 		}
-
-		@Override
-		protected void onCallCompleted(Integer result) {}
 		
 	}
 	

@@ -12,7 +12,6 @@ import java.util.Map;
 import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.App;
-import net.petsinamerica.askavet.utils.BaseListFragment;
 import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
@@ -40,7 +39,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -338,19 +336,12 @@ public class EnquiryPostActivity extends FragmentActivity {
 					if (result.size() == 0){
 						Toast.makeText(EnquiryPostActivity.this, "您还没有任何宠物，请先添加宠物信息！", Toast.LENGTH_LONG).show();
 					}
-				}else{
-					// if error 
-					String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
-					GeneralHelpers.showAlertDialog(EnquiryPostActivity.this, null, errorMsg);
 				}
 			}else{
 				GeneralHelpers.showAlertDialog(EnquiryPostActivity.this, 
-						"获取宠物信息出错", "对不起，服务器超时或出错，请稍后再试");
+						"获取宠物信息出错", "对不起，出错啦！错误原因不清，请稍后再试。");
 			}
 		}
-
-		@Override
-		protected void onCallCompleted(Integer result) {}
 		
 	}
 	

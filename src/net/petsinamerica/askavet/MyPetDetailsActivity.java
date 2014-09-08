@@ -3,12 +3,9 @@ package net.petsinamerica.askavet;
 import java.util.List;
 import java.util.Map;
 
-import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
-import net.petsinamerica.askavet.utils.UserInfoManager;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
@@ -42,12 +39,6 @@ public class MyPetDetailsActivity extends FragmentActivity {
 		getSupportFragmentManager().beginTransaction()
 			.add(R.id.activity_petinfo_container, petDetailFragment)
 			.commit();
-		/*
-		getFragmentManager()
-			.beginTransaction()
-			.replace(R.id.activity_petinfo_container, mPetListFragment)
-			.addToBackStack(null)
-			.commit();*/
 		
 	}
 	
@@ -103,7 +94,10 @@ public class MyPetDetailsActivity extends FragmentActivity {
 			
 			// this has to be initialized first 
 			if (mPetid != NOT_INITIALIZED){
-				getPetInfoTask = (GetPetInfoTask) new GetPetInfoTask().execute(Constants.URL_PETINFO + mPetid);
+				getPetInfoTask = (GetPetInfoTask) new GetPetInfoTask()
+					.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_MAP)
+					.setErrorDialog(true)
+					.execute(Constants.URL_PETINFO + mPetid);
 			}
 
 			return rootview;
@@ -118,9 +112,6 @@ public class MyPetDetailsActivity extends FragmentActivity {
 		}
 		
 		private class GetPetInfoTask extends CallPiaApiInBackground{
-			
-			@Override
-			protected void onCallCompleted(Integer result) {}
 
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {}
@@ -128,36 +119,40 @@ public class MyPetDetailsActivity extends FragmentActivity {
 			@Override
 			protected void onCallCompleted(Map<String, Object> result) {
 				
-				String petName = result.get(Constants.KEY_PET_NAME).toString();
-				String petSex = result.get(Constants.KEY_PET_SEX).toString();
-				String petBDay = result.get(Constants.KEY_PET_BDAY).toString();
-				String petBreed = result.get(Constants.KEY_PET_BREED).toString();
-				String petNeuterAge = result.get(Constants.KEY_PET_NEUTERAGE).toString();
-				String petInsurance = result.get(Constants.KEY_PET_INSURANCE).toString();
-				String petSpecies = result.get(Constants.KEY_PET_SPECIES).toString();
-				String petFlea = result.get(Constants.KEY_PET_FLEA).toString();
-				String petVaccination = result.get(Constants.KEY_PET_VACCINATION).toString();
-				String petDeworm = result.get(Constants.KEY_PET_DEWORM).toString();
-				String petImageUrl = result.get(Constants.KEY_PET_PIC).toString();
-				if (petImageUrl!= null && !petImageUrl.startsWith("http")){
-					petImageUrl = Constants.URL_CLOUD_STORAGE + petImageUrl;
+				if (result != null && !result.containsKey(Constants.KEY_ERROR_MESSAGE)){
+					String petName = result.get(Constants.KEY_PET_NAME).toString();
+					String petSex = result.get(Constants.KEY_PET_SEX).toString();
+					String petBDay = result.get(Constants.KEY_PET_BDAY).toString();
+					String petBreed = result.get(Constants.KEY_PET_BREED).toString();
+					String petNeuterAge = result.get(Constants.KEY_PET_NEUTERAGE).toString();
+					String petInsurance = result.get(Constants.KEY_PET_INSURANCE).toString();
+					String petSpecies = result.get(Constants.KEY_PET_SPECIES).toString();
+					String petFlea = result.get(Constants.KEY_PET_FLEA).toString();
+					String petVaccination = result.get(Constants.KEY_PET_VACCINATION).toString();
+					String petDeworm = result.get(Constants.KEY_PET_DEWORM).toString();
+					String petImageUrl = result.get(Constants.KEY_PET_PIC).toString();
+					if (petImageUrl!= null && !petImageUrl.startsWith("http")){
+						petImageUrl = Constants.URL_CLOUD_STORAGE + petImageUrl;
+					}
+					
+					tvPetName.setText(petName);
+					tvPetSex.setText("(" + petSex + ")");
+					tvPetBDay.setText(petBDay);
+					tvPetBreed.setText(petBreed);
+					tvPetNeuterAge.setText(petNeuterAge + " 个月");
+					tvPetSpecies.setText(petSpecies);
+					tvPetInsurance.setText(petInsurance);
+					tvPetFlea.setText(petFlea);
+					tvPetVaccination.setText(petVaccination);
+					tvPetDeworm.setText(petDeworm);
+					
+					// load the data into the image view
+					Picasso.with(App.appContext)
+						   .load(petImageUrl)
+						   .into(ivPetAvatar);
+				}else{
+					// maybe do something here
 				}
-				
-				tvPetName.setText(petName);
-				tvPetSex.setText("(" + petSex + ")");
-				tvPetBDay.setText(petBDay);
-				tvPetBreed.setText(petBreed);
-				tvPetNeuterAge.setText(petNeuterAge + " 个月");
-				tvPetSpecies.setText(petSpecies);
-				tvPetInsurance.setText(petInsurance);
-				tvPetFlea.setText(petFlea);
-				tvPetVaccination.setText(petVaccination);
-				tvPetDeworm.setText(petDeworm);
-				
-				// load the data into the image view
-				Picasso.with(App.appContext)
-					   .load(petImageUrl)
-					   .into(ivPetAvatar);
 			}
 		}
 	}

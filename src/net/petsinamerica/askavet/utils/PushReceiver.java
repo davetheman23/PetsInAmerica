@@ -1,7 +1,7 @@
 package net.petsinamerica.askavet.utils;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +11,7 @@ import net.petsinamerica.askavet.R;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -19,7 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -148,8 +148,6 @@ public class PushReceiver extends BroadcastReceiver {
 	}
 	
 	class BindUserCidInBackground extends CallPiaApiInBackground{
-		@Override
-		protected void onCallCompleted(Integer result) {}
 		
 		@Override
 		protected void onCallCompleted(List<Map<String, Object>> result) {}
@@ -163,15 +161,10 @@ public class PushReceiver extends BroadcastReceiver {
 
 		@Override
 		protected void addParamstoPost(HttpPost post, Context context) 
-												throws UnsupportedEncodingException {
+												throws UnsupportedEncodingException, IOException {
 			
-			AccessToken token = AccessTokenManager.readAccessToken(context);
-			
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
-			
+			List<NameValuePair> nameValuePairs = URLEncodedUtils.parse(post.getEntity());
 			// add user login information
-			nameValuePairs.add(new BasicNameValuePair(Constants.KEY_USERID, token.getUserId()));
-			nameValuePairs.add(new BasicNameValuePair(Constants.KEY_USERTOKEN, token.getToken()));
 			nameValuePairs.add(new BasicNameValuePair("cid", cid));
 			
 			HttpParams httpParams = mClient.getParams();

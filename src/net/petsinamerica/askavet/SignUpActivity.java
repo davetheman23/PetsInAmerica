@@ -69,6 +69,8 @@ public class SignUpActivity extends Activity {
 				if (isUserEntriesValid()){					
 					signupInBackground = (SignupInBackground) new SignupInBackground()
 						.setParameters(SignUpActivity.this, CallPiaApiInBackground.TYPE_RETURN_MAP, false)
+						.setProgressDialog(true, "请稍等，正在注册...")
+						.setErrorDialog(true)
 						.execute(Constants.URL_SIGN_UP);
 				}
 			}
@@ -179,48 +181,26 @@ public class SignUpActivity extends Activity {
 	}
 	
 	private class SignupInBackground extends CallPiaApiInBackground{
-		
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			if (progressDialog != null){
-				progressDialog.setMessage("请稍等，正在注册...");
-				progressDialog.show();
-			}
-		}
-		
-		@Override
-		protected void onCallCompleted(Integer result) {}
 
 		@Override
 		protected void onCallCompleted(List<Map<String, Object>> result) {}
 		
 		@Override
 		protected void onCallCompleted(Map<String, Object> result) {
-			if (progressDialog!= null){
-				if (progressDialog.isShowing()){
-					progressDialog.dismiss();
-				}
-			}
-			if (result != null){
-				if (!result.containsKey(Constants.KEY_ERROR_MESSAGE)){
-					// obtain the userid & access token returned from the server
-					String userid = result.get(Constants.KEY_USERID).toString();
-					String token = result.get(Constants.KEY_USERTOKEN).toString();
-					
-					//TODO: if expiration date is available from server, should
-					//      use the standard constructor for AccessToken
-					// save the token in a safe place
-					AccessTokenManager.SaveAccessToken(
-							getApplicationContext(), 
-							new AccessToken(userid, token));
-					Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
-					intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(intent);
-				}else{
-					GeneralHelpers.showAlertDialog(SignUpActivity.this, 
-							"登录失败", result.get(Constants.KEY_ERROR_MESSAGE).toString());
-				}
+			if (result != null && !result.containsKey(Constants.KEY_ERROR_MESSAGE)){
+				// obtain the userid & access token returned from the server
+				String userid = result.get(Constants.KEY_USERID).toString();
+				String token = result.get(Constants.KEY_USERTOKEN).toString();
+				
+				//TODO: if expiration date is available from server, should
+				//      use the standard constructor for AccessToken
+				// save the token in a safe place
+				AccessTokenManager.SaveAccessToken(
+						getApplicationContext(), 
+						new AccessToken(userid, token));
+				Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(intent);
 			}
 		}
 		
@@ -228,7 +208,6 @@ public class SignUpActivity extends Activity {
 		protected void addParamstoPost(HttpPost post, Context context) 
 												throws UnsupportedEncodingException {
 			
-					
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
 			
 			// add user login information

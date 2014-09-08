@@ -2,7 +2,6 @@ package net.petsinamerica.askavet;
 
 import java.util.List;
 
-import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
@@ -11,25 +10,18 @@ import net.petsinamerica.askavet.utils.PiaNotification;
 import net.petsinamerica.askavet.utils.PushReceiver;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
-import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 
 public class NotificationCenterActivity extends FragmentActivity {

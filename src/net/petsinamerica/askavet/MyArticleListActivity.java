@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.webkit.WebView.FindListener;
 import android.widget.TextView;
 
 public class MyArticleListActivity extends FragmentActivity{
@@ -37,10 +36,12 @@ public class MyArticleListActivity extends FragmentActivity{
 			break;
 		}
 		
-		ArticleListFragment fragment = new ArticleListFragment();
+		ArticleListFragment articleListFragment = new ArticleListFragment();
+		articleListFragment.setParameters(mUrl, false, false, false, true, false);
+		articleListFragment.setUserDataFlag(true);
 		
 		getSupportFragmentManager().beginTransaction()
-			.add(android.R.id.content, fragment)
+			.add(android.R.id.content, articleListFragment)
 			.commit();
 		
 	}
@@ -51,8 +52,6 @@ public class MyArticleListActivity extends FragmentActivity{
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
-			setParameters(mUrl, false, false, false);
-			setUserDataFlag(true);
 			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
 			setCustomAdapter(new MyArticleListAdapter(
 					this.getActivity(), R.layout.list_article_item, emptyList));

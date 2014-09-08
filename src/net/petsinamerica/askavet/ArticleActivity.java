@@ -47,7 +47,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.igexin.sdk.PushManager;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -196,7 +195,9 @@ public class ArticleActivity extends Activity {
 		
 		if (articleId != 0){
 			String articleURL_API = Constants.URL_ARTICLE_API + Integer.toString(articleId);
-			getArticleInBackground2 = (GetArticleInBackground2) new GetArticleInBackground2().execute(articleURL_API);
+			getArticleInBackground2 = (GetArticleInBackground2) new GetArticleInBackground2()
+				.setErrorDialog(true)
+				.execute(articleURL_API);
 		}else{
 			//TODO notify the user
 		}
@@ -416,14 +417,11 @@ public class ArticleActivity extends Activity {
 	private class GetArticleInBackground2 extends CallPiaApiInBackground{
 		
 		@Override
-		protected void onCallCompleted(Integer result) {}
-		
-		@Override
 		protected void onCallCompleted(List<Map<String, Object>> result) {}
 		
 		@Override
 		protected void onCallCompleted(Map<String, Object> result) {
-			if (result != null){
+			if (result != null && !result.containsKey(Constants.KEY_ERROR_MESSAGE)){
 				String imageURL = result.get(Constants.KEY_IMAGE).toString();
 				if (imageURL.isEmpty()){
 					imageURL = result.get("summary_img").toString();

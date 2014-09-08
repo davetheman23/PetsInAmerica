@@ -5,7 +5,6 @@ import java.util.Map;
 
 import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
-import net.petsinamerica.askavet.utils.GeneralHelpers;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -52,7 +51,7 @@ public class MyPetActivity extends FragmentActivity{
 			dialog.show();
 		}else{
 			// setup the list fragment that shows a list of all pets of the user		
-			PetListFragment1 petListFragment = new PetListFragment1();
+			PetListFragment petListFragment = new PetListFragment();
 			
 			fm = getSupportFragmentManager(); 
 			fm.beginTransaction()
@@ -64,118 +63,11 @@ public class MyPetActivity extends FragmentActivity{
 
 	
 	
-	/* This listfragment would not show a footerview when the list is empty, this is due to baselistfragment
-	 * inflates a custom layout view
-	public static class PetListFragment extends BaseListFragment{
-		
-		OnPetItemSelectedListener mCallback;
-		
-		PetListAdapter2 adapter;
-		
-		private View customFooter;
-		
-		// a map to retain the reference of all the detail fragments
-		// that are ever been created
-		Map<Integer, PetDetailFragment> petDetails = 
-							new HashMap<Integer, MyPetActivity.PetDetailFragment>();
-		
-		// Container Activity must implement this interface
-	    public interface OnPetItemSelectedListener {
-	        	public void onPetSelected(int position);
-	    }
-		
-		@Override
-		public void onAttach(Activity activity) {
-			super.onAttach(activity);
-			
-			// This makes sure that the container activity has implemented
-	        // the callback interface. If not, it throws an exception
-	        try {
-	            mCallback = (OnPetItemSelectedListener) activity;
-	        } catch (ClassCastException e) {
-	            throw new ClassCastException(activity.toString()
-	                    + " must implement OnPetItemSelectedListener");
-	        }
-			
-			setParameters(Constants.URL_USERPETS,false,true,true);
-			setPage(Integer.parseInt(UserInfoManager.userid));
-			setUserDataFlag(true);
-			
-			List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
-			adapter = new PetListAdapter2(this.getActivity(), 
-						R.layout.list_pet_item, emptyList);
-			setCustomAdapter(adapter);
-		}
-		
-
-
-		@Override
-		public void onViewCreated(View view, Bundle savedInstanceState) {
-			super.onViewCreated(view, savedInstanceState);
-			setStyle(Style.card);
-		}
-
-
-		@Override
-		protected void onItemClickAction(View v, int position, long id) {
-			if (position != getListView().getCount()-getListView().getFooterViewsCount()){
-				// if not the footer clicked
-				int petId = adapter.getPetId(v);			
-				Intent intent = new Intent(getActivity(), MyPetDetailsActivity.class);
-				intent.putExtra(Constants.KEY_PET_ID, petId);
-				startActivity(intent);			
-			}else{
-				// if footer is clicked
-				Intent intent = new Intent(getActivity(), MyPetDetailsActivity.class);
-				startActivity(intent);
-				Toast.makeText(getActivity(), "功能还在完善中，暂时仅支持网上添加宠物", Toast.LENGTH_LONG).show();;
-			}
-			return;
-		}
-
-		@Override
-		protected void setUpFooterView() {
-			if (mfooterview != null){
-				getListView().removeFooterView(mfooterview);
-				mfooterview = null;
-			}
-			LayoutInflater inflater = (LayoutInflater) getActivity()
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			//mFooterView = (View) inflater.inflate(R.layout.list_pet_item_addpet, null);
-			customFooter = (View) inflater.inflate(R.layout.list_footer_pet_item_addpet, null);
-			getListView().addFooterView(customFooter);
-			getListView().setFooterDividersEnabled(true);
-			
-			// set the footer as invisible only make it visible when needed
-			customFooter.setVisibility(View.VISIBLE);
-			
-		}
-		
-		@Override
-		protected void handleEmptyList() {
-		}
-
-
-
-		@Override
-		protected void handleEndofList() {
-			if (customFooter != null){
-				getListView().removeFooterView(customFooter);
-			}
-			LayoutInflater inflater = (LayoutInflater) getActivity()
-					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			customFooter = (View) inflater.inflate(R.layout.list_footer_pet_item_addpet, (ViewGroup)getListView().getParent(),true);			
-			getListView().setEmptyView(customFooter);
-		}
-		
-	}
-	*/
-	
-	public static class PetListFragment1 extends ListFragment{
+	public static class PetListFragment extends ListFragment{
 		
 		private Context mContext;
 		
-		private GetCommentsInBackground getCommentsInBackground;
+		private GetPetListInBackground getPetListInBackground;
 		
 		@Override
 		public void onAttach(Activity activity) {
@@ -204,8 +96,8 @@ public class MyPetActivity extends FragmentActivity{
 
 		@Override
 		public void onDestroyView() {
-			if (getCommentsInBackground!= null){
-				getCommentsInBackground.cancel(true);
+			if (getPetListInBackground!= null){
+				getPetListInBackground.cancel(true);
 			}
 			super.onDestroyView();
 		}
@@ -213,18 +105,14 @@ public class MyPetActivity extends FragmentActivity{
 		@Override
 		public void onViewCreated(View view, Bundle savedInstanceState) {
 			super.onViewCreated(view, savedInstanceState);
-			getCommentsInBackground = (GetCommentsInBackground) new GetCommentsInBackground()
-				.setParameters(
-					getActivity(),
-					CallPiaApiInBackground.TYPE_RETURN_LIST)
+			getPetListInBackground = (GetPetListInBackground) new GetPetListInBackground()
+				.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST)
+				.setErrorDialog(true)
 				.execute(Constants.URL_USERPETS + "/" + UserInfoManager.userid);
 			
 		}
 
-		private class GetCommentsInBackground extends CallPiaApiInBackground{
-			
-			@Override
-			protected void onCallCompleted(Integer result) {}
+		private class GetPetListInBackground extends CallPiaApiInBackground{
 			
 			@Override
 			protected void onCallCompleted(Map<String, Object> result) {}
@@ -232,25 +120,20 @@ public class MyPetActivity extends FragmentActivity{
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {
 				// get the query information
-				if (result != null){
-					if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
-						// if no error
-						LayoutInflater inflater = (LayoutInflater) getActivity()
-								.getSystemService(Context.LAYOUT_INFLATER_SERVICE);										
-						View footerview = (View) inflater.inflate(R.layout.list_footer_pet_item_addpet, null);
-						getListView().addFooterView(footerview);
-						getListView().setFooterDividersEnabled(true);
-						
-						PetListAdapter2 petlist = new PetListAdapter2(mContext, 
-								R.layout.list_pet_item, result);
-						
-						setListAdapter(petlist);
-					}else{
-						// if error 
-						String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
-						GeneralHelpers.showMessage(mContext, errorMsg);
-					}
-						
+				if (result != null && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+					// if no error
+					LayoutInflater inflater = (LayoutInflater) getActivity()
+							.getSystemService(Context.LAYOUT_INFLATER_SERVICE);										
+					View footerview = (View) inflater.inflate(R.layout.list_footer_pet_item_addpet, null);
+					getListView().addFooterView(footerview);
+					getListView().setFooterDividersEnabled(true);
+					
+					PetListAdapter2 petlist = new PetListAdapter2(mContext, 
+							R.layout.list_pet_item, result);
+					
+					setListAdapter(petlist);
+				}else{
+					// do something here if necessary
 				}
 			}
 		}

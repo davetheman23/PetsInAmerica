@@ -91,6 +91,8 @@ public class CommentActivity extends FragmentActivity{
 		
 		private GetCommentsInBackground getCommentsInBackground;
 		
+		private SubmitNewComments submitNewComments;
+		
 		@Override
 		public void onAttach(Activity activity) {
 			super.onAttach(activity);
@@ -125,8 +127,10 @@ public class CommentActivity extends FragmentActivity{
 					//GeneralHelpers.showMessage(mContext, "新评论功能还在完善中");
 					String url = Constants.URL_NEW_COMMENT;
 					// call api in background
-					new submitNewComments()
+					submitNewComments = (SubmitNewComments) new SubmitNewComments()
 						.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_LIST)
+						.setProgressDialog(true, "请稍等，正在提交您的评论！")
+						.setErrorDialog(true)
 						.execute(url);
 				}
 			});
@@ -145,6 +149,7 @@ public class CommentActivity extends FragmentActivity{
 			// call api in background
 			getCommentsInBackground = (GetCommentsInBackground) new GetCommentsInBackground()
 				.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_LIST)
+				.setErrorDialog(true)
 				.execute(url);
 			
 			return rootView;
@@ -155,13 +160,13 @@ public class CommentActivity extends FragmentActivity{
 			if (getCommentsInBackground != null){
 				getCommentsInBackground.cancel(true);
 			}
+			if (submitNewComments != null){
+				submitNewComments.cancel(true);
+			}
 			super.onDestroyView();
 		}
 		
 		private class GetCommentsInBackground extends CallPiaApiInBackground{
-			
-			@Override
-			protected void onCallCompleted(Integer result) {}
 			
 			@Override
 			protected void onCallCompleted(Map<String, Object> result) {}
@@ -169,8 +174,7 @@ public class CommentActivity extends FragmentActivity{
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {
 				// get the query information
-				if (result != null){
-					
+				if (result != null && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
 					if (commentlist == null){
 						commentlist = new CommentListAdapter(mContext, 
 								R.layout.list_comment_item, result);
@@ -179,12 +183,10 @@ public class CommentActivity extends FragmentActivity{
 						commentlist.addAll(result);
 						commentlist.notifyDataSetChanged();
 					}
-					
-					
 				}
 			}
 		}
-		private class submitNewComments extends CallPiaApiInBackground{
+		private class SubmitNewComments extends CallPiaApiInBackground{
 
 			@Override
 			protected void addParamstoPost(HttpPost post, Context context)
@@ -209,31 +211,19 @@ public class CommentActivity extends FragmentActivity{
 
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {
-				if (result != null){
-					if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
-						// if no error
-						GeneralHelpers.showMessage(getActivity(),
-								"您的评论已成功发表！");
-						if (commentlist != null){
-							commentlist.clear();
-							commentlist.addAll(result);
-							commentlist.notifyDataSetChanged();
-						}
-					}else{
-						// if error 
-						String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
-						GeneralHelpers.showAlertDialog(getActivity(), null, errorMsg);
+				if (result != null && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+					// if no error
+					GeneralHelpers.showMessage(getActivity(), 
+							"您的评论已成功发表！");
+					if (commentlist != null){
+						commentlist.clear();
+						commentlist.addAll(result);
+						commentlist.notifyDataSetChanged();
 					}
 				}else{
 					GeneralHelpers.showAlertDialog(getActivity(), 
-							"评论出错", "对不起，评论提交不成功，请稍后再试");
+							"评论出错", "对不起，服务器出错啦！错误原因未知，请稍后再试。");
 				}
-				
-			}
-
-			@Override
-			protected void onCallCompleted(Integer result) {
-				// TODO Auto-generated method stub
 				
 			}
 			

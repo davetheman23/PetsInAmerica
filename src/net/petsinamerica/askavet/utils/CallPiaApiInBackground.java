@@ -2,20 +2,16 @@ package net.petsinamerica.askavet.utils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import net.petsinamerica.askavet.LoginActivity;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONException;
 
-import com.igexin.sdk.PushManager;
-
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -23,7 +19,7 @@ import android.widget.Toast;
 /**
  * This is a helper class for PIA api calls, it creates a new thread and subclass can simply
  * implement the action to be taken on completion of the API call, by default a map object will be returned 
- * if no error, using {@link #setParameters(Type)} to set the result type if a non-map object will be 
+ * if no error, using {@link #setParameters} to set the result type if a non-map object will be 
  * returned. Additionally, {@link #addParamstoPost(HttpPost, Context)} can be overwritten to add more 
  * parameters to an API call
  * The map object is the result 
@@ -34,7 +30,6 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	
 	public final static int TYPE_RETURN_MAP = 0;
 	public final static int TYPE_RETURN_LIST = 1;
-	public final static int TYPE_RETURN_INT = 2;
 	
 	
 	private int mType = TYPE_RETURN_MAP;
@@ -43,7 +38,10 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	
 	private boolean mIsStarted = false;
 	private boolean mIsIdle = true;
-	private boolean mShowDialog = false;
+	private boolean mShowProgressDialog = false;
+	private boolean mShowErrorDialog = false;
+	
+	private String mShowProgressMessage = "请稍后...";
 	
 	private Context mContext = App.appContext;
 	
@@ -75,11 +73,26 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	}
 	
 	/**
-	 * set if to show the progress dialog during the doInBackground
+	 * set if to show the progress dialog during the doInBackground,
+	 * default behavior is not showing the progress dialog
+	 * @param showDialog default is false, set true to show a progress dialog
+	 * @param showMessage the message to be shown in the progress dialog, set to null if default message is to be used
+	 */
+	public CallPiaApiInBackground setProgressDialog(boolean showDialog, String showMessage){
+		mShowProgressDialog = showDialog;
+		if (showMessage != null){
+			mShowProgressMessage = showMessage;
+		}
+		return this;
+	}
+	
+	/**
+	 * set if to show an error dialog if pia server responded an error instead of a success,
+	 * default behavior is not showing the error dialog
 	 * @param showDialog default is false, set true to show a progress dialog
 	 */
-	public CallPiaApiInBackground setProgressDialog(boolean showDialog){
-		mShowDialog = showDialog;
+	public CallPiaApiInBackground setErrorDialog(boolean showDialog){
+		mShowErrorDialog = showDialog;
 		return this;
 	}
 	
@@ -88,9 +101,9 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 		super.onPreExecute();
 		mIsStarted = false;
 		mIsIdle = true;
-		if (mDialog == null && mShowDialog){
+		if (mDialog == null && mShowProgressDialog){
 			mDialog = new ProgressDialog(mContext);
-			mDialog.setMessage("请稍后...");
+			mDialog.setMessage(mShowProgressMessage);
 			mDialog.show();
 		}
 		if (!AccessTokenManager.isSessionValid(App.appContext) && mRequireValidSession){
@@ -106,11 +119,11 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 		mIsIdle = false;
 		
 		if (mRequireValidSession){
-			AccessTokenManager.addAccessTokenPost(post, mContext);
+			AccessTokenManager.addAccessTokenPost(post, App.appContext);
 		}
 
 		try {
-			addParamstoPost(post, mContext);
+			addParamstoPost(post, App.appContext);
 			
 			// execute post
 			HttpResponse response = mClient.execute(post);
@@ -119,8 +132,6 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 				return GeneralHelpers.handlePiaResponseArray(response);
 			case TYPE_RETURN_MAP:
 				return GeneralHelpers.handlePiaResponse(response);
-			case TYPE_RETURN_INT:
-				return GeneralHelpers.handlePiaResponseInt(response);
 			}
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -156,9 +167,32 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 		}
 		// -- above for alpha test use -- //
 		
+		// check to see if show error dialog once an error is received
+		if (result != null){
+			if (mShowErrorDialog){
+				List<Map<String, Object>> result_list = null;
+				Map<String, Object> result_map = new HashMap<String, Object>();
+				switch (mType){
+				case TYPE_RETURN_LIST:
+					result_list = (List<Map<String, Object>>)result;
+					if (result_list.size()>0){
+						result_map = result_list.get(0);
+					}
+					break;
+				case TYPE_RETURN_MAP:
+					result_map = (Map<String, Object>)result;
+					break;
+				}
+				if (result_map.containsKey(Constants.KEY_ERROR_MESSAGE)){
+					String errorMsg = result_map.get(Constants.KEY_ERROR_MESSAGE).toString();
+					GeneralHelpers.showMessage(mContext, errorMsg);
+				}
+			}
+		}
+		
+		// send the result to the subclasses using onCallCompleted abstract methods
 		List<Map<String, Object>> result_list = null;
 		Map<String, Object> result_map = null;
-		Integer result_int = null;
 		switch (mType){
 		case TYPE_RETURN_LIST:
 			result_list = (List<Map<String, Object>>)result;
@@ -167,10 +201,6 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 		case TYPE_RETURN_MAP:
 			result_map = (Map<String, Object>)result;
 			onCallCompleted(result_map);
-			break;
-		case TYPE_RETURN_INT:
-			result_int = (Integer)result;
-			onCallCompleted(result_int);
 			break;
 		}
 		mIsIdle = true;
@@ -184,10 +214,6 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	/** perform action when it is completed, if result is not of map type, 
 	 * then no implementation is needed for this method */
 	protected abstract void onCallCompleted(List<Map<String, Object>> result);
-	
-	/** perform action when it is completed, if result is not of integer type, 
-	 * then no implementation is needed for this method */
-	protected abstract void onCallCompleted(Integer result);
 	
 	/** this provides a way for subclasses to handle when session is invalid
 	 * such as token is expired or not available. Note canceling background thread
