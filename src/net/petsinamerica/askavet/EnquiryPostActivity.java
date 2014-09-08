@@ -13,6 +13,7 @@ import net.petsinamerica.askavet.utils.AccessToken;
 import net.petsinamerica.askavet.utils.AccessTokenManager;
 import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.BaseListFragment;
+import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.GeneralHelpers;
 import net.petsinamerica.askavet.utils.UserInfoManager;
@@ -39,6 +40,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -153,16 +155,10 @@ public class EnquiryPostActivity extends FragmentActivity {
 			}
 		});
 		
-		//TODO after an image is taken, this will sometimes fail, I suspect it is loading the images too frequently? 
-		// set up a fragment, just to load the pet data into an adapter in a background thread 
-		PetListFragment petListFragment = new PetListFragment();
-		petListFragment.setParameters(Constants.URL_USERPETS, false, true, false);
-		petListFragment.setPage(Integer.parseInt(UserInfoManager.userid));
-		petListFragment.setUserDataFlag(true);
-		getSupportFragmentManager()
-			.beginTransaction()
-			.add(petListFragment, "PetListFragment_wo_layout")
-			.commit();
+		GetPetListTask getPetListTask = (GetPetListTask) new GetPetListTask()
+			.setParameters(this, CallPiaApiInBackground.TYPE_RETURN_LIST, true);
+		String url = Constants.URL_USERPETS + Integer.parseInt(UserInfoManager.userid);
+		getPetListTask.execute(url);
 
 	}
 
@@ -324,27 +320,41 @@ public class EnquiryPostActivity extends FragmentActivity {
 			mUserInputs.putInt(PET_ID, petAdapter.getSelectedItemId());
 		}
 	}
-	
-	public static class PetListFragment extends BaseListFragment{
+	private class GetPetListTask extends CallPiaApiInBackground{
 
 		@Override
-		protected void onHttpDone(List<Map<String, Object>> resultArray) {
-			if (resultArray != null){
-				petAdapter = new PetListAdapter(getActivity(), 
-							R.layout.list_pet_item_with_selection, resultArray);
-				mHLview.setAdapter(petAdapter);
-				if (resultArray.size() == 0){
-					Toast.makeText(getActivity(), "您还没有任何宠物，请先添加宠物信息！", Toast.LENGTH_LONG).show();
+		protected void onCallCompleted(Map<String, Object> result) {
+			
+		}
+
+		@Override
+		protected void onCallCompleted(List<Map<String, Object>> result) {
+			if (result != null){
+				if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+					// if no error
+					petAdapter = new PetListAdapter(EnquiryPostActivity.this, 
+							R.layout.list_pet_item_with_selection, result);
+					mHLview.setAdapter(petAdapter);
+					if (result.size() == 0){
+						Toast.makeText(EnquiryPostActivity.this, "您还没有任何宠物，请先添加宠物信息！", Toast.LENGTH_LONG).show();
+					}
+				}else{
+					// if error 
+					String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
+					GeneralHelpers.showAlertDialog(EnquiryPostActivity.this, null, errorMsg);
 				}
+			}else{
+				GeneralHelpers.showAlertDialog(EnquiryPostActivity.this, 
+						"获取宠物信息出错", "对不起，服务器超时或出错，请稍后再试");
 			}
 		}
 
 		@Override
-		protected void onItemClickAction(View v, int position, long id) {			
-			return;
-		}
+		protected void onCallCompleted(Integer result) {}
 		
 	}
+	
+	
 	
 	private class HttpUploadEnquiry extends AsyncTask<String, Void, Map<String, Object>>{
 		

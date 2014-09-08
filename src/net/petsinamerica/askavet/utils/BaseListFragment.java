@@ -191,15 +191,8 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 				GeneralHelpers.showAlertDialog(getActivity(), "请稍等", "正在和服务器在通信中");
 			}
 		}
-		
-		
-	
-		
     }
 	
-	
-	
-
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
@@ -209,6 +202,12 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 				setUpFooterView();
 			}
 			// first time the view is created
+			if (mCustomAdapter == null){
+				// if customAdapter is not set 
+				mCustomAdapter.addAll(mData);
+			}else{
+				// if custom Adapter is set by calling setCustomAdapter before
+			}
 			setListAdapter(mCustomAdapter);
 			loadListInBackground();
 		}
