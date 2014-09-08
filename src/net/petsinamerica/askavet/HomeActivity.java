@@ -393,7 +393,7 @@ public class HomeActivity extends FragmentActivity implements
 			
 			// start a new activity 
 			Intent newIntent = new Intent(this.getActivity(), ArticleActivity.class);
-			newIntent.putExtra("ArticleId", articleID);
+			newIntent.putExtra(Constants.KEY_ARTICALID, articleID);
 			newIntent.putExtra(Constants.KEY_ARTICLE_COMMENTS, commentNum);
 			newIntent.putExtra(Constants.KEY_ARTICLE_LIKES, likeNum);
 			startActivity(newIntent);

@@ -76,7 +76,7 @@ public class NotificationCenterActivity extends FragmentActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_standard_list, container, false);
+			View rootView = inflater.inflate(R.layout.fragment_standard_list_wo_refresh, container, false);
 			
 			// get references to all objects
 			pb = (ProgressBar) rootView.findViewById(android.R.id.progress);

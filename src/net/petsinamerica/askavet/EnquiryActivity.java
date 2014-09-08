@@ -319,11 +319,19 @@ public class EnquiryActivity extends FragmentActivity {
 			protected void onCallCompleted(List<Map<String, Object>> result) {
 				// get the query information
 				if (result != null){
-					detailList = new EnquiryDetailListAdapter(mContext, 
-									R.layout.list_enquiry_details_header_item, 
-									R.layout.list_enquiry_details_item, result);
+					if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+						// if no error
+						detailList = new EnquiryDetailListAdapter(mContext, 
+								R.layout.list_enquiry_details_header_item, 
+								R.layout.list_enquiry_details_item, result);
+				
+						setListAdapter(detailList);
+					}else{
+						// if error 
+						String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
+						GeneralHelpers.showAlertDialog(getActivity(), null, errorMsg);
+					}
 					
-					setListAdapter(detailList);
 				}
 			}
 		}
@@ -377,7 +385,5 @@ public class EnquiryActivity extends FragmentActivity {
 			
 		}
 	}
-	
-	
 	
 }

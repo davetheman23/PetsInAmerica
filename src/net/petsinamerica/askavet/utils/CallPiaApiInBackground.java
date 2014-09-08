@@ -73,6 +73,11 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 		mType = resultType;
 		return this;
 	}
+	
+	/**
+	 * set if to show the progress dialog during the doInBackground
+	 * @param showDialog default is false, set true to show a progress dialog
+	 */
 	public CallPiaApiInBackground setProgressDialog(boolean showDialog){
 		mShowDialog = showDialog;
 		return this;

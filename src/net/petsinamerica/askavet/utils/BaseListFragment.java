@@ -1,29 +1,22 @@
 package net.petsinamerica.askavet.utils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import net.petsinamerica.askavet.R;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.json.JSONException;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +41,7 @@ import android.widget.TextView;
  *
  */
 public abstract class BaseListFragment extends ListFragment implements OnRefreshListener{
+//public abstract class BaseListFragment extends ListFragment{
 	
 	public static final boolean FLAG_URL_NO_PAGE = false;
 	public static final boolean FLAG_URL_HAS_PAGE = true;
@@ -67,7 +61,7 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	
 	private HttpPostTask httpPostTask = null;
 	
-	private static final String TAG = "BaseListFragment";
+	//private static final String TAG = "BaseListFragment";
 	
 	private SwipeRefreshLayout mSwipeRefreshLayout;
 
@@ -84,6 +78,7 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	private boolean mHasFooter = true;			// flag to indicate if footer is needed
 	
 	private ArrayAdapter<Map<String, Object>> mCustomAdapter;
+	private List<Map<String, Object>> mData = new ArrayList<Map<String,Object>>();
 	private Context mContext;
 	private String mUrl;
 	
@@ -149,15 +144,17 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	}
 	
 	public void loadListInBackground(){
-		if (!mflag_page && !mflag_objectId){
-			httpPostTask = (HttpPostTask) new HttpPostTask().execute(mUrl);
-		}else if (mflag_page){
+		String url = mUrl;
+		if (mflag_page){
 			// fetch list data from the network
-			httpPostTask = (HttpPostTask) new HttpPostTask().execute(mUrl + Integer.toString(mPage));
+			url = mUrl + Integer.toString(mPage);
 		}else if (mflag_objectId){
 			// fetch object data from the network
-			httpPostTask = (HttpPostTask) new HttpPostTask().execute(mUrl + Integer.toString(mPage));
+			url = mUrl + Integer.toString(mPage);
 		}
+		httpPostTask = (HttpPostTask) new HttpPostTask()
+			.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_LIST, mIsUserSpecific)
+			.execute(url);
 	}
 	
 	
@@ -172,35 +169,35 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View rootview = inflater.inflate(R.layout.fragment_standard_list,container, false);
-		//mOverallProgBar = (ProgressBar) rootview.findViewById(android.R.id.progress);
-		//mOverallEmptyListView = (TextView) rootview.findViewById(android.R.id.empty);
+		View rootview = inflater.inflate(R.layout.fragment_standard_list_w_refresh, null, false);
+		mOverallProgBar = (ProgressBar) rootview.findViewById(android.R.id.progress);
+		mOverallEmptyListView = (TextView) rootview.findViewById(android.R.id.empty);
 		
 		mSwipeRefreshLayout = (SwipeRefreshLayout) rootview.findViewById(R.id.swipe_container);
 		mSwipeRefreshLayout.setOnRefreshListener(this);
-		
+		mSwipeRefreshLayout.setColorScheme(R.color.Red, R.color.Blue, R.color.White, R.color.Green);
 		return rootview;
 	}
 	
 	@Override 
 	public void onRefresh() {
-        /*new Handler().postDelayed(new Runnable() {
-            @Override public void run() {
-            	mSwipeRefreshLayout.setRefreshing(false);
-            }
-        }, 5000);*/
 		if (httpPostTask != null){
 			if (httpPostTask.isIdle()){
+				mSwipeRefreshLayout.setRefreshing(true);
 				// if the thread is in idle state, 
 				loadListInBackground();
 			}else{
 				// if the thread is getting list in the background
 				GeneralHelpers.showAlertDialog(getActivity(), "请稍等", "正在和服务器在通信中");
 			}
-			
 		}
 		
+		
+	
+		
     }
+	
+	
 	
 
 	@Override
@@ -345,126 +342,87 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	 */
 	protected void onHttpDone(List<Map<String, Object>> resultArray){}
 	
-
-	private class HttpPostTask extends AsyncTask<String, Void, List<Map<String, Object>>> {
-
-		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
-		
-		private boolean mIsStarted = false;
-		private boolean mIsIdle = true;
-
+	
+	private class HttpPostTask extends CallPiaApiInBackground{
 		@Override
 		protected void onPreExecute() {
-			super.onPreExecute();
-			mIsStarted = false;
-			mIsIdle = true;
-			
 			if (mOverallProgBar != null && getListView().getCount() <= 1){
 				mOverallProgBar.setVisibility(View.VISIBLE);
 			}
 			if (mOverallEmptyListView != null){
 				mOverallEmptyListView.setText("");
 			}
-			// this call needs a valid token, so handle when local token is not valid
-			if (!AccessTokenManager.isSessionValid(App.appContext)){
-				// handling invalid session
-				// 1. cancel the asynctask
-				cancel(true);
-				App.inValidateSession(getActivity());
-			}
+			super.onPreExecute();
 		}
 
 		@Override
-		protected List<Map<String, Object>> doInBackground(String... params) {
-			mIsStarted = true;
-			mIsIdle = false;
-			
-			String url = params[0];
-			HttpPost post = new HttpPost(url);
-			if (mIsUserSpecific){
-				AccessTokenManager.addAccessTokenPost(post, mContext);
-			}
-			
-			try {
-				HttpResponse response = mClient.execute(post);
-				return GeneralHelpers.handlePiaResponseArray(response);
-			} catch (ClientProtocolException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}catch (JSONException e) {
-				e.printStackTrace();
-				Log.e(TAG, "JSONException");
-				Log.e(TAG, "Currently Loading URL:" + url);
-			}finally{
-				if (null != mClient){
-					mClient.close();
-				}
-			}
-			return null;
-		}
+		protected void onCallCompleted(Map<String, Object> result) {}
 
 		@Override
-		protected void onPostExecute(List<Map<String, Object>> resultArray) {
-			if (isCancelled()){
-				return;
-			}
-			if (!AccessTokenManager.isSessionValid(mContext)){
-				return;
-			}
-			onHttpDone(resultArray);
+		protected void onCallCompleted(List<Map<String, Object>> result) {
+			// allow subclasses to call this method
+			onHttpDone(result);
+			
 			if (mOverallProgBar != null){
 				mOverallProgBar.setVisibility(View.GONE);
 			}
 			if (mOverallEmptyListView != null){
 				mOverallEmptyListView.setText(getResources().getString(R.string.no_content_available));
 			}
-			if (isAdded() && resultArray != null){		
-			// always test isAdded for a fragment, this help make sure
-			// the getActivity doesn't return null pointer
-				if (resultArray.size() > 0 ){
-					if (getListAdapter() != null){
-						mCustomAdapter.addAll(resultArray);
-					}else{
-						// it is not normal resultArray.size() >0 but mflag_addData is true
-						Log.e(TAG, "ListAdapter is not set properly, plese check!");
-					}
+			
+			if (result != null){
+				if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+					// if no error
 					if (mfooterview!=null){
 						mfooterview.setVisibility(View.GONE);
 					}
-					
-				}else{
-					// no more list items to be displayed and handle it
-					if (getListView().getCount() < 1){
-						handleEmptyList();;
+					if (result.size()>0){
+						if (mSwipeRefreshLayout.isRefreshing()){
+							// if refreshing is from top, then need to get only new feeds
+							// and add that on top of the list
+							int i = 0;
+							for (Map<String, Object> r : result){
+								if (!mData.contains(r)){
+									mData.add(r);
+									mCustomAdapter.insert(r, i);
+									i++;
+								}else{
+									// the assumption is that once the first item is the 
+									// same as the ones stored in mData, then all those 
+									// following will be also the same
+									break;
+								}
+							}
+						}else{
+							// if refreshing is from bottom, then all needs to be added below
+							mData.addAll(result);
+							mCustomAdapter.addAll(result);
+						}
+						//after all update operations, notify the dataset changed
+						mCustomAdapter.notifyDataSetChanged();
 					}else{
-						handleEndofList();
+						// no more list items to be displayed and handle it
+						if (getListView().getCount() < 1){
+							handleEmptyList();;
+						}else{
+							handleEndofList();
+						}
 					}
+				}else{
+					// if error 
+					String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
+					GeneralHelpers.showAlertDialog(getActivity(), null, errorMsg);
 				}
-				if (mCustomAdapter!= null){
-					mCustomAdapter.notifyDataSetChanged();
-				}
-			}else{
-				Log.d(TAG, "Need to handle null return result cases");
 			}
-			mIsIdle = true;
+			
+			// stop the refreshing animation
+			if (mSwipeRefreshLayout != null){
+				mSwipeRefreshLayout.setRefreshing(false);
+			}
 		}
-		
-		/**
-		 * Check if the current AsyncTask started
-		 * @return
-		 */
-		public boolean isStarted(){
-			return mIsStarted;
-		}
-		
-		/**
-		 * Check if the current AsyncTask is in working state
-		 * @return true if thread is idle, false if thread is running in background
-		 */
-		public boolean isIdle(){
-			return mIsIdle;
-		}
+
+		@Override
+		protected void onCallCompleted(Integer result) {}
 		
 	}
 	

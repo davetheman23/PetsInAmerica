@@ -115,7 +115,7 @@ public class ArticleActivity extends Activity {
 		
 		
 		// get article id from the extra that was set when the activity was started
-		articleId = getIntent().getIntExtra("ArticleId", 0);
+		articleId = getIntent().getIntExtra(Constants.KEY_ARTICALID, 0);
 		//articleId = 397;
 		commentNum = getIntent().getIntExtra(Constants.KEY_ARTICLE_COMMENTS, 0);
 		likeNum = getIntent().getIntExtra(Constants.KEY_ARTICLE_LIKES, 0);

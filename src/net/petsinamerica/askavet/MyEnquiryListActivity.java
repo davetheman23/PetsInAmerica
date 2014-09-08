@@ -55,6 +55,7 @@ public class MyEnquiryListActivity extends FragmentActivity{
 			startActivity(newIntent);
 			
 		}
+
 	}
 
 }
