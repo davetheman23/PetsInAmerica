@@ -21,6 +21,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
@@ -32,6 +33,7 @@ import org.json.JSONException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.http.AndroidHttpClient;
@@ -234,13 +236,7 @@ public class EnquiryPostActivity extends FragmentActivity {
 	 * 2. replace the image tag in the text with image url
 	 * 3. setup an async Task to upload data
 	 */
-	private void submitEnquiry(){
-		
-		uploadProgDialog = new ProgressDialog(this);
-		
-		uploadProgDialog.setMessage("请稍等，正在上传提问 ...");
-		uploadProgDialog.show();
-		
+	private void submitEnquiry(){		
 		
 		// get the inputs everytime the submit button is hit
 		extractUserInputs();
@@ -286,7 +282,11 @@ public class EnquiryPostActivity extends FragmentActivity {
 		}
 		
 		// upload enquiry only after all images are uploaded 
-		new HttpUploadEnquiry().execute(Constants.URL_NEWENQUIRY);
+		new HttpUploadEnquiry()
+			.setParameters(this,CallPiaApiInBackground.TYPE_RETURN_MAP,true)
+			.setErrorDialog(true)
+			.setProgressDialog(true, "请稍等，正在上传提问 ...")
+			.execute(Constants.URL_NEWENQUIRY);
 		
 	}
 	
@@ -328,7 +328,7 @@ public class EnquiryPostActivity extends FragmentActivity {
 		@Override
 		protected void onCallCompleted(List<Map<String, Object>> result) {
 			if (result != null){
-				if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+				if (result.size() > 0 && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
 					// if no error
 					petAdapter = new PetListAdapter(EnquiryPostActivity.this, 
 							R.layout.list_pet_item_with_selection, result);
@@ -345,28 +345,30 @@ public class EnquiryPostActivity extends FragmentActivity {
 		
 	}
 	
-	
-	
-	private class HttpUploadEnquiry extends AsyncTask<String, Void, Map<String, Object>>{
-		
-		AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
+	private class HttpUploadEnquiry extends CallPiaApiInBackground{
 
 		@Override
-		protected Map<String, Object> doInBackground(String... params){
-			String url = params[0];
-			HttpPost post = new HttpPost(url);
-			
-			AccessToken token = AccessTokenManager.readAccessToken(App.appContext);
-			if (token.isExpired()){
-				// TODO do something to report it
+		protected void onCallCompleted(Map<String, Object> result) {			
+			if (result != null){
+				if (!result.containsKey(Constants.KEY_ERROR_MESSAGE)){
+					// results are valid
+					// do something
+					GeneralHelpers.showAlertDialog(EnquiryPostActivity.this,
+							"提问成功！",
+							"您的提问已经成功，我们会尽快给您回复！");
+				}
 			}
+		}
+
+		@Override
+		protected void onCallCompleted(List<Map<String, Object>> result) {
+		}
+
+		@Override
+		protected HttpPost addParamstoPost(HttpPost post, Context context)
+				throws UnsupportedEncodingException, IOException {
 			
-			// construct the parameter list
-			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(11);
-			
-			// add user login information
-			nameValuePairs.add(new BasicNameValuePair(Constants.KEY_USERID, token.getUserId()));
-			nameValuePairs.add(new BasicNameValuePair(Constants.KEY_USERTOKEN, token.getToken()));
+			List<NameValuePair> nameValuePairs = URLEncodedUtils.parse(post.getEntity());
 			
 			// add user enquiries
 			nameValuePairs.add(new BasicNameValuePair(TITLE, getCode(TITLE)));
@@ -380,55 +382,16 @@ public class EnquiryPostActivity extends FragmentActivity {
 			nameValuePairs.add(new BasicNameValuePair(SHOW_PUBLIC, getCode(SHOW_PUBLIC)));
 			nameValuePairs.add(new BasicNameValuePair(PET_ID, Integer.toString(mUserInputs.getInt(PET_ID))));
 			
-			try {
-				HttpParams httpParams = mClient.getParams();
-				//httpParams.setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, Charset.forName("UTF-8"));
-				HttpConnectionParams.setConnectionTimeout(httpParams, 10*1000); // time in 10 second
-				
-				// add the params into the post, make sure to include encoding UTF_8 as follows
-				post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
-
-				// execute post
-				HttpResponse response = mClient.execute(post);
-				
-				return GeneralHelpers.handlePiaResponse(response);
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}finally{
-				if (mClient!=null){
-					mClient.close();
-				}
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Map<String, Object> result) {
-			if (uploadProgDialog != null){
-				uploadProgDialog.dismiss();
-			}
+			// add the params into the post, make sure to include encoding UTF_8 as follows
+			post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
 			
-			if (result != null){
-				if (!result.containsKey(Constants.KEY_ERROR_MESSAGE)){
-					// results are valid
-					// do something
-					GeneralHelpers.showAlertDialog(EnquiryPostActivity.this,
-							"提问成功！",
-							"您的提问已经成功，我们会尽快给你回复！");
-				}else{
-					// results are not valid
-					GeneralHelpers.showAlertDialog(EnquiryPostActivity.this, 
-							"您进行的操作似乎有误",
-							result.get(Constants.KEY_ERROR_MESSAGE).toString());
-				}
-			}
+			return post;
 		}
 		
+		
+		
 	}
+	
 	
 	private class HttpUploadImage extends AsyncTask<Uri, Void, Map<String, Object>>{
 		

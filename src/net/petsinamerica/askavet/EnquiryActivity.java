@@ -183,8 +183,6 @@ public class EnquiryActivity extends FragmentActivity {
 		}
 	}
 
-	
-
 
 	@Override
 	protected void onDestroy() {
@@ -246,7 +244,7 @@ public class EnquiryActivity extends FragmentActivity {
 					}
 					if (submitReplyInBackground == null){
 						submitReplyInBackground = (SubmitReplyInBackground) new SubmitReplyInBackground()
-							.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST)
+							.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST,true)
 							.setProgressDialog(true,"回复正在提交中，请稍后。。。")
 							.setErrorDialog(true)
 							.execute(Constants.URL_ENQUIRY_REPLY);
@@ -274,7 +272,7 @@ public class EnquiryActivity extends FragmentActivity {
 			// call api in background 
 			String queryURL_API = Constants.URL_ENQUIRY_DETAILS + Integer.toString(mQueryId);
 			getEnquiryInBackground = (GetEnquiryInBackground) new GetEnquiryInBackground()
-				.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST)
+				.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST,true)
 				.execute(queryURL_API);
 			
 			return rootView;
@@ -316,13 +314,15 @@ public class EnquiryActivity extends FragmentActivity {
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {
 				// get the query information
-				if (result != null && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
-					// if no error
-					detailList = new EnquiryDetailListAdapter(mContext, 
-							R.layout.list_enquiry_details_header_item, 
-							R.layout.list_enquiry_details_item, result);
-			
-					setListAdapter(detailList);
+				if (result != null){
+					if (result.size() > 0 && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+						// if no error
+						detailList = new EnquiryDetailListAdapter(mContext, 
+								R.layout.list_enquiry_details_header_item, 
+								R.layout.list_enquiry_details_item, result);
+				
+						setListAdapter(detailList);
+					}
 				}
 			}
 		}
@@ -330,7 +330,7 @@ public class EnquiryActivity extends FragmentActivity {
 		private class SubmitReplyInBackground extends CallPiaApiInBackground{
 
 			@Override
-			protected void addParamstoPost(HttpPost post, Context context)
+			protected HttpPost addParamstoPost(HttpPost post, Context context)
 					throws UnsupportedEncodingException, IOException {
 				
 				// here assume that user inputs are all valid, checks need to be performed before 
@@ -338,6 +338,7 @@ public class EnquiryActivity extends FragmentActivity {
 				
 				// get the parameters already exited in the post, normally are user Id and token
 				List<NameValuePair> nameValuePairs = URLEncodedUtils.parse(post.getEntity());
+				
 				// add more parameters to the post
 				nameValuePairs.add(new BasicNameValuePair("queryid", Integer.toString(mQueryId)));
 				nameValuePairs.add(new BasicNameValuePair(Constants.KEY_CONTENT, content));
@@ -345,6 +346,7 @@ public class EnquiryActivity extends FragmentActivity {
 				// reset a new entity with all parameters 
 				post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
 				
+				return post;
 			}
 
 			@Override
@@ -353,16 +355,22 @@ public class EnquiryActivity extends FragmentActivity {
 
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {
-				if (result != null && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
-					// if no error
-					if (detailList != null){
-						detailList.clear();
-						detailList.addAll(result);
-						detailList.notifyDataSetChanged();
+				if (result != null){
+					if (result.size() > 0 && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+						// if no error
+						// update the list of all Q&A
+						if (detailList != null){
+							detailList.clear();
+							detailList.addAll(result);
+							detailList.notifyDataSetChanged();
+						}
+						// show success message
+						GeneralHelpers.showAlertDialog(getActivity(), "成功", "您的回复已成功提交，请耐心等候兽医的回复");
+						// empty the reply box
+						et_ReplyContent.setText("");
 					}
 				}
 			}
-
 		}
 	}
 	

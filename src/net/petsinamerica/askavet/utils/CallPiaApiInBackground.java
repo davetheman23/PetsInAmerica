@@ -51,7 +51,6 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 	protected AndroidHttpClient mClient = AndroidHttpClient.newInstance("");
 	
 	/** set parameters to customize this abstract class
-	 * @param context   context of which started this API call task
 	 * @param resultType	the type of the http response object, default is map type 
 	 * @param requireValidSession	whether this call require a valid login session, default is true
 	 */
@@ -61,17 +60,6 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 		mRequireValidSession = requireValidSession;
 		return this;
 	}
-	
-	/** set parameters to customize this abstract class
-	 * @param context   context of which started this API call task
-	 * @param resultType	the type of the http response object, default is map type 
-	 */
-	public CallPiaApiInBackground setParameters(Context context, int resultType){
-		mContext = context;
-		mType = resultType;
-		return this;
-	}
-	
 	/**
 	 * set if to show the progress dialog during the doInBackground,
 	 * default behavior is not showing the progress dialog
@@ -226,10 +214,11 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 		App.inValidateSession(mContext);
 	};
 	
-	/** add additional parameters to the post object, do not need to call super(),
-	 * this assumes the app session is valid */
-	protected void addParamstoPost(HttpPost post, Context context) 
+	/** add additional parameters to the post object, default implementation is just return 
+	 * an identical post from the input this assumes the app session is valid */
+	protected HttpPost addParamstoPost(HttpPost post, Context context) 
 			 						throws UnsupportedEncodingException, IOException{
+		return post;
 	}
 	
 	/**

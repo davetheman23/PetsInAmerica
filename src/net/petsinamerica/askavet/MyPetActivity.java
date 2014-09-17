@@ -106,7 +106,7 @@ public class MyPetActivity extends FragmentActivity{
 		public void onViewCreated(View view, Bundle savedInstanceState) {
 			super.onViewCreated(view, savedInstanceState);
 			getPetListInBackground = (GetPetListInBackground) new GetPetListInBackground()
-				.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST)
+				.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST,true)
 				.setErrorDialog(true)
 				.execute(Constants.URL_USERPETS + "/" + UserInfoManager.userid);
 			
@@ -120,18 +120,20 @@ public class MyPetActivity extends FragmentActivity{
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {
 				// get the query information
-				if (result != null && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
-					// if no error
-					LayoutInflater inflater = (LayoutInflater) getActivity()
-							.getSystemService(Context.LAYOUT_INFLATER_SERVICE);										
-					View footerview = (View) inflater.inflate(R.layout.list_footer_pet_item_addpet, null);
-					getListView().addFooterView(footerview);
-					getListView().setFooterDividersEnabled(true);
-					
-					PetListAdapter2 petlist = new PetListAdapter2(mContext, 
-							R.layout.list_pet_item, result);
-					
-					setListAdapter(petlist);
+				if (result != null){ 
+					if (result.size() > 0 && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+						// if no error
+						LayoutInflater inflater = (LayoutInflater) getActivity()
+								.getSystemService(Context.LAYOUT_INFLATER_SERVICE);										
+						View footerview = (View) inflater.inflate(R.layout.list_footer_pet_item_addpet, null);
+						getListView().addFooterView(footerview);
+						getListView().setFooterDividersEnabled(true);
+						
+						PetListAdapter2 petlist = new PetListAdapter2(mContext, 
+								R.layout.list_pet_item, result);
+						
+						setListAdapter(petlist);
+					}
 				}else{
 					// do something here if necessary
 				}

@@ -124,11 +124,10 @@ public class CommentActivity extends FragmentActivity{
 						return;
 					}
 					
-					//GeneralHelpers.showMessage(mContext, "新评论功能还在完善中");
 					String url = Constants.URL_NEW_COMMENT;
 					// call api in background
 					submitNewComments = (SubmitNewComments) new SubmitNewComments()
-						.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_LIST)
+						.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_LIST,true)
 						.setProgressDialog(true, "请稍等，正在提交您的评论！")
 						.setErrorDialog(true)
 						.execute(url);
@@ -148,7 +147,7 @@ public class CommentActivity extends FragmentActivity{
 			}
 			// call api in background
 			getCommentsInBackground = (GetCommentsInBackground) new GetCommentsInBackground()
-				.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_LIST)
+				.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_LIST,true)
 				.setErrorDialog(true)
 				.execute(url);
 			
@@ -174,14 +173,17 @@ public class CommentActivity extends FragmentActivity{
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {
 				// get the query information
-				if (result != null && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
-					if (commentlist == null){
-						commentlist = new CommentListAdapter(mContext, 
-								R.layout.list_comment_item, result);
-						setListAdapter(commentlist);
-					}else{
-						commentlist.addAll(result);
-						commentlist.notifyDataSetChanged();
+				if (result != null){
+					if (result.size() > 0 && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+						if (commentlist == null){
+							commentlist = new CommentListAdapter(mContext, 
+									R.layout.list_comment_item, result);
+							setListAdapter(commentlist);
+						}else{
+							// TODO need to check to see if any items are already added in the list
+							commentlist.addAll(result);
+							commentlist.notifyDataSetChanged();
+						}
 					}
 				}
 			}
@@ -189,7 +191,7 @@ public class CommentActivity extends FragmentActivity{
 		private class SubmitNewComments extends CallPiaApiInBackground{
 
 			@Override
-			protected void addParamstoPost(HttpPost post, Context context)
+			protected HttpPost addParamstoPost(HttpPost post, Context context)
 					throws UnsupportedEncodingException, IOException {
 				
 				List<NameValuePair> nameValuePairs = URLEncodedUtils.parse(post.getEntity());
@@ -202,7 +204,7 @@ public class CommentActivity extends FragmentActivity{
 				
 				// add the params into the post, make sure to include encoding UTF_8 as follows
 				post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));				
-				
+				return post;
 			}
 
 			@Override
@@ -211,14 +213,16 @@ public class CommentActivity extends FragmentActivity{
 
 			@Override
 			protected void onCallCompleted(List<Map<String, Object>> result) {
-				if (result != null && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
-					// if no error
-					GeneralHelpers.showMessage(getActivity(), 
-							"您的评论已成功发表！");
-					if (commentlist != null){
-						commentlist.clear();
-						commentlist.addAll(result);
-						commentlist.notifyDataSetChanged();
+				if (result != null){
+					if (result.size() > 0 && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+						// if no error
+						GeneralHelpers.showMessage(getActivity(), 
+								"您的评论已成功发表！");
+						if (commentlist != null){
+							commentlist.clear();
+							commentlist.addAll(result);
+							commentlist.notifyDataSetChanged();
+						}
 					}
 				}else{
 					GeneralHelpers.showAlertDialog(getActivity(), 

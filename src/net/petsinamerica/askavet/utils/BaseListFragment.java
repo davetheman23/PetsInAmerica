@@ -13,6 +13,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
@@ -163,7 +164,7 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 			url = mUrl + Integer.toString(mPage);
 		}
 		httpPostTask = (HttpPostTask) new HttpPostTask()
-			.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_LIST, mIsUserSpecific)
+			.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST, mIsUserSpecific)
 			.setErrorDialog(mShowErrorDialog)
 			.setProgressDialog(mShowProgressDialog, null)
 			.execute(url);
@@ -364,6 +365,7 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	
 	
 	private class HttpPostTask extends CallPiaApiInBackground{
+
 		@Override
 		protected void onPreExecute() {
 			if (mOverallProgBar != null && getListView().getCount() <= 1){
@@ -390,13 +392,15 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 				mOverallEmptyListView.setText(getResources().getString(R.string.no_content_available));
 			}
 			
+			if (mfooterview!=null){
+				mfooterview.setVisibility(View.GONE);
+			}
+			
 			if (result != null){
-				if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
-					// if no error
-					if (mfooterview!=null){
-						mfooterview.setVisibility(View.GONE);
-					}
-					if (result.size()>0){
+				if (result.size()>0){
+					// if have return results or have error
+					if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
+						// if no error
 						if (mSwipeRefreshLayout.isRefreshing()){
 							// if refreshing is from top, then need to get only new feeds
 							// and add that on top of the list
@@ -421,17 +425,17 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 						//after all update operations, notify the dataset changed
 						mCustomAdapter.notifyDataSetChanged();
 					}else{
-						// no more list items to be displayed and handle it
-						if (getListView().getCount() < 1){
-							handleEmptyList();;
-						}else{
-							handleEndofList();
-						}
+						// if there is an error from server
+						String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
+						handleErrorMessage(errorMsg);
 					}
 				}else{
-					// if error, can set show error dialog to false then do something here
-					String errorMsg = result.get(0).get(Constants.KEY_ERROR_MESSAGE).toString();
-					handleErrorMessage(errorMsg);
+					// if success but no return results
+					if (getListView().getCount() < 1){
+						handleEmptyList();;
+					}else{
+						handleEndofList();
+					}
 				}
 			}
 			

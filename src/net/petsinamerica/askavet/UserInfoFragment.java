@@ -2,6 +2,7 @@ package net.petsinamerica.askavet;
 
 import net.petsinamerica.askavet.utils.Constants;
 import net.petsinamerica.askavet.utils.UserInfoManager;
+import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 	private TextView tv_nickname;
 	private TextView tv_weiboUsername;
 	private TextView tv_city;
+	private Button btn_edit;
 	/*private static HorizontalListView hv_PetList;*/
 	public static ImageView iv_avatar;
 	
@@ -51,6 +54,8 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 		
 	}
 	
+	LayoutTransition layoutTransition;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -61,6 +66,16 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 		tv_weiboUsername = (TextView) rootview.findViewById(R.id.frag_userinfo_weibousername);
 		tv_city = (TextView) rootview.findViewById(R.id.frag_userinfo_city);
 		iv_avatar = (ImageView) rootview.findViewById(R.id.frag_userinfo_image);
+		btn_edit = (Button) rootview.findViewById(R.id.frag_userinfo_edit);
+		
+		btn_edit.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				
+				Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+				startActivity(intent);
+			}
+		});
 		
 		
 		for (final int linearLayout : linearLayouts){

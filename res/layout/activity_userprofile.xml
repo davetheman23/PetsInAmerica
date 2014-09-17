@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/activity_userprofile_pic"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp"
+        android:src="@drawable/someone" />
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/activity_userprofile_pic"
+        android:layout_margin="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp" >
+
+        <TableRow
+            android:id="@+id/activity_userprofile_nickname_row"
+            android:layout_marginTop="5dp" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="@string/label_nickname" />
+
+            <EditText
+                android:id="@+id/activity_userprofile_nickname"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="3"
+                android:background="@drawable/textlines"
+                android:inputType="phone|none"
+                android:padding="4dp"
+                android:hint="@string/label_nickname"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/activity_userprofile_email_row"
+            android:layout_marginTop="15dp" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="@string/label_email" />
+
+            <EditText
+                android:id="@+id/activity_userprofile_email"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="3"
+                android:background="@drawable/textlines"
+                android:inputType="textEmailAddress|none"
+                android:padding="4dp"
+                android:hint="@string/label_email"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/activity_userprofile_gender_row"
+            android:layout_marginTop="15dp" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="@string/label_gender" />
+
+            <Spinner
+                android:id="@+id/activity_userprofile_gender"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:background="@drawable/textlines"
+                android:entries="@array/spinner_gender"
+                android:gravity="left|center_vertical" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/activity_userprofile_phone_row"
+            android:layout_marginTop="15dp" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="@string/label_phone" />
+
+            <EditText
+                android:id="@+id/activity_userprofile_phone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="3"
+                android:background="@drawable/textlines"
+                android:inputType="phone|none"
+                android:padding="4dp"
+                android:hint="请输入电话号码"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </TableRow>
+        <TableRow
+            android:id="@+id/activity_userprofile_country_row"
+            android:layout_marginTop="15dp" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="国家" />
+
+            <EditText
+                android:id="@+id/activity_userprofile_country"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="3"
+                android:background="@drawable/textlines"
+                android:inputType="phone|none"
+                android:padding="4dp"
+                android:hint ="请输入所在国家"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </TableRow>
+        <TableRow
+            android:id="@+id/activity_userprofile_city_row"
+            android:layout_marginTop="15dp" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="@string/label_city" />
+
+            <EditText
+                android:id="@+id/activity_userprofile_city"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="3"
+                android:background="@drawable/textlines"
+                android:inputType="phone|none"
+                android:padding="4dp"
+                android:hint="@string/label_city"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </TableRow>
+        <TableRow
+            android:id="@+id/activity_userprofile_zipcode_row"
+            android:layout_marginTop="15dp" >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="@string/label_city" />
+
+            <EditText
+                android:id="@+id/activity_userprofile_zipcode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="3"
+                android:background="@drawable/textlines"
+                android:inputType="phone|none"
+                android:padding="4dp"
+                android:hint="邮编"
+                android:textAppearance="@android:style/TextAppearance.Small" />
+        </TableRow>
+    </TableLayout>
+
+    <Button
+        android:id="@+id/activity_userprofile_submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center_horizontal"
+        android:background="?android:attr/selectableItemBackground"
+        android:text="提交修改" />
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="0.5dp"
+        android:layout_above="@id/activity_userprofile_submit"
+        android:layout_margin="5dp"
+        android:layout_span="2"
+        android:background="#999" />
+
+</RelativeLayout>

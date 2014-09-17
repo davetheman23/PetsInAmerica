@@ -3,27 +3,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:animateLayoutChanges="true">
 
     <LinearLayout
+        android:id="@+id/frag_userinfo_top_level"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/WhiteSmoke"
-        android:orientation="vertical" >
+        android:orientation="vertical" 
+        android:animateLayoutChanges="true">
 
 	  	<RelativeLayout 
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:padding="10dp"
 	        android:layout_margin="10dp"
-	        android:background="@drawable/layer_card_background2">
+	        android:background="@drawable/layer_card_background2"
+	        android:animateLayoutChanges="true">
 	        <ImageView
 	           android:id="@+id/frag_userinfo_image"
 	           android:layout_width="100dp"
 	           android:layout_height="100dp"
 	           android:contentDescription="ProfilePic"
 	            android:layout_alignParentLeft="true"
-	            android:layout_centerInParent="true"
+	            android:layout_alignParentTop="true"
 	           android:padding="5dp"
 	           android:src="@drawable/someone" />
 
@@ -45,6 +49,7 @@
 	            android:layout_below="@id/frag_userinfo_edit"
 	            android:layout_marginLeft="10dp"
 	            android:layout_toRightOf="@id/frag_userinfo_image"
+	            android:animateLayoutChanges="true"
 	            android:gravity="center_horizontal" >
 	            <TableRow>
 		            <View
@@ -121,7 +126,10 @@
 		                android:gravity="left"
 		                android:text="广州" />
 		        </TableRow>
+		        
 	        </TableLayout>
+	        
+			
 	
 	    </RelativeLayout>
 	    
@@ -135,6 +143,7 @@
 	        android:layout_marginRight="10dp"
 	        android:layout_marginBottom="10dp"
 	        android:paddingRight="2dp"
+        	android:animateLayoutChanges="true"
 	       	>
 	       <LinearLayout
 	            android:id="@+id/frag_userinfo_ll_likedarticles"
@@ -142,11 +151,14 @@
 	            android:layout_height="wrap_content"
 	            android:gravity="center_horizontal"
 	            android:orientation="horizontal"
-	            android:paddingLeft="5dp"
-	            android:paddingRight="5dp"
+	            android:paddingTop="5dp"
+	            android:paddingBottom="5dp"
+	            android:paddingLeft="10dp"
+	            android:paddingRight="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:clickable="true"
-	            android:background="@drawable/layout_selector">
+	            android:background="@drawable/layout_selector"
+	            android:animateLayoutChanges="true">
 		        <ImageView 
 	                android:layout_width="30dp"
 	                android:layout_height="match_parent"
@@ -209,8 +221,10 @@
 	            android:layout_height="wrap_content"
 	            android:gravity="center_horizontal"
 	            android:orientation="horizontal"
-	            android:paddingLeft="5dp"
-	            android:paddingRight="5dp"
+	            android:paddingTop="5dp"
+	            android:paddingBottom="5dp"
+	            android:paddingLeft="10dp"
+	            android:paddingRight="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:background="@drawable/layout_selector" >
 	            <ImageView 
@@ -274,10 +288,13 @@
 	            android:layout_height="wrap_content"
 	            android:gravity="center_horizontal"
 	            android:orientation="horizontal"
-	            android:paddingLeft="5dp"
-	            android:paddingRight="5dp"
+	            android:paddingTop="5dp"
+	            android:paddingBottom="5dp"
+	            android:paddingLeft="10dp"
+	            android:paddingRight="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:background="@drawable/layout_selector" 
+	            
 	            android:visibility="gone">
 	            <ImageView 
 	                android:layout_width="30dp"
@@ -333,28 +350,16 @@
 		             android:text=">" 
 		             android:textAppearance="@android:style/TextAppearance.Small"/>
 	      	</LinearLayout>
-	      
-	    </LinearLayout>
-	    
-	    <LinearLayout
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:gravity="left|center_vertical"
-	        android:orientation="vertical"
-	        android:layout_marginLeft="10dp"
-	        android:layout_marginRight="10dp"
-	        android:layout_marginBottom="10dp"
-	        android:paddingRight="2dp"
-	        
-	       	>
-	    	<LinearLayout
+	      	<LinearLayout
 	    	    android:id="@+id/frag_userinfo_ll_myenquiries"
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
 	            android:gravity="center_horizontal"
 	            android:orientation="horizontal"
-	            android:paddingLeft="5dp"
-	            android:paddingRight="5dp"
+	            android:paddingTop="5dp"
+	            android:paddingBottom="5dp"
+	            android:paddingLeft="10dp"
+	            android:paddingRight="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:background="@drawable/layout_selector" >
 	            <ImageView 
@@ -419,8 +424,10 @@
 	            android:layout_height="wrap_content"
 	            android:gravity="center_horizontal"
 	            android:orientation="horizontal"
-	            android:paddingLeft="5dp"
-	            android:paddingRight="5dp"
+	            android:paddingTop="5dp"
+	            android:paddingBottom="5dp"
+	            android:paddingLeft="10dp"
+	            android:paddingRight="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:background="@drawable/layout_selector" >
 	            
@@ -477,44 +484,17 @@
 		             android:layout_marginRight="5dp"
 		             android:gravity="center_vertical|right"
 		             android:text=">" />
-	            
 	      	</LinearLayout>
-	      	
-	        <!--<com.meetme.android.horizontallistview.HorizontalListView
-	            android:id="@+id/frag_userinfo_petlist_container"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
-	            android:layout_marginLeft="15dp"
-	            android:layout_marginRight="15dp"
-	            android:minHeight="150dp"/>
-	            -->
-			<!-- <FrameLayout 
-				  android:id="@+id/frag_userinfo_petlist_container"
-				  android:layout_width="fill_parent"
-				  android:layout_height="fill_parent"
-				  android:padding="5dp"
-				  android:layout_marginBottom="2dp"
-				  android:background="@drawable/layer_card_background2"/>
-			-->
-	     </LinearLayout>
-	     <LinearLayout
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:gravity="left|center_vertical"
-	        android:orientation="vertical"
-	        android:layout_marginLeft="10dp"
-	        android:layout_marginRight="10dp"
-	        android:paddingRight="2dp"
-	        
-	       	>
-	     	<LinearLayout
+	      	<LinearLayout
 	     	    android:id="@+id/frag_userinfo_ll_settings"
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
 	            android:gravity="center_horizontal"
 	            android:orientation="horizontal"
-	            android:paddingLeft="5dp"
-	            android:paddingRight="5dp"
+	            android:paddingTop="5dp"
+	            android:paddingBottom="5dp"
+	            android:paddingLeft="10dp"
+	            android:paddingRight="10dp"
 	            android:layout_marginBottom="10dp"
 	            android:background="@drawable/layout_selector"  >
 	            <ImageView 
@@ -542,37 +522,8 @@
 		             android:gravity="center_vertical|right"
 		             android:text=">" />
 	      	</LinearLayout>
-	     </LinearLayout>
-	     
-	     <!-- 
-	    <RelativeLayout 
-	        android:id="@+id/frag_userinfo_petlist_container"
-	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"
-	        android:layout_below="@id/frag_userinfo_tablelayout"
-	        android:padding="5dp">
-	        <ListView 
-	            android:id="@android:id/list"
-	            android:layout_width="fill_parent"
-	            android:layout_height="fill_parent"
-	            android:paddingTop="5dp"
-	            android:paddingBottom="5dp">
-	        </ListView>
-	        <TextView
-		        android:id="@android:id/empty"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content" 
-		        android:text="@string/no_content_available"
-		        android:layout_centerInParent="true"/>
-	    </RelativeLayout>
-	     -->
-	<!-- 	 
-		<android.support.v4.view.ViewPager 
-	    	xmlns:tools="http://schemas.android.com/tools"
-	    	android:id="@+id/pager"
-	    	android:layout_width="fill_parent"
-	    	android:layout_height="fill_parent"
-	    	tools:context=".HomeActivity" />
-	 -->
-	</LinearLayout>	 
+	      
+	    </LinearLayout>
+	    
+	</LinearLayout>    
 </ScrollView>

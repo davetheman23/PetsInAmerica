@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.igexin.sdk.PushConsts;
 
@@ -160,10 +161,15 @@ public class PushReceiver extends BroadcastReceiver {
 		}
 
 		@Override
-		protected void addParamstoPost(HttpPost post, Context context) 
+		protected HttpPost addParamstoPost(HttpPost post, Context context) 
 												throws UnsupportedEncodingException, IOException {
 			
 			List<NameValuePair> nameValuePairs = URLEncodedUtils.parse(post.getEntity());
+			if (nameValuePairs == null){
+				Toast.makeText(context, "Push Receiver bind failed", Toast.LENGTH_LONG).show();
+				Log.d("Push Receiver", "Binding failed. cannot find post entity");
+				return post;
+			}
 			// add user login information
 			nameValuePairs.add(new BasicNameValuePair("cid", cid));
 			
@@ -172,6 +178,8 @@ public class PushReceiver extends BroadcastReceiver {
 			
 			// add the params into the post, make sure to include encoding UTF_8 as follows
 			post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
+			Log.d("Push Receiver", "Binding success." + nameValuePairs.toString());
+			return post;
 		}
 
 		@Override

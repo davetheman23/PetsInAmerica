@@ -50,6 +50,9 @@
     <string name="label_email">邮箱</string>
     <string name="label_city">城市</string>
     <string name="label_weibo_name">微博名</string>
+    <string name="label_gender">性别</string>
+    <string name="label_phone">电话</string>
+    <string name="label_birthday">生日</string>
     <string name="label_my_pets">我的宠物</string>
     <string name="label_my_enquiries">我的提问</string>
     <string name="label_my_comment_articles">我评论过的文章</string>
@@ -57,6 +60,10 @@
     <string name="label_my_favorites">我的收藏</string>
     <string name="label_my_petfriends">我的宠物好友</string>
     <string name="label_setting">设置</string>
+    <string-array name="spinner_gender">
+		<item>男</item>
+		<item>女</item>
+	</string-array>
     
     
     <!-- Pet Info page  -->

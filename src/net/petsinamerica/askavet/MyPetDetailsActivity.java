@@ -95,7 +95,7 @@ public class MyPetDetailsActivity extends FragmentActivity {
 			// this has to be initialized first 
 			if (mPetid != NOT_INITIALIZED){
 				getPetInfoTask = (GetPetInfoTask) new GetPetInfoTask()
-					.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_MAP)
+					.setParameters(getActivity(), CallPiaApiInBackground.TYPE_RETURN_MAP, true)
 					.setErrorDialog(true)
 					.execute(Constants.URL_PETINFO + mPetid);
 			}

@@ -205,7 +205,7 @@ public class SignUpActivity extends Activity {
 		}
 		
 		@Override
-		protected void addParamstoPost(HttpPost post, Context context) 
+		protected HttpPost addParamstoPost(HttpPost post, Context context) 
 												throws UnsupportedEncodingException {
 			
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
@@ -220,6 +220,8 @@ public class SignUpActivity extends Activity {
 			
 			// add the params into the post, make sure to include encoding UTF_8 as follows
 			post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
+			
+			return post;
 		}
 		
 	}
