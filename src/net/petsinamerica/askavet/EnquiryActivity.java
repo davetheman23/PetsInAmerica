@@ -19,7 +19,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -217,6 +219,8 @@ public class EnquiryActivity extends FragmentActivity {
 		
 		private EditText et_ReplyContent;
 		
+		private LinearLayout ll_ctrls;
+		
 		private EnquiryDetailListAdapter detailList;
 
 		@Override
@@ -228,6 +232,12 @@ public class EnquiryActivity extends FragmentActivity {
 		public void setParameters(int queryId, int ownerId){
 			mQueryId = queryId;
 			mQueryOwnerId = ownerId;
+		}
+		
+		private void setReplyControlsVisibility(int visibility){
+			ll_ctrls.setVisibility(visibility);
+			btn_SubmitReply.setVisibility(visibility);
+			et_ReplyContent.setVisibility(visibility);
 		}
 
 		@Override
@@ -260,14 +270,9 @@ public class EnquiryActivity extends FragmentActivity {
 			});
 			et_ReplyContent = (EditText) rootView.findViewById(R.id.frag_enquiry_details_reply_content);
 			
-			LinearLayout ll = (LinearLayout) rootView.findViewById(R.id.frag_enquiry_details_controls);
+			ll_ctrls = (LinearLayout) rootView.findViewById(R.id.frag_enquiry_details_controls);
 			
-			// check to see if the enquiry is asked by the user, if not, only allow viewing
-			if (mQueryOwnerId != AccessTokenManager.getUserId(App.appContext)){
-				ll.setVisibility(View.GONE);
-				btn_SubmitReply.setVisibility(View.GONE);
-				et_ReplyContent.setVisibility(View.GONE);
-			}
+			setReplyControlsVisibility(View.GONE);
 			
 			// call api in background 
 			String queryURL_API = Constants.URL_ENQUIRY_DETAILS + Integer.toString(mQueryId);
@@ -317,6 +322,58 @@ public class EnquiryActivity extends FragmentActivity {
 				if (result != null){
 					if (result.size() > 0 && !result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
 						// if no error
+						Map<String, Object> enquiry = result.get(0);
+						if (enquiry.containsKey("status")){
+							// check to see if:
+							// 1. the enquiry is asked by the user, if not, only allow viewing
+							// 2. the answer status is new answer
+							if (Integer.parseInt(enquiry.get("status").toString()) == Constants.STATUS_NEWANSWER
+								&& mQueryOwnerId == AccessTokenManager.getUserId(App.appContext)){
+								
+								// set up the footer to allow the user to mark the problem as solved
+								LayoutInflater inflater = (LayoutInflater) mContext
+										.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+								View footerview = (View) inflater.inflate(R.layout.list_enquiry_details_footer_item, null);
+								getListView().addFooterView(footerview);
+								getListView().setFooterDividersEnabled(true);
+								
+								// set up a alert dialog to double check with the user if enquiry should be marked solved
+								Button btn_submitSolved = (Button) footerview.findViewById(R.id.list_enquiry_details_footer_submitsolved);
+								btn_submitSolved.setOnClickListener(new View.OnClickListener() {
+									@Override
+									public void onClick(View v) {
+										AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+										builder.setTitle("请确认")
+										.setMessage("您的问题已经得到解决了么？")
+										.setCancelable(false)
+										.setPositiveButton("是的", new DialogInterface.OnClickListener(){
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												new SubmitSolvedInBackground()
+													.setParameters(mContext, CallPiaApiInBackground.TYPE_RETURN_MAP, true)
+													.setErrorDialog(true)
+													.setProgressDialog(true, null)
+													.execute(Constants.URL_ENQUIRY_MARKSOLVED);
+												dialog.cancel();
+											}
+											
+										})
+										.setNegativeButton("还没有", new DialogInterface.OnClickListener() {
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												// allow user to reply if it is his/her own question 
+												setReplyControlsVisibility(View.VISIBLE);
+												dialog.cancel();
+											}
+										});
+										AlertDialog dialog = builder.create();
+										dialog.show();
+									}
+								});
+							}
+						}
+						
+						// load the enquiry questions in the list
 						detailList = new EnquiryDetailListAdapter(mContext, 
 								R.layout.list_enquiry_details_header_item, 
 								R.layout.list_enquiry_details_item, result);
@@ -325,6 +382,46 @@ public class EnquiryActivity extends FragmentActivity {
 					}
 				}
 			}
+		}
+		
+		private class SubmitSolvedInBackground extends CallPiaApiInBackground{
+			
+			@Override
+			protected HttpPost addParamstoPost(HttpPost post, Context context)
+					throws UnsupportedEncodingException, IOException {
+				
+				// get the parameters already exited in the post, normally are user Id and token
+				List<NameValuePair> nameValuePairs = URLEncodedUtils.parse(post.getEntity());
+				
+				// add more parameters to the post
+				nameValuePairs.add(new BasicNameValuePair("queryid", Integer.toString(mQueryId)));
+				
+				// reset a new entity with all parameters 
+				post.setEntity(new UrlEncodedFormEntity(nameValuePairs, HTTP.UTF_8));
+				
+				return post;
+			}
+
+			@Override
+			protected void onCallCompleted(Map<String, Object> result) {
+				if (result != null){
+					if (!result.containsKey(Constants.KEY_ERROR_MESSAGE)){
+						// if no error
+						// show success message
+						GeneralHelpers.showAlertDialog(getActivity(), "解决了！", "谢谢您的提问，问题已解决！如果问题有新发展，请按新问题提问。");
+						// empty the reply box
+						ll_ctrls.setVisibility(View.GONE);
+					}
+				}
+				
+			}
+
+			@Override
+			protected void onCallCompleted(List<Map<String, Object>> result) {
+				// TODO Auto-generated method stub
+				
+			}
+			
 		}
 		
 		private class SubmitReplyInBackground extends CallPiaApiInBackground{

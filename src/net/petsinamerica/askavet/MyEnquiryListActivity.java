@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.widget.ArrayAdapter;
 
 public class MyEnquiryListActivity extends FragmentActivity{
 	
@@ -54,6 +55,17 @@ public class MyEnquiryListActivity extends FragmentActivity{
 			startActivity(newIntent);
 			
 		}
+
+
+		@Override
+		protected void refreshList(List<Map<String, Object>> result) {
+			setListData(result);
+			ArrayAdapter<Map<String, Object>> adapter = (ArrayAdapter<Map<String, Object>>) getListAdapter();
+			adapter.clear();
+			adapter.addAll(result);
+		}
+		
+		
 
 	}
 

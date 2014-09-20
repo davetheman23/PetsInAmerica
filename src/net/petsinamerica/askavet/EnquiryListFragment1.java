@@ -54,8 +54,6 @@ public class EnquiryListFragment1 extends Fragment {
 		mMyListFragment.setParameters(Constants.URL_MYENQUIRY, true, false,true, true, false);
 		mMyListFragment.setUserDataFlag(true);
 		mMyListFragment.setPage(1);
-		
-		
 	}
 	
 	@Override
@@ -171,9 +169,8 @@ public class EnquiryListFragment1 extends Fragment {
 			//Record_Usage(articleID);
 			Intent newIntent = new Intent(mContext, EnquiryActivity.class);
 			int queryId = ((EnquiryListAdapter)this.getListAdapter()).getQueryID(v);
-			newIntent.putExtra("QueryId", queryId);
+			newIntent.putExtra(Constants.KEY_QUERYID, queryId);
 			startActivity(newIntent);
-			
 		}
 	}
 	

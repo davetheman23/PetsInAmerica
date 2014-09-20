@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.petsinamerica.askavet.utils.Constants;
 import android.content.Context;
+import android.content.res.XmlResourceParser;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,33 +102,38 @@ public class EnquiryListAdapter extends ArrayAdapter<Map<String,Object>> {
 		
 		String ownerId = enquiry.get("owner").toString();
 		String title = enquiry.get(TAG_TITLE).toString();
-		String userAvatarURL = enquiry.get(TAG_AVATAR).toString();
-		String ownerName = enquiry.get(TAG_OWNERNAME).toString();
+		String userAvatarURL = null;
+		if (enquiry.containsKey(TAG_AVATAR)){
+			userAvatarURL = enquiry.get(TAG_AVATAR).toString();
+		}
+		String ownerName = null;
+		if (enquiry.containsKey(TAG_OWNERNAME)){
+			ownerName = enquiry.get(TAG_OWNERNAME).toString();
+		}
 		String queryID = enquiry.get(TAG_ID).toString();
 		String date = enquiry.get(TAG_DATE).toString();
 		String content = enquiry.get(TAG_CONTENT).toString();
 		int status = Integer.parseInt(enquiry.get(TAG_STATUS).toString());
 		int status_color = android.R.color.black;
-		// TODO need to convert these hard-coded strings 
 		String sStatus = null;
 		switch (status){
-		case 0:
+		case Constants.STATUS_ONGOING:
 			sStatus = "进行中";
 			status_color = android.graphics.Color.GREEN;
 			break;
-		case 1:
+		case Constants.STATUS_UNKNOWN:
 			sStatus = "未知状态";
 			status_color = android.R.color.darker_gray;
 			break;
-		case 2:
+		case Constants.STATUS_NEWANSWER:
 			sStatus = "新回答";
 			status_color = android.graphics.Color.MAGENTA;
 			break;
-		case 3:
+		case Constants.STATUS_SOLVED:
 			sStatus = "已解决";
 			status_color = android.graphics.Color.BLUE;
 			break;
-		case 4:
+		case Constants.STATUS_CLOSED:
 			sStatus = "已关闭";
 			status_color = android.graphics.Color.BLACK;
 			break;

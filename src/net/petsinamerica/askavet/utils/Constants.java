@@ -39,11 +39,15 @@ public interface Constants {
 	
 	public static final String URL_ENQUIRY_DETAILS = URL_API  + "query/";
 	
+	public static final String URL_PET_ENQURIES = URL_API  + "petQuery/";
+	
 	public static final String URL_MYENQUIRY = URL_API  + "userQueryList/";
 	
 	public static final String URL_ENQUIRY_REPLY = URL_API  + "postReply/";
 	
 	public static final String URL_NEWENQUIRY = URL_API  + "newQuery/";
+	
+	public static final String URL_ENQUIRY_MARKSOLVED = URL_API  + "markSolved/";
 	
 	public static final String URL_PRODUCTLIST = URL_API  + "productlist/";
 	
@@ -94,6 +98,18 @@ public interface Constants {
   	public static final String KEY_ENQUIRY_OWNERID = "owner";
   	
   	
+  	/*
+  	 * Enquiry status
+  	 */
+  	public static final int STATUS_ONGOING = 0;
+  	
+  	public static final int STATUS_UNKNOWN = 1;
+  	
+  	public static final int STATUS_NEWANSWER = 2;
+  	
+  	public static final int STATUS_SOLVED = 3;
+  	
+  	public static final int STATUS_CLOSED = 4;
   	
   	/*
   	 * for storage 

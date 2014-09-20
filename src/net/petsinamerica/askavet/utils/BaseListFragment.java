@@ -196,6 +196,7 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	public void onRefresh() {
 		if (httpPostTask != null){
 			if (httpPostTask.isIdle()){
+				// start the refreshing animation
 				mSwipeRefreshLayout.setRefreshing(true);
 				// if the thread is in idle state, 
 				loadListInBackground();
@@ -355,13 +356,20 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	 */
 	protected void setCustomAdapter(ArrayAdapter<Map<String, Object>> customAdapter){
 		mCustomAdapter = customAdapter;
+		
 	}
 	
 	/**
 	 *  this is a method with out implementation, it is called directly after the http
-	 *  onPostExecute() method, should overwrite if data is needed 
+	 *  onPostExecute() method, results are not necessary success, should overwrite if data is needed 
 	 */
 	protected void onHttpDone(List<Map<String, Object>> resultArray){}
+	
+	/**
+	 *  this is a method with out implementation, it is called it a result is successfully
+	 *  returned, should overwrite if data is needed 
+	 */
+	protected void onHttpSuccess(List<Map<String, Object>> resultArray){}
 	
 	
 	private class HttpPostTask extends CallPiaApiInBackground{
@@ -401,22 +409,11 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 					// if have return results or have error
 					if (!result.get(0).containsKey(Constants.KEY_ERROR_MESSAGE)){
 						// if no error
+						onHttpSuccess(result);
 						if (mSwipeRefreshLayout.isRefreshing()){
 							// if refreshing is from top, then need to get only new feeds
 							// and add that on top of the list
-							int i = 0;
-							for (Map<String, Object> r : result){
-								if (!mData.contains(r)){
-									mData.add(r);
-									mCustomAdapter.insert(r, i);
-									i++;
-								}else{
-									// the assumption is that once the first item is the 
-									// same as the ones stored in mData, then all those 
-									// following will be also the same
-									break;
-								}
-							}
+							refreshList(result);
 						}else{
 							// if refreshing is from bottom, then all needs to be added below
 							mData.addAll(result);
@@ -448,6 +445,48 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	}
 	
 	/**
+	 * method to define the exact behavior of refreshing the list adapter attached to this fragment.
+	 * The default refreshing behavior is to load a list of result, and add to the list adapter one 
+	 * by one from start to end. In each addition, a comparison will be performend to see if the newly 
+	 * loaded list contain the first element in the original list. if so, then adding elements will 
+	 * stop, otherwise, it continues until the end of the newly loaded list. 
+	 * This behavior can be overwritten in the subclass. Note, to overwrite how the list adapter is 
+	 * to be updated, the subclass needs to also ensure the underlying data is updated as well, use
+	 * {@link #getListData} to obtain the underlying data, and {@link #setListData} to set data. 
+	 * @param result	the newly loaded list
+	 */
+	protected void refreshList(List<Map<String, Object>> result) {
+		int i = 0;
+		for (Map<String, Object> r : result){
+			if (!mData.contains(r)){
+				mData.add(r);
+				mCustomAdapter.insert(r, i);
+				i++;
+			}else{
+				// the assumption is that once the first item is the 
+				// same as the ones stored in mData, then all those 
+				// following will be also the same
+				break;
+			}
+		}
+		
+	}
+	
+	/**
+	 * Get the data that is currently associated with the data in the customadapter
+	 */
+	protected List<Map<String, Object>> getListData(){
+		return mData;
+	}
+	
+	/**
+	 * Set the data that is currently associated with the data in the customadapter
+	 */
+	protected void setListData(List<Map<String, Object>> data){
+		mData = data;
+	}
+	
+	/**
 	 *  function to fetch the attribute set defined in layoutResource element ViewName
 	 */
 	private AttributeSet getAttributeSet(Context context, int layoutResource, String ViewName){
@@ -471,5 +510,7 @@ public abstract class BaseListFragment extends ListFragment implements OnRefresh
 	    } while(state != XmlPullParser.END_DOCUMENT);
 	    return Attributes;
 	}
+
+	
 
 }

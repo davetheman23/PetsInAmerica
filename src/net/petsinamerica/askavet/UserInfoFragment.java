@@ -1,6 +1,7 @@
 package net.petsinamerica.askavet;
 
 import net.petsinamerica.askavet.utils.Constants;
+import net.petsinamerica.askavet.utils.GeneralHelpers;
 import net.petsinamerica.askavet.utils.UserInfoManager;
 import android.animation.LayoutTransition;
 import android.app.Activity;
@@ -72,8 +73,10 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 			@Override
 			public void onClick(View v) {
 				
-				Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-				startActivity(intent);
+				GeneralHelpers.showMessage(getActivity(), "功能还在完善中， 暂时仅支持网上修改个人资料。 请登录 http://www.petsinamerica.net");
+				
+				/*Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+				startActivity(intent);*/
 			}
 		});
 		
@@ -104,7 +107,8 @@ public class UserInfoFragment extends Fragment implements UserInfoManager.Listen
 							startActivity(intent);
 							break;
 						default:
-							Toast.makeText(mContext, "功能还在完善中" + Integer.toString(linearLayout), Toast.LENGTH_LONG).show();
+							GeneralHelpers.showMessage(mContext, "功能还在完善中");
+							//Toast.makeText(mContext, "功能还在完善中" + Integer.toString(linearLayout), Toast.LENGTH_LONG).show();
 					}
 					
 				}

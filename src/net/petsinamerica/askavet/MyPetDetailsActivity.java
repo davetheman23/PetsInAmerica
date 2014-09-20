@@ -1,32 +1,42 @@
 package net.petsinamerica.askavet;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import net.petsinamerica.askavet.utils.App;
+import net.petsinamerica.askavet.utils.BaseListFragment;
 import net.petsinamerica.askavet.utils.CallPiaApiInBackground;
 import net.petsinamerica.askavet.utils.Constants;
+import android.R.anim;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 public class MyPetDetailsActivity extends FragmentActivity {
 
+	private int mPetId;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_petinfo);
 		
-		int petId = getIntent().getIntExtra(Constants.KEY_PET_ID, -1);
-		if (petId == -1){
+		mPetId = getIntent().getIntExtra(Constants.KEY_PET_ID, -1);
+		if (mPetId == -1){
 			// TODO report problem
 			return;
 		}
@@ -34,11 +44,12 @@ public class MyPetDetailsActivity extends FragmentActivity {
 		PetDetailFragment petDetailFragment ;
 		// setup the list fragment that shows a list of all pets of the user
 		petDetailFragment = new PetDetailFragment();
-		petDetailFragment.setPetId(petId);
+		petDetailFragment.setPetId(mPetId);
 		
 		getSupportFragmentManager().beginTransaction()
 			.add(R.id.activity_petinfo_container, petDetailFragment)
 			.commit();
+		
 		
 	}
 	
@@ -64,6 +75,10 @@ public class MyPetDetailsActivity extends FragmentActivity {
 		private int mPetid = NOT_INITIALIZED;
 		
 		private GetPetInfoTask getPetInfoTask;
+		
+		MyPetQueryListFragment myPetQueryListFragment;
+		
+		static PetDetailFragment mContext;
 		
 		/**
 		 * Set Pet ID immediately after created a new instance of the class
@@ -99,6 +114,16 @@ public class MyPetDetailsActivity extends FragmentActivity {
 					.setErrorDialog(true)
 					.execute(Constants.URL_PETINFO + mPetid);
 			}
+			
+			myPetQueryListFragment = new MyPetQueryListFragment();
+			myPetQueryListFragment.setParameters(Constants.URL_PET_ENQURIES, false, true, false, true, false);
+			myPetQueryListFragment.setPage(mPetid);	
+			
+			getChildFragmentManager().beginTransaction()
+				.add(myPetQueryListFragment, "petQueryList")
+				.commit();
+			
+			mContext = this;
 
 			return rootview;
 		}
@@ -155,5 +180,43 @@ public class MyPetDetailsActivity extends FragmentActivity {
 				}
 			}
 		}
+		
+		public static class MyPetQueryListFragment extends BaseListFragment {
+			
+			@Override
+			public void onAttach(Activity activity) {
+				super.onAttach(activity);			
+				List<Map<String, Object>> emptyList = new ArrayList<Map<String, Object>>();
+				setCustomAdapter(new EnquiryListAdapter(getActivity(), 
+						R.layout.list_enquiry_item, emptyList));
+			}
+
+
+			@Override
+			protected void onHttpSuccess(List<Map<String, Object>> resultArray) {
+				if (mContext != null){
+					mContext.setListAdapter(getListAdapter());
+				}
+			}
+
+
+			@Override
+			protected void onItemClickAction(View v, int position, long id) {
+			}
+			
+		}
+
+		@Override
+		public void onListItemClick(ListView l, View v, int position, long id) {
+			super.onListItemClick(l, v, position, id);
+			Intent newIntent = new Intent(getActivity(), EnquiryActivity.class);
+			int queryId = ((EnquiryListAdapter)this.getListAdapter()).getQueryID(v);
+			newIntent.putExtra(Constants.KEY_QUERYID, queryId);
+			startActivity(newIntent);
+		}
+		
+		
 	}
+	
+	
 }

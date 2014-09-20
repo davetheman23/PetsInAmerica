@@ -26,5 +26,16 @@
         <attr name="android:requiresFadingEdge" />
         <attr name="android:fadingEdgeLength" />
     </declare-styleable>
+       
+    <declare-styleable name="EnquiryStatus">
+        <attr name="status" format="enum">
+            <enum name="进行中" value="0" />
+            <enum name="未知状态" value="1" />
+            <enum name="新回答" value="2" />
+            <enum name="已解决" value="3" />
+            <enum name="已关闭" value="4" />
+        </attr>
+    </declare-styleable> 
+    
 
 </resources>

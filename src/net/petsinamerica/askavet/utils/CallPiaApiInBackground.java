@@ -145,14 +145,14 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 			return;
 		}
 		// -- below for alpha test use -- //
-		if (result != null){
+		/*if (result != null){
 			String outstr = result.toString();
 			int len = result.toString().length();
 			outstr = outstr.substring(1, (len-1>20? 20 : len-1));
 			Toast.makeText(mContext, "成功" + outstr, Toast.LENGTH_LONG).show();		
 		}else{
 			Toast.makeText(mContext, "失败", Toast.LENGTH_LONG).show();
-		}
+		}*/
 		// -- above for alpha test use -- //
 		
 		// check to see if show error dialog once an error is received
@@ -173,7 +173,8 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 				}
 				if (result_map.containsKey(Constants.KEY_ERROR_MESSAGE)){
 					String errorMsg = result_map.get(Constants.KEY_ERROR_MESSAGE).toString();
-					GeneralHelpers.showMessage(mContext, errorMsg);
+					GeneralHelpers.showAlertDialog(mContext, "出错啦！", errorMsg);
+					//GeneralHelpers.showMessage(mContext, errorMsg);
 				}
 			}
 		}

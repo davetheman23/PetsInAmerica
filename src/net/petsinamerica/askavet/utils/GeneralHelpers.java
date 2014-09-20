@@ -22,6 +22,7 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 import org.json.JSONTokener;
 
 import android.app.AlertDialog;
@@ -34,6 +35,7 @@ import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.os.Parcelable;
+import android.util.JsonReader;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -168,6 +170,12 @@ public final class GeneralHelpers {
 									JSONException, HttpResponseException, IOException {
 		String responseString = new BasicResponseHandler().handleResponse(response);
 		
+		if (!isJsonStrValid(responseString)){
+			Map<String, Object> jErrObject = new HashMap<String, Object>();
+			jErrObject.put(Constants.KEY_ERROR_MESSAGE, "服务器返回出错！");
+			return jErrObject;
+		}
+		
 		JSONObject responseObject = (JSONObject) new JSONTokener(responseString).nextValue(); 
 		
 		Map<String, Object> responseMap = JsonHelper.toMap(responseObject);
@@ -189,6 +197,24 @@ public final class GeneralHelpers {
 	}
 	
 	/**
+	 * check if a Json string is valid
+	 * @param str any input string
+	 */
+	public static boolean isJsonStrValid(String str){
+		try{
+			new JSONObject(str);
+		}catch (JSONException e){
+			try {
+	            new JSONArray(str);
+	        } catch (JSONException e1) {
+	            return false;
+	        }
+		}
+		return true;
+		
+	}
+	
+	/**
 	 * parse a PIA server response, return results in a list of maps if no error, 
 	 * This applies to the responses that returns a list of objects 
 	 * @param response raw response from PIA server
@@ -198,6 +224,14 @@ public final class GeneralHelpers {
 	public static List<Map<String, Object>> handlePiaResponseArray(HttpResponse response) throws 
 	JSONException, HttpResponseException, IOException {
 		String responseString = new BasicResponseHandler().handleResponse(response);
+		
+		if (!isJsonStrValid(responseString)){
+			Map<String, Object> jErrObject = new HashMap<String, Object>();
+			jErrObject.put(Constants.KEY_ERROR_MESSAGE, "服务器返回出错！");
+			List<Map<String, Object>> errArray = new ArrayList<Map<String,Object>>(); 
+			errArray.add(jErrObject);
+			return errArray;
+		}
 		
 		JSONObject responseObject = (JSONObject) new JSONTokener(responseString).nextValue(); 
 		
@@ -225,7 +259,7 @@ public final class GeneralHelpers {
 		builder.setTitle(title)
 		.setMessage(message)
 		.setCancelable(false)
-		.setPositiveButton("好的", new DialogInterface.OnClickListener() {
+		.setPositiveButton("知道了！", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();

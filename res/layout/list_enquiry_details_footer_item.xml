@@ -1,0 +1,17 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="fill_parent"
+    android:orientation="horizontal"
+	android:background="@drawable/layer_card_background"
+	android:baselineAligned="false"
+    >
+	<Button 
+	    android:id="@+id/list_enquiry_details_footer_submitsolved"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:text="已 解 决 了 ？"
+	    android:background="?android:attr/selectableItemBackground"
+	    />
+	    
+</LinearLayout>
