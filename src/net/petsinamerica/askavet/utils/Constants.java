@@ -12,6 +12,8 @@ public interface Constants {
 	
 	public static final int RENEW_LOCAL_TOKEN_MINS = 60*20*7; 	// every time the user start the app, should renew the local token
 	
+	public static final String APP_KEY_BUGSENSE = "6a3b26c4";
+	
 	/*
 	 * for internet connections
 	 */

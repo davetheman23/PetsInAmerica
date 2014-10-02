@@ -164,10 +164,16 @@ public class PushReceiver extends BroadcastReceiver {
 		protected HttpPost addParamstoPost(HttpPost post, Context context) 
 												throws UnsupportedEncodingException, IOException {
 			
+			if (post == null || post.getEntity() == null){
+				//Toast.makeText(context, "Push Receiver bind failed", Toast.LENGTH_LONG).show();
+				//Log.d("Push Receiver", "Binding failed. cannot find post entity");
+				return post;
+			}
+			
 			List<NameValuePair> nameValuePairs = URLEncodedUtils.parse(post.getEntity());
 			if (nameValuePairs == null){
-				Toast.makeText(context, "Push Receiver bind failed", Toast.LENGTH_LONG).show();
-				Log.d("Push Receiver", "Binding failed. cannot find post entity");
+				//Toast.makeText(context, "Push Receiver bind failed", Toast.LENGTH_LONG).show();
+				//Log.d("Push Receiver", "Binding failed. cannot find post entity");
 				return post;
 			}
 			// add user login information

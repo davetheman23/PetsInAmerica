@@ -2,7 +2,6 @@ package net.petsinamerica.askavet.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,16 +12,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.petsinamerica.askavet.R;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 import org.json.JSONTokener;
 
 import android.app.AlertDialog;
@@ -32,10 +27,7 @@ import android.content.Intent;
 import android.content.pm.LabeledIntent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
 import android.os.Parcelable;
-import android.util.JsonReader;
 import android.util.Log;
 import android.widget.Toast;
 

@@ -3,15 +3,15 @@ package net.petsinamerica.askavet.utils;
 import java.io.File;
 
 import net.petsinamerica.askavet.LoginActivity;
-
-import com.igexin.sdk.PushManager;
-
 import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Environment;
+
+import com.igexin.sdk.PushManager;
+import com.splunk.mint.Mint;
 
 /**
  * define all global variables here, for global variables that are known in advance 
@@ -31,10 +31,15 @@ public class App extends Application {
 	 * it can be called from anywhere within the application
 	 */
 	public static Context appContext;
+	
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		
+		Mint.initAndStartSession(this, Constants.APP_KEY_BUGSENSE);
+		Mint.setUserIdentifier(UserInfoManager.userid);
+		
 		/* the external card exists*/
 		INTERNAL_DIRECTORY = Environment.getRootDirectory().toString();
 		INTERNAL_DIRECTORY = INTERNAL_DIRECTORY + File.separator + Constants.PIA_ROOT_DIR;
@@ -52,6 +57,7 @@ public class App extends Application {
 			PushManager.getInstance().turnOffPush(appContext);
 			//PushManager.getInstance().stopService(appContext);
 		}
+		Mint.closeSession(this);
 		super.onTerminate();
 	}
 	

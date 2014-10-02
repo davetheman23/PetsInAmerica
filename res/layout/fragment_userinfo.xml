@@ -162,7 +162,7 @@
 		        <ImageView 
 	                android:layout_width="30dp"
 	                android:layout_height="match_parent"
-	                android:src="@drawable/ic_like"
+	                android:src="@drawable/ic_like_sm"
 	                android:contentDescription=""
 	                />
 		        <RelativeLayout 
@@ -230,7 +230,7 @@
 	            <ImageView 
 	                android:layout_width="30dp"
 	                android:layout_height="match_parent"
-	                android:src="@drawable/ic_comment"
+	                android:src="@drawable/ic_comment_sm"
 	                android:contentDescription=""
 	                />
 	            <RelativeLayout 
@@ -365,7 +365,7 @@
 	            <ImageView 
 	                android:layout_width="30dp"
 	                android:layout_height="match_parent"
-	                android:src="@drawable/ic_question"
+	                android:src="@drawable/ic_enquiry_sm"
 	                android:contentDescription=""
 	                />
 	            <RelativeLayout 
@@ -434,7 +434,7 @@
 	     	    <ImageView 
 	     	        android:layout_width="30dp" 
 	     	        android:layout_height="match_parent" 
-	     	        android:src="@drawable/ic_mypet" 
+	     	        android:src="@drawable/ic_mypet_sm" 
 	     	        android:contentDescription="" />
 	     	    <RelativeLayout 
 	                android:layout_width="wrap_content"
@@ -500,7 +500,7 @@
 	            <ImageView 
 	                android:layout_width="30dp"
 	                android:layout_height="match_parent"
-	                android:src="@drawable/ic_setting"
+	                android:src="@drawable/ic_setting_sm"
 	                android:contentDescription=""
 	                />
 	        	<TextView

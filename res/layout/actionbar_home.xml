@@ -4,7 +4,13 @@
     android:layout_height="wrap_content"
     android:paddingRight="10dp"
     android:layout_gravity="fill_horizontal">
-
+<!-- 
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/logo_wordsonly_sm" />
+ -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

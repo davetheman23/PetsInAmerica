@@ -107,11 +107,14 @@ public abstract class CallPiaApiInBackground extends AsyncTask<String, Void, Obj
 		mIsIdle = false;
 		
 		if (mRequireValidSession){
-			AccessTokenManager.addAccessTokenPost(post, App.appContext);
+			post = AccessTokenManager.addAccessTokenPost(post, App.appContext);
+			if (post == null){
+				return null;
+			}
 		}
 
 		try {
-			addParamstoPost(post, App.appContext);
+			post = addParamstoPost(post, App.appContext);
 			
 			// execute post
 			HttpResponse response = mClient.execute(post);

@@ -26,8 +26,6 @@ import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 
@@ -94,7 +92,6 @@ public class EnquiryPostActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_enquiry_post);
 		
-		
 		// inhibit the auto-popup of the soft key board when creating the activity
 		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
 		
@@ -135,6 +132,7 @@ public class EnquiryPostActivity extends FragmentActivity {
 					showErrorDialog();
 					return;
 				}
+				
 				// if all entries are valid
 				submitEnquiry();
 			}

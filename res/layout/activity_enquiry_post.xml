@@ -109,7 +109,6 @@
 	                android:gravity="right"
 	                android:textSize="14sp"
 	                android:ellipsize="end"
-	                android:text="品牌"
 	                android:hint="品牌，味道，原料等"/>
 	        </TableRow>
 	        <TableRow
@@ -132,7 +131,6 @@
 	                android:layout_height="wrap_content"
 	                android:gravity="right"
 	                android:textSize="14sp"
-	                android:text="10"
 	                android:hint="公斤"/>
 	            
 	        </TableRow>
