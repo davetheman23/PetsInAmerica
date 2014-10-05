@@ -117,6 +117,17 @@ public class AccessTokenManager {
     }
     
     /**
+     * Get the PIA token of the user current in session
+     * @param context application context
+     * @return the user pia token; "" if not available
+     */
+    public static String getUserToken(Context context){
+    	SharedPreferences pref = context.getSharedPreferences(sPREFERENCES_NAME, Context.MODE_PRIVATE);
+        String token = pref.getString(sKEY_ACCESS_TOKEN, "");
+        return token;
+    }
+    
+    /**
      * clear only the PIA token from SharedPreferences
      * 
      */

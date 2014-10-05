@@ -131,6 +131,7 @@
 	                android:layout_height="wrap_content"
 	                android:gravity="right"
 	                android:textSize="14sp"
+	                android:inputType="numberDecimal"
 	                android:hint="公斤"/>
 	            
 	        </TableRow>

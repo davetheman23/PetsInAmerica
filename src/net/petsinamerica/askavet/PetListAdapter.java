@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -88,6 +90,8 @@ public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 
 			viewHolder = (ViewHolder) rowview.getTag();
 		}
+		final View rowviewf = rowview;
+		final int positionf = position;
 		
 		Map<String, Object> listItem = getItem(position); 
 		String sName, sImgURL, sItemId;
@@ -98,6 +102,14 @@ public class PetListAdapter extends ArrayAdapter<Map<String, Object>> {
 		
 		viewHolder.itemId = Integer.parseInt(sItemId);
 		viewHolder.checkBox.setChecked(selectStates[position]);
+		viewHolder.checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked){
+					setItemSelected(rowviewf, positionf);
+				}
+			}
+		});
 		
 		if (sImgURL!= null && !sImgURL.startsWith("http")){
 			sImgURL = Constants.URL_CLOUD_STORAGE + sImgURL;

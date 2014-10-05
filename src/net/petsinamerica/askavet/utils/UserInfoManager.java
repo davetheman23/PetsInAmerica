@@ -91,6 +91,8 @@ public class UserInfoManager {
 		if (resultMap.get("language") != null){
 			language = resultMap.get("language").toString();
 		}
+		
+		piaToken = AccessTokenManager.getUserToken(App.appContext);
 
 		infoAvailable = true;
 		if (mPiaInfoListener!= null){

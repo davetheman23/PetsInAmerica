@@ -1,6 +1,5 @@
 package net.petsinamerica.askavet.utils;
 
-import java.sql.Date;
 
 public class PiaNotification {
 	public static final int STATUS_RECEIVED = 0;

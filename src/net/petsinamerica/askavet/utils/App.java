@@ -1,8 +1,10 @@
 package net.petsinamerica.askavet.utils;
 
 import java.io.File;
+import java.util.HashMap;
 
 import net.petsinamerica.askavet.LoginActivity;
+import net.petsinamerica.askavet.R;
 import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
@@ -10,8 +12,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Environment;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 import com.igexin.sdk.PushManager;
-import com.splunk.mint.Mint;
 
 /**
  * define all global variables here, for global variables that are known in advance 
@@ -32,13 +35,23 @@ public class App extends Application {
 	 */
 	public static Context appContext;
 	
+	/**
+	 * TrackerName and mTrackers are used in google analytics
+	 */
+	// The following line should be changed to include the correct property id.
+    private static final String PROPERTY_ID = "UA-55283361-1";
+    
+	public enum TrackerName {
+	    APP_TRACKER, // Tracker used only in this app.
+	    GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
+	    ECOMMERCE_TRACKER, // Tracker used by all ecommerce transactions from a company.
+	}
+    HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
+	
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
-		Mint.initAndStartSession(this, Constants.APP_KEY_BUGSENSE);
-		Mint.setUserIdentifier(UserInfoManager.userid);
 		
 		/* the external card exists*/
 		INTERNAL_DIRECTORY = Environment.getRootDirectory().toString();
@@ -57,7 +70,6 @@ public class App extends Application {
 			PushManager.getInstance().turnOffPush(appContext);
 			//PushManager.getInstance().stopService(appContext);
 		}
-		Mint.closeSession(this);
 		super.onTerminate();
 	}
 	
@@ -93,4 +105,17 @@ public class App extends Application {
 		dialog.show();
 	}
 	
+	
+	synchronized Tracker getTracker(TrackerName trackerId) {
+	    if (!mTrackers.containsKey(trackerId)) {
+
+	      GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+	      Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(PROPERTY_ID)
+	          : (trackerId == TrackerName.GLOBAL_TRACKER) ? analytics.newTracker(R.xml.global_tracker)
+	              : analytics.newTracker(R.xml.ecommerce_tracker);
+	      mTrackers.put(trackerId, t);
+
+	    }
+	    return mTrackers.get(trackerId);
+	  }
 }

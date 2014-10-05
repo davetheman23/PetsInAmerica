@@ -76,7 +76,7 @@
     <string name="label_petinsurance">保险公司</string>
     <string name="label_pet_age">年龄</string>
     
-    <!-- Enquiry form page -->
+    <!-- Enquiry post page -->
     <string name="prompt_please_select">请选择</string>
     <string-array name="pet_diet_selection">
         <item>商业粮 commercial</item>
@@ -100,6 +100,10 @@
         <item>便秘 Constipated</item>
         <item>干燥 Dry</item>
         <item>拉稀 Diarrhea</item>
+    </string-array>
+    <string-array name="image_action_array">
+        <item>从相册选择</item>
+        <item>新拍一张照片</item>
     </string-array>
     
     <!-- Notification Page -->

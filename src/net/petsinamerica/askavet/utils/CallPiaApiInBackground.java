@@ -14,7 +14,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 /**
  * This is a helper class for PIA api calls, it creates a new thread and subclass can simply

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.petsinamerica.askavet"
-    android:versionCode="065"
-    android:versionName="0.6.5" >
+    android:versionCode="067"
+    android:versionName="0.6.7" >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -34,6 +34,9 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_pia_logo" 
         android:theme="@style/MyTheme">
+        
+        <meta-data android:name="com.google.android.gms.version"
+        	android:value="@integer/google_play_services_version" />
         
         <activity
             android:name="net.petsinamerica.askavet.LoginActivity"
