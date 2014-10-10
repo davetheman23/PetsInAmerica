@@ -255,7 +255,7 @@ public class EnquiryActivity extends FragmentActivity {
 					if (submitReplyInBackground == null){
 						submitReplyInBackground = (SubmitReplyInBackground) new SubmitReplyInBackground()
 							.setParameters(getActivity(),CallPiaApiInBackground.TYPE_RETURN_LIST,true)
-							.setProgressDialog(true,"回复正在提交中，请稍后。。。")
+							.setProgressDialog(true,"回复正在提交中，请稍后...")
 							.setErrorDialog(true)
 							.execute(Constants.URL_ENQUIRY_REPLY);
 					}else{

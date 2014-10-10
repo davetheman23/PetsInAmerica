@@ -73,9 +73,10 @@ public class LoginActivity extends Activity{
         findViewById(R.id.button_login_weibo).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mSsoHandler = new SsoHandler(LoginActivity.this, mWeiboAuth);
-                mSsoHandler.authorize(new AuthListener());
+                //mSsoHandler = new SsoHandler(LoginActivity.this, mWeiboAuth);
+                //mSsoHandler.authorize(new AuthListener());
             	//Toast.makeText(getApplication(), "微博登陆暂不支持未关联的用户", Toast.LENGTH_LONG).show();
+            	GeneralHelpers.showAlertDialog(LoginActivity.this, "功能未启用", "由于微博方原因，微博登陆暂时无法使用。");
             }
         });
         

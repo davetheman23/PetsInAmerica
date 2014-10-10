@@ -37,6 +37,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 import com.igexin.sdk.PushManager;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.exception.WeiboException;
@@ -89,6 +91,12 @@ public class HomeActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		// turn on google analytics
+		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+		analytics.enableAutoActivityReports(getApplication());
+		Tracker mGATracker = analytics.newTracker(App.ga_trackerID);
+		mGATracker.enableAutoActivityTracking(true);
+		
 		Log.d("HomeActivity", "OnCreate() method is called");
 		
 		// initialize/turn on push service 
@@ -123,7 +131,7 @@ public class HomeActivity extends FragmentActivity implements
 			mUsersAPI = new UsersAPI(weiboToken);
 			mUsersAPI.show(Long.parseLong(weiboToken.getUid()), mListener);
 		}else{
-			Toast.makeText(this, "微博信息获取失败,请重新登录微博", Toast.LENGTH_LONG).show();;
+			//TODO Toast.makeText(this, "微博信息获取失败,请重新登录微博", Toast.LENGTH_LONG).show();;
 		}
 	    // 对statusAPI实例化
 	    //StatusesAPI statusesAPI = new StatusesAPI(weiboToken);
@@ -222,7 +230,30 @@ public class HomeActivity extends FragmentActivity implements
 		
 	}
 	
-	
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		/*int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		if (currentapiVersion < android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH){
+			GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+			analytics.reportActivityStart(this);
+		}*/
+		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+		analytics.reportActivityStart(this);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		/*int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+		if (currentapiVersion < android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH){
+			GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+			analytics.reportActivityStop(this);
+		}*/
+		GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+		analytics.reportActivityStop(this);
+	}
 
 	@Override
 	protected void onPause() {

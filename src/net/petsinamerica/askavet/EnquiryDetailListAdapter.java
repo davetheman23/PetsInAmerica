@@ -11,6 +11,7 @@ import net.petsinamerica.askavet.utils.App;
 import net.petsinamerica.askavet.utils.Constants;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.sax.StartElementListener;
 import android.text.Html;
 import android.text.Spannable;
@@ -224,11 +225,14 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 				public boolean shouldOverrideUrlLoading(WebView view, String url) {
 					if (url.startsWith("loadarticle")){
 						Intent intent = new Intent(mContext, ArticleActivity.class);
-						intent.putExtra("ArticleId", article_id);
+						intent.putExtra(Constants.KEY_ARTICALID, article_id);
 						mContext.startActivity(intent);
-						return true;
+					}else{
+						// if not any of the cases above, it will open up the browser
+						Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+						mContext.startActivity(intent);
 					}
-					return false;
+					return true;
 				}
 			});
 			

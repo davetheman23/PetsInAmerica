@@ -237,7 +237,7 @@ public class EnquiryPostActivity extends FragmentActivity {
 			Toast.makeText(getApplication(), "请选择宠物", Toast.LENGTH_LONG).show();
 			return false;
 		}
-		if (mUserInputs.getInt(PET_WEIGHT, -999) < 0){
+		if (mUserInputs.getFloat(PET_WEIGHT, -999) < 0){
 			Toast.makeText(getApplication(), "请确认宠物重量是否输入正确", Toast.LENGTH_LONG).show();
 			return false;
 		}
@@ -304,9 +304,9 @@ public class EnquiryPostActivity extends FragmentActivity {
 		mUserInputs.putString(PET_DIET, dietView.getSelectedItem().toString());
 		mUserInputs.putString(PET_DIETDESCRIPTION, descrView.getText().toString());
 		if (!weightString.isEmpty()){
-			mUserInputs.putInt(PET_WEIGHT, Integer.parseInt(weightView.getText().toString()));
+			mUserInputs.putFloat(PET_WEIGHT, Float.parseFloat(weightView.getText().toString()));
 		}else{
-			mUserInputs.putInt(PET_WEIGHT,-1);
+			mUserInputs.putFloat(PET_WEIGHT,-1.0f);
 		}
 		mUserInputs.putString(PET_MENTATION, mentationView.getSelectedItem().toString());
 		mUserInputs.putString(PET_APPETITE, appetiteView.getSelectedItem().toString());

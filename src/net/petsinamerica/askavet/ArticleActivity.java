@@ -48,6 +48,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 import com.igexin.sdk.PushManager;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Picasso;
@@ -186,12 +188,13 @@ public class ArticleActivity extends Activity {
 		
 
 		mWebView = (WebView) findViewById(R.id.article_activity_web_view);
-		mWebView.setWebViewClient(new WebViewClient());
+		mWebView.setWebViewClient(new myWebViewClient());
 		mWebView.setHorizontalScrollBarEnabled(false);
+		mWebView.setScrollContainer(false);
+		
 		mWebView.getSettings().setBuiltInZoomControls(false);
 		mWebView.getSettings().setSupportZoom(false);
 		mWebView.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
-
 		
 		if (articleId != 0){
 			String articleURL_API = Constants.URL_ARTICLE_API + Integer.toString(articleId);
@@ -452,13 +455,18 @@ public class ArticleActivity extends Activity {
 				// display html content in a webview
 				String html_string = null;
 				if (imageURL != null && sContent != null){
-					//sContent = "<img src=\"" + imageURL + "\">" + sContent;
-					// adding a parameters to allow the pictures to fit in the screen. 
-					String pattern1 = "(<img src=\".*?\")(.*?)(>)";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
-					sContent = sContent.replaceAll(pattern1, "$1 width=\"100%\" alt=\"\"$3");
-					// delete the reference section, which is too long and cannot be wrapped, if not deleted, the webview will try to fit it. 
-					String pattern2 = "<p>[rR]eference.+</p>"; 
-					sContent = sContent.replaceAll(pattern2, "");
+
+					// see if there is no much content, then it is possible this article uses image instead of contents
+					if (sContent.length() < 50){
+						sContent = "<img src=\"" + imageURL + "\" width=\"100%\" alt=\"\">" + sContent;
+					}else{
+						// adding a parameters to allow the pictures to fit in the screen. 
+						String pattern1 = "(<img src=\".*?\")(.*?)(>)";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
+						sContent = sContent.replaceAll(pattern1, "$1 width=\"100%\" alt=\"\"$3");
+						// delete the reference section, which is too long and cannot be wrapped, if not deleted, the webview will try to fit it. 
+						String pattern2 = "<p>[rR]eference.+</p>";
+						sContent = sContent.replaceAll(pattern2, "");
+					}
 					html_string = "<body>" + sContent + "</body>";
 				}else{
 					html_string = "<body>" + noContent + "</body>";
@@ -480,6 +488,36 @@ public class ArticleActivity extends Activity {
 				mProgBarView.setVisibility(View.GONE);
 			}
 		}
+	}
+	
+	/**
+	 * define a client to be loaded by webview, this client will handle how to load links
+	 */
+	private class myWebViewClient extends WebViewClient{
+
+		@Override
+		public boolean shouldOverrideUrlLoading(WebView view, String url) {
+			
+			// check if url links to another article
+			if (url.startsWith("http") && url.contains("article")){
+				Uri uri = Uri.parse(url);
+				String path = uri.getPath();
+				String idStr = path.substring(path.lastIndexOf('/') + 1);
+				if (!idStr.equals("")){
+					int id = Integer.parseInt(idStr);
+					Intent intent = new Intent(ArticleActivity.this, ArticleActivity.class);
+					intent.putExtra(Constants.KEY_ARTICALID, id);
+					startActivity(intent);
+				}
+			}else{
+				// if not any of the cases above, it will open up the browser
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+				startActivity(intent);
+			}
+			
+			return true;
+		}
+		
 	}
 	
 	/**
