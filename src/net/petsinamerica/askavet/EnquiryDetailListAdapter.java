@@ -201,18 +201,27 @@ class EnquiryDetailListAdapter extends ArrayAdapter<Map<String,Object>> {
 			// -- allow some text within a webview to be clickable, especially those that will direct to another article
 			String str_articleId = "0";
 			// 1. first detect if there are any text should be clickable
-			// 1-a. match article url
-			String pattern_str = "(\\[url=)(.*?article/)([0-9]+)(\\])(.*?)(\\[/url\\])";
-			Pattern pattern1 = Pattern.compile(pattern_str);
-			Matcher matcher = pattern1.matcher(details);
-			if (matcher.find()){
-				str_articleId = matcher.group(3);
-				details = details.replaceAll(pattern_str, "<a href = \"loadarticle:$3\">$5</a>");
+			// 1-a. match article url with pattern "[url=article]180[/url]"
+			String pattern_str1 = "(\\[url=)(.*?article/)([0-9]+)(\\])(.*?)(\\[/url\\])";
+			Pattern pattern1 = Pattern.compile(pattern_str1);
+			Matcher matcher1 = pattern1.matcher(details);
+			if (matcher1.find()){
+				str_articleId = matcher1.group(3);
+				details = details.replaceAll(pattern_str1, "<a href = \"loadarticle:$3\">$5</a>");
 			}
+			// 1-b. match article url with pattern "[article]180[/article]"
+			String pattern_str2 = "(\\[article\\])([0-9]+)(\\[/article\\])";
+			Pattern pattern2 = Pattern.compile(pattern_str2);
+			Matcher matcher2 = pattern2.matcher(details);
+			if (matcher2.find()){
+				str_articleId = matcher2.group(2);
+				details = details.replaceAll(pattern_str2, "<a href = \"loadarticle:$3\">article $2</a>");
+			}
+			
 			final int article_id = Integer.parseInt(str_articleId);
 			// 1-b. match the image url
-			String pattern2 = "(" + Pattern.quote("[img]")+")(.*?)("+ Pattern.quote("[/img]")+ ")";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
-			details = details.replaceAll(pattern2, "<img src = $2 width=\"100%\" alt=\"\">");
+			String pattern3 = "(" + Pattern.quote("[img]")+")(.*?)("+ Pattern.quote("[/img]")+ ")";	// see http://www.vogella.com/tutorials/JavaRegularExpressions/article.html for further info
+			details = details.replaceAll(pattern3, "<img src = $2 width=\"100%\" alt=\"\">");
 			
 			viewHolder.tv_authorname.setText(authorname);
 			//viewHolder.tv_enquirydetails.setText(Html.fromHtml(details));

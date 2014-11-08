@@ -199,6 +199,7 @@ public class ArticleActivity extends Activity {
 		if (articleId != 0){
 			String articleURL_API = Constants.URL_ARTICLE_API + Integer.toString(articleId);
 			getArticleInBackground2 = (GetArticleInBackground2) new GetArticleInBackground2()
+				.setParameters(ArticleActivity.this, GetArticleInBackground2.TYPE_RETURN_MAP, false)
 				.setErrorDialog(true)
 				.execute(articleURL_API);
 		}else{
