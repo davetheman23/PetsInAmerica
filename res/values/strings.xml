@@ -48,6 +48,7 @@
     <string name="label_username">用户名</string>
     <string name="label_nickname">昵 称</string>
     <string name="label_email">邮箱</string>
+    <string name="label_postcode">邮编</string>
     <string name="label_city">城市</string>
     <string name="label_weibo_name">微博名</string>
     <string name="label_gender">性别</string>

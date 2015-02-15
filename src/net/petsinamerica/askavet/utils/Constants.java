@@ -71,6 +71,8 @@ public interface Constants {
 	
 	public static final String URL_USER_LIKES = URL_API  + "userLikes/";	
 	
+	public static final String URL_USER_EDIT_PROF = URL_API + "editProfile/";
+	
 	
 	/* 
 	 * some commonly used keys

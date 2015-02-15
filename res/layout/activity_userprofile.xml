@@ -176,7 +176,7 @@
                 android:layout_gravity="left|center_vertical"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:text="@string/label_city" />
+                android:text="@string/label_postcode" />
 
             <EditText
                 android:id="@+id/activity_userprofile_zipcode"
@@ -187,7 +187,7 @@
                 android:background="@drawable/textlines"
                 android:inputType="phone|none"
                 android:padding="4dp"
-                android:hint="邮编"
+                android:hint="@string/label_postcode"
                 android:textAppearance="@android:style/TextAppearance.Small" />
         </TableRow>
     </TableLayout>
